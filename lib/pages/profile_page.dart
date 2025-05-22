@@ -4,16 +4,15 @@ import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 
-class PicturePage extends StatefulWidget {
-  const PicturePage({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<PicturePage> createState() => _PicturePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _PicturePageState extends State<PicturePage> {
-  int currentIndex = 2; // FitCheck tab index
-
+class _ProfilePageState extends State<ProfilePage> {
+  int currentIndex = 3; // Profile tab index
   void _onTabTapped(int index) {
     if (index == currentIndex) return;
 
@@ -47,7 +46,7 @@ class _PicturePageState extends State<PicturePage> {
       backgroundColor: Colors.black,
       body: const Center(
         child: Text(
-          "Hello from FitCheck Page",
+          "Hello from Profile Page",
           style: TextStyle(color: Colors.white),
         ),
       ),

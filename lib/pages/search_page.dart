@@ -4,19 +4,30 @@ import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 
-class PicturePage extends StatefulWidget {
-  const PicturePage({super.key});
+void main() => runApp(const MyApp());
 
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
-  State<PicturePage> createState() => _PicturePageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'BottomNav Demo',
+      theme: ThemeData.dark(),
+      home: const HomePage(),
+    );
+  }
 }
 
-class _PicturePageState extends State<PicturePage> {
-  int currentIndex = 2; // FitCheck tab index
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  int currentIndex = 0;
 
   void _onTabTapped(int index) {
-    if (index == currentIndex) return;
-
     Widget page;
     switch (index) {
       case 0:
@@ -45,16 +56,20 @@ class _PicturePageState extends State<PicturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      
       body: const Center(
         child: Text(
-          "Hello from FitCheck Page",
+          "Tap a bottom nav item SearchPage",
           style: TextStyle(color: Colors.white),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: currentIndex,
-        onTap: _onTabTapped,
+        onTap: (index) {
+          setState(() => currentIndex = index);
+          _onTabTapped(index); // Navigate
+        },
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,

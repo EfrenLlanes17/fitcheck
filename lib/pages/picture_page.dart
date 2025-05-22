@@ -72,9 +72,9 @@ class _PicturePageState extends State<PicturePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
-  padding: const EdgeInsets.only(top: 0),
+  padding: const EdgeInsets.only(top: 60),
   child: SizedBox(
-  height:double.infinity,
+  //height:MediaQuery.of(context).size.height - 60 -kBottomNavigationBarHeight,
   width: double.infinity,
   child: FutureBuilder<void>(
     future: _initializeControllerFuture,
@@ -86,8 +86,7 @@ class _PicturePageState extends State<PicturePage> {
             child: FittedBox(
               fit: BoxFit.cover,
               child: SizedBox(
-                width: MediaQuery.of(context).size.height - (MediaQuery.of(context).size.width)/2.2,
-                height: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.width +kBottomNavigationBarHeight,
                 child: CameraPreview(_controller),
               ),
             ),
@@ -120,7 +119,7 @@ class _PicturePageState extends State<PicturePage> {
       floatingActionButton: Align(
   alignment: Alignment.bottomCenter,
   child: Padding(
-    padding: const EdgeInsets.only(bottom: 70), // Adjust this value as needed
+    padding: const EdgeInsets.only(bottom: 170), // Adjust this value as needed
     child: GestureDetector(
       onTap: () async {
         try {

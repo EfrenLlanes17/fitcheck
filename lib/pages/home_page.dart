@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: const Center(
         child: Text(
-          "Tap a bottom nav item",
+          "Tap a bottom nav itemmm",
           style: TextStyle(color: Colors.white),
         ),
       ),

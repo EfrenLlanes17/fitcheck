@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/freinds_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
+import 'package:fitcheck/pages/displayPicture_page.dart';
 import 'package:camera/camera.dart';
 
 class PicturePage extends StatefulWidget {
@@ -64,6 +65,8 @@ class _PicturePageState extends State<PicturePage> {
     );
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,19 +97,24 @@ class _PicturePageState extends State<PicturePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          try {
-            await _initializeControllerFuture;
+  try {
+    await _initializeControllerFuture;
+    final image = await _controller.takePicture();
 
-            final image = await _controller.takePicture();
+    if (!mounted) return;
 
-            // For now, just print the file path
-            print('Picture saved to ${image.path}');
-            
-            // You can add code here to display or save the picture, etc.
-          } catch (e) {
-            print('Error taking picture: $e');
-          }
-        },
+    // Navigate to a new screen to show the picture
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DisplayPictureScreen(imagePath: image.path),
+      ),
+    );
+  } catch (e) {
+    print('Error taking picture: $e');
+  }
+}
+,
         child: const Icon(Icons.camera_alt),
       ),
     );

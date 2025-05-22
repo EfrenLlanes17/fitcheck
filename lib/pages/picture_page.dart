@@ -95,28 +95,43 @@ class _PicturePageState extends State<PicturePage> {
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-  try {
-    await _initializeControllerFuture;
-    final image = await _controller.takePicture();
+      floatingActionButton: Align(
+  alignment: Alignment.bottomCenter,
+  child: Padding(
+    padding: const EdgeInsets.only(bottom: 70), // Adjust this value as needed
+    child: GestureDetector(
+      onTap: () async {
+        try {
+          await _initializeControllerFuture;
+          final image = await _controller.takePicture();
 
-    if (!mounted) return;
+          if (!mounted) return;
 
-    // Navigate to a new screen to show the picture
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DisplayPictureScreen(imagePath: image.path),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DisplayPictureScreen(imagePath: image.path),
+            ),
+          );
+        } catch (e) {
+          print('Error taking picture: $e');
+        }
+      },
+      child: Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 5),
+          color: Colors.transparent,
+        ),
       ),
-    );
-  } catch (e) {
-    print('Error taking picture: $e');
-  }
-}
-,
-        child: const Icon(Icons.camera_alt),
-      ),
+    ),
+  ),
+),
+floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+
     );
   }
 }

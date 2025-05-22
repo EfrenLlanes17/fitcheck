@@ -25,7 +25,7 @@ class _PicturePageState extends State<PicturePage> {
 
     _controller = CameraController(
       widget.camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
     );
 
     _initializeControllerFuture = _controller.initialize();
@@ -119,7 +119,7 @@ class _PicturePageState extends State<PicturePage> {
       floatingActionButton: Align(
   alignment: Alignment.bottomCenter,
   child: Padding(
-    padding: const EdgeInsets.only(bottom: 170), // Adjust this value as needed
+    padding: const EdgeInsets.only(bottom: 190), // Adjust this value as needed
     child: GestureDetector(
       onTap: () async {
         try {

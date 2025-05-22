@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "708038093570",
+    "project_id": "fitcheck-e648e",
+    "storage_bucket": "fitcheck-e648e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708038093570:android:f6f52ff2906608475b701b",
+        "android_client_info": {
+          "package_name": "com.example.fitcheck"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx6amj1AHx2CXRPKu99lefC19aS_0Zg44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

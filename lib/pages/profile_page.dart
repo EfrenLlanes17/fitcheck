@@ -14,6 +14,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int currentIndex = 3; // Profile tab index
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   void _onTabTapped(int index) {
     if (index == currentIndex) return;
 
@@ -41,14 +45,74 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void _signIn() {
+    final username = _usernameController.text;
+    final password = _passwordController.text;
+
+    // Replace this with real authentication logic
+    if (username == 'admin' && password == 'password') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Signed in successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid credentials')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: const Center(
-        child: Text(
-          "Hello from Profile Page",
-          style: TextStyle(color: Colors.white),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Sign In",
+                style: TextStyle(color: Colors.white, fontSize: 32),
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _usernameController,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white54),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white54),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _signIn,
+                child: const Text('Sign In'),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

@@ -71,16 +71,38 @@ class _PicturePageState extends State<PicturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+      body: Padding(
+  padding: const EdgeInsets.only(top: 0),
+  child: SizedBox(
+  height:double.infinity,
+  width: double.infinity,
+  child: FutureBuilder<void>(
+    future: _initializeControllerFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        return ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.center,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.height - (MediaQuery.of(context).size.width)/2.2,
+                height: MediaQuery.of(context).size.height,
+                child: CameraPreview(_controller),
+              ),
+            ),
+          ),
+        );
+      } else {
+        return const Center(child: CircularProgressIndicator());
+      }
+    },
+  ),
+),
+
+),
+
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: currentIndex,
@@ -118,11 +140,11 @@ class _PicturePageState extends State<PicturePage> {
         }
       },
       child: Container(
-        width: 70,
-        height: 70,
+        width: 85,
+        height: 85,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 5),
+          border: Border.all(color: Colors.white, width: 7),
           color: Colors.transparent,
         ),
       ),

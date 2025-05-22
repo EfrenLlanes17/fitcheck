@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/freinds_page.dart';
-import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
+import 'package:camera/camera.dart';
 
 class PicturePage extends StatefulWidget {
-  const PicturePage({super.key});
+  const PicturePage({super.key, required this.camera});
+
+  final CameraDescription camera;
 
   @override
   State<PicturePage> createState() => _PicturePageState();
@@ -13,6 +15,26 @@ class PicturePage extends StatefulWidget {
 
 class _PicturePageState extends State<PicturePage> {
   int currentIndex = 2; // FitCheck tab index
+  late CameraController _controller;
+  late Future<void> _initializeControllerFuture;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = CameraController(
+      widget.camera,
+      ResolutionPreset.medium,
+    );
+
+    _initializeControllerFuture = _controller.initialize();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _onTabTapped(int index) {
     if (index == currentIndex) return;
@@ -26,7 +48,8 @@ class _PicturePageState extends State<PicturePage> {
         page = const FreindsPage();
         break;
       case 2:
-        page = const PicturePage();
+        // Pass the current camera to PicturePage to avoid errors
+        page = PicturePage(camera: widget.camera);
         break;
       case 3:
         page = const ProfilePage();
@@ -45,11 +68,15 @@ class _PicturePageState extends State<PicturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: const Center(
-        child: Text(
-          "Hello from FitCheck Page",
-          style: TextStyle(color: Colors.white),
-        ),
+      body: FutureBuilder<void>(
+        future: _initializeControllerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return CameraPreview(_controller);
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
@@ -59,23 +86,28 @@ class _PicturePageState extends State<PicturePage> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt_outlined),
-            label: 'Friends',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt_outlined),
-            label: 'FitCheck',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_2_outlined),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Friends'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt_outlined), label: 'FitCheck'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          try {
+            await _initializeControllerFuture;
+
+            final image = await _controller.takePicture();
+
+            // For now, just print the file path
+            print('Picture saved to ${image.path}');
+            
+            // You can add code here to display or save the picture, etc.
+          } catch (e) {
+            print('Error taking picture: $e');
+          }
+        },
+        child: const Icon(Icons.camera_alt),
       ),
     );
   }

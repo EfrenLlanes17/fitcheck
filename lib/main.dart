@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/home_page.dart';
+import 'package:camera/camera.dart';
 
-void main() {
+late final List<CameraDescription> cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Await needs to be inside an async function
+  cameras = await availableCameras();
+  
   runApp(const MyApp());
 }
 

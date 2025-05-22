@@ -3,6 +3,7 @@ import 'package:fitcheck/pages/freinds_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
+import 'package:fitcheck/main.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -25,7 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
         page = const FreindsPage();
         break;
       case 2:
-        page = const PicturePage();
+        page = PicturePage(camera: cameras.first);
         break;
       case 3:
         page = const ProfilePage();

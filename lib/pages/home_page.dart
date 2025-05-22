@@ -3,6 +3,8 @@ import 'package:fitcheck/pages/freinds_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/search_page.dart'; // <-- Add this import
+import 'package:fitcheck/main.dart';
+
 
 void main() => runApp(const MyApp());
 
@@ -37,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         page = const FreindsPage();
         break;
       case 2:
-        page = const PicturePage();
+        page = PicturePage(camera: cameras.first);
         break;
       case 3:
         page = const ProfilePage();

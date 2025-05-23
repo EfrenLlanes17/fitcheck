@@ -158,6 +158,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       'password': password,
       'createdAt': DateTime.now().toIso8601String(),
       'lastLogin': DateTime.now().toIso8601String(),
+      'email' : '',
+      'phone' : '',
+      'profilepicture' : '',
+      'bio' : '',
+
     });
 
     final prefs = await SharedPreferences.getInstance();
@@ -199,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Profile'),
+       
         backgroundColor: Colors.black,
         bottom: !_isLoggedIn
             ? TabBar(

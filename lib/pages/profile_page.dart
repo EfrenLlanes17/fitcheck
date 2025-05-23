@@ -5,6 +5,7 @@ import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,6 +16,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
   int currentIndex = 3; // Profile tab index
+  bool _isLoggedIn = false;
+  String _currentUsername = '';
+  String _storedPassword = '';
+  
 
   late TabController _tabController;
 
@@ -30,6 +35,26 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername').get();
+      if (snapshot.exists) {
+      final userData = snapshot.value as Map;
+      final storedPassword = userData['password'] ?? '';
+
+      setState(() {
+        _isLoggedIn = true;
+        _currentUsername = savedUsername;
+         _storedPassword = storedPassword;
+      });
+      }
+    }
   }
 
   void _onTabTapped(int index) {
@@ -60,49 +85,55 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   }
 
   void _signIn() async {
-  final username = _signInUsernameController.text.trim();
-  final password = _signInPasswordController.text.trim();
+    final username = _signInUsernameController.text.trim();
+    final password = _signInPasswordController.text.trim();
 
-  if (username.isEmpty || password.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please enter username and password')),
-    );
-    return;
-  }
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter username and password')),
+      );
+      return;
+    }
 
-  try {
-    final snapshot = await databaseRef.child('users/$username').get();
+    try {
+      final snapshot = await databaseRef.child('users/$username').get();
 
-    if (snapshot.exists) {
-      final userData = snapshot.value as Map;
-      final storedPassword = userData['password'];
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        final storedPassword = userData['password'];
 
-      if (storedPassword == password) {
-        // Password matches, update last login
-        await databaseRef.child('users/$username').update({
-          'lastLogin': DateTime.now().toIso8601String(),
-        });
+        if (storedPassword == password) {
+          await databaseRef.child('users/$username').update({
+            'lastLogin': DateTime.now().toIso8601String(),
+          });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signed in successfully')),
-        );
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('username', username);
+
+          setState(() {
+            _isLoggedIn = true;
+            _currentUsername = username;
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Signed in successfully')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Incorrect password')),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Incorrect password')),
+          const SnackBar(content: Text('Username does not exist')),
         );
       }
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username does not exist')),
+        SnackBar(content: Text('Error signing in: $e')),
       );
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error signing in: $e')),
-    );
   }
-}
-
 
   void _createAccount() async {
     final username = _createUsernameController.text.trim();
@@ -115,7 +146,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       return;
     }
 
-    // Check if user already exists
     final snapshot = await databaseRef.child('users/$username').get();
     if (snapshot.exists) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,23 +154,34 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       return;
     }
 
-    // Create new user
     await databaseRef.child('users/$username').set({
       'password': password,
       'createdAt': DateTime.now().toIso8601String(),
       'lastLogin': DateTime.now().toIso8601String(),
     });
 
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+
+    setState(() {
+      _isLoggedIn = true;
+      _currentUsername = username;
+     
+    });
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Account created successfully')),
     );
+  }
 
-    // Switch to sign in tab after account creation
-    _tabController.index = 0;
+  void _signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username');
 
-    // Clear create account fields
-    _createUsernameController.clear();
-    _createPasswordController.clear();
+    setState(() {
+      _isLoggedIn = false;
+      _currentUsername = '';
+    });
   }
 
   @override
@@ -160,111 +201,126 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       appBar: AppBar(
         title: const Text('Profile'),
         backgroundColor: Colors.black,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Sign In'),
-            Tab(text: 'Create Account'),
-          ],
-        ),
+        bottom: !_isLoggedIn
+            ? TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Sign In'),
+                  Tab(text: 'Create Account'),
+                ],
+              )
+            : null,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            // Sign In Tab
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _signInUsernameController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white54),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _signInPasswordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white54),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _signIn,
-                      child: const Text('Sign In'),
-                    ),
-                  ],
-                ),
+      body: _isLoggedIn
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Welcome, $_currentUsername! Password: $_storedPassword',
+                    style: const TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _signOut,
+                    child: const Text('Sign Out'),
+                  ),
+                ],
               ),
-            ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Sign In Tab
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _signInUsernameController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Username',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white54),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _signInPasswordController,
+                          obscureText: true,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white54),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: _signIn,
+                          child: const Text('Sign In'),
+                        ),
+                      ],
+                    ),
+                  ),
 
-            // Create Account Tab
-            Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _createUsernameController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white54),
+                  // Create Account Tab
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _createUsernameController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Username',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white54),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _createPasswordController,
+                          obscureText: true,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white54),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: _createAccount,
+                          child: const Text('Create Account'),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _createPasswordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white54),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _createAccount,
-                      child: const Text('Create Account'),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: currentIndex,

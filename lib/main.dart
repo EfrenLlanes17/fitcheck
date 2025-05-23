@@ -12,13 +12,21 @@ late final List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  
-  // Await needs to be inside an async function
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  final firebaseApp = Firebase.app();
+  final rtdb = FirebaseDatabase.instanceFor(
+    app: firebaseApp,
+    databaseURL: 'https://fitcheck-e648e-default-rtdb.firebaseio.com/',
+  );
+
+  // Initialize camera list
   cameras = await availableCameras();
-  
+
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

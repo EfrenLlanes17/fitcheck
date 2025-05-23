@@ -4,6 +4,9 @@ import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,6 +20,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+
 
   void _onTabTapped(int index) {
     if (index == currentIndex) return;
@@ -46,20 +51,26 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _signIn() {
-    final username = _usernameController.text;
-    final password = _passwordController.text;
+  final username = _usernameController.text;
+  final password = _passwordController.text;
 
-    // Replace this with real authentication logic
-    if (username == 'admin' && password == 'password') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signed in successfully')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid credentials')),
-      );
-    }
+  // Example hardcoded login check
+  if (username == 'admin' && password == 'password') {
+    // ✅ Write user data to Firebase
+    databaseRef.child('users/$username').set({
+      'lastLogin': DateTime.now().toIso8601String(),
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Signed in successfully')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Invalid credentials')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

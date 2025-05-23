@@ -218,20 +218,37 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       ),
       body: _isLoggedIn
           ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Welcome, $_currentUsername! Password: $_storedPassword',
-                    style: const TextStyle(color: Colors.white, fontSize: 24),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _signOut,
-                    child: const Text('Sign Out'),
-                  ),
-                ],
-              ),
+              child: FutureBuilder<DataSnapshot>(
+  future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
+  builder: (context, snapshot) {
+    String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7'; // fallback
+
+    if (snapshot.hasData && snapshot.data!.value != null && snapshot.data!.value.toString().isNotEmpty) {
+      profileUrl = snapshot.data!.value.toString();
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircleAvatar(
+          radius: 60,
+          backgroundImage: NetworkImage(profileUrl),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'Welcome, $_currentUsername!',
+          style: const TextStyle(color: Colors.white, fontSize: 24),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: _signOut,
+          child: const Text('Sign Out'),
+        ),
+      ],
+    );
+  },
+),
+
             )
           : Padding(
               padding: const EdgeInsets.all(24.0),

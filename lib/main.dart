@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:camera/camera.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 
 late final List<CameraDescription> cameras;
+// final firebaseApp = Firebase.app();
+// final rtdb = FirebaseDatabase.instanceFor(app: firebaseApp, databaseURL: 'https://fitcheck-e648e-default-rtdb.firebaseio.com/');
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  
+  
   // Await needs to be inside an async function
   cameras = await availableCameras();
   

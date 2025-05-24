@@ -30,7 +30,7 @@ class _PicturePageState extends State<PicturePage> {
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  String _currentUsername = '';
+  
 
   @override
   void initState() {
@@ -40,26 +40,10 @@ class _PicturePageState extends State<PicturePage> {
       ResolutionPreset.max,
     );
     _initializeControllerFuture = _controller.initialize();
-    _loadUserData();
-  }
-
-  void _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedUsername = prefs.getString('username');
     
-    if (savedUsername != null) {
-      final snapshot = await databaseRef.child('users/$savedUsername').get();
-      if (snapshot.exists) {
-      final userData = snapshot.value as Map;
-      final storedPassword = userData['password'] ?? '';
-
-      setState(() {
-        _currentUsername = savedUsername;
-  
-      });
-      }
-    }
   }
+
+  
 
   @override
   void dispose() {
@@ -94,26 +78,7 @@ class _PicturePageState extends State<PicturePage> {
     );
   }
 
-  Future<void> _uploadPictureToDatabase(String imagePath) async {
-    try {
-      final file = File(imagePath);
-      final bytes = await file.readAsBytes();
-      final base64Image = base64Encode(bytes);
-      final databaseRef = FirebaseDatabase.instance.ref();
-
-      await databaseRef
-          .child('users/$_currentUsername/pictures')
-          .push()
-          .set({
-        'imageData': base64Image,
-        'timestamp': DateTime.now().toIso8601String(),
-      });
-
-      print('Image uploaded to database successfully.');
-    } catch (e) {
-      print('Failed to upload image: $e');
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +137,7 @@ class _PicturePageState extends State<PicturePage> {
 
                 if (!mounted) return;
 
-                await _uploadPictureToDatabase(image.path); // Upload here
+                
 
                 Navigator.push(
                   context,

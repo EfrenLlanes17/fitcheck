@@ -4,6 +4,10 @@ import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/main.dart'; // for cameras
 import 'dart:io';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:fitcheck/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
@@ -14,13 +18,56 @@ class DisplayPictureScreen extends StatefulWidget {
   State<DisplayPictureScreen> createState() => _DisplayPictureScreenState();
 }
 
+ 
+
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   final TextEditingController _descriptionController = TextEditingController();
-
+ final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+ String _currentUsername = '';
   @override
   void dispose() {
     _descriptionController.dispose();
     super.dispose();
+  }
+
+   @override
+  void initState() {
+    super.initState();
+    
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      setState(() {
+        _currentUsername = savedUsername;
+  
+      });
+      
+    }
+  }
+
+  Future<void> _uploadPictureToDatabase(String imagePath) async {
+    try {
+      final file = File(imagePath);
+      final bytes = await file.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      final databaseRef = FirebaseDatabase.instance.ref();
+
+      await databaseRef.child('users/$_currentUsername/pictures')
+          .push()
+          .set({
+        'imageData': base64Image,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+
+      print('Image uploaded to database successfully.');
+    } catch (e) {
+      print('Failed to upload image: $e');
+    }
   }
 
   @override
@@ -61,9 +108,11 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               ElevatedButton.icon(
                 icon: const Icon(Icons.check_circle),
                 label: const Text('Post'),
-                onPressed: () {
+                onPressed: () async {
                   final description = _descriptionController.text;
                   // You can pass this to ProfilePage or save it as needed
+                   _loadUserData();
+                  await _uploadPictureToDatabase(widget.imagePath);
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

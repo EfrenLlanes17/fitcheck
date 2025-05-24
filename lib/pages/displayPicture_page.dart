@@ -8,6 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
@@ -50,25 +51,47 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     }
   }
 
-  Future<void> _uploadPictureToDatabase(String imagePath) async {
-    try {
-      final file = File(imagePath);
-      final bytes = await file.readAsBytes();
-      final base64Image = base64Encode(bytes);
-      final databaseRef = FirebaseDatabase.instance.ref();
+  Future<void> uploadImageAndSaveUrl(String imagePath) async {
+  try {
+    final file = File(imagePath);
+    final storageRef = FirebaseStorage.instance.ref().child('user_images/$_currentUsername/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-      await databaseRef.child('users/$_currentUsername/pictures')
-          .push()
-          .set({
-        'imageData': base64Image,
-        'timestamp': DateTime.now().toIso8601String(),
-      });
+   final uploadTask = storageRef.putFile(file,SettableMetadata());
+   await uploadTask.whenComplete(() => null);
+   final downloadUrl = await storageRef.getDownloadURL();
 
-      print('Image uploaded to database successfully.');
-    } catch (e) {
-      print('Failed to upload image: $e');
-    }
+
+    final databaseRef = FirebaseDatabase.instance.ref();
+    await databaseRef.child('users/$_currentUsername/pictures').push().set({
+      'url': downloadUrl,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+
+    print('Image uploaded and URL saved!');
+  } catch (e) {
+    print('Error uploading image: $e');
   }
+}
+
+  // Future<void> _uploadPictureToDatabase(String imagePath) async {
+  //   try {
+  //     final file = File(imagePath);
+  //     final bytes = await file.readAsBytes();
+  //     final base64Image = base64Encode(bytes);
+  //     final databaseRef = FirebaseDatabase.instance.ref();
+
+  //     await databaseRef.child('users/$_currentUsername/pictures')
+  //         .push()
+  //         .set({
+  //       'imageData': base64Image,
+  //       'timestamp': DateTime.now().toIso8601String(),
+  //     });
+
+  //     print('Image uploaded to database successfully.');
+  //   } catch (e) {
+  //     print('Failed to upload image: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -112,13 +135,13 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   final description = _descriptionController.text;
                   // You can pass this to ProfilePage or save it as needed
                    _loadUserData();
-                  await _uploadPictureToDatabase(widget.imagePath);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
+                  await uploadImageAndSaveUrl(widget.imagePath);
+                   Navigator.pushReplacement(
+                     context,
+                     MaterialPageRoute(
                       builder: (context) => const ProfilePage(),
-                    ),
-                  );
+                     ),
+                   );
                 },
               ),
             ],

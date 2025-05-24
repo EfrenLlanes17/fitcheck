@@ -228,31 +228,27 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {
                       final picturesMap = Map<String, dynamic>.from(pictureSnapshot.data!.value as Map);
                       imageWidgets = picturesMap.entries.map((entry) {
-                        final imageData = entry.value['imageData'] as String?;
+                        final imageUrl = entry.value['url'] as String?;
                         final timestamp = entry.value['timestamp'] as String?;
 
-                        if (imageData == null || imageData.isEmpty) return const SizedBox();
+                        if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
 
-                        try {
-                          final bytes = base64Decode(imageData);
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 12),
-                              Image.memory(bytes, height: 200),
-                              const SizedBox(height: 4),
-                              Text(
-                                timestamp ?? '',
-                                style: const TextStyle(color: Colors.grey, fontSize: 12),
-                              ),
-                              const Divider(color: Colors.grey),
-                            ],
-                          );
-                        } catch (_) {
-                          return const Text('Invalid image data', style: TextStyle(color: Colors.red));
-                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 12),
+                            Image.network(imageUrl, height: 200, fit: BoxFit.cover),
+                            const SizedBox(height: 4),
+                            Text(
+                              timestamp ?? '',
+                              style: const TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                            const Divider(color: Colors.grey),
+                          ],
+                        );
                       }).toList();
                     }
+
 
                     return SingleChildScrollView(
                       padding: const EdgeInsets.all(16),

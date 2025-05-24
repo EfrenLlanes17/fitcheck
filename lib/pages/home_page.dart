@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/freinds_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
-import 'package:fitcheck/pages/search_page.dart'; // <-- Add this import
-import 'package:fitcheck/main.dart';
-
+import 'package:fitcheck/pages/search_page.dart';
+import 'package:fitcheck/main.dart'; // For `cameras`
 
 void main() => runApp(const MyApp());
 
@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -59,7 +60,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        
         backgroundColor: Colors.black,
         actions: [
           IconButton(
@@ -73,18 +73,62 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: const Center(
-        child: Text(
-          "Tap a bottom nav itemmm",
-          style: TextStyle(color: Colors.white),
-        ),
+      body: FutureBuilder<DataSnapshot>(
+        future: FirebaseDatabase.instance.ref().child('pictures').get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.value == null) {
+            return const Center(
+              child: Text(
+                'No pictures yet.',
+                style: TextStyle(color: Colors.white70),
+              ),
+            );
+          }
+
+          final picturesMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+          final pictureWidgets = picturesMap.entries.map((entry) {
+            final data = Map<String, dynamic>.from(entry.value);
+            final imageUrl = data['url'] ?? '';
+            final timestamp = data['timestamp'] ?? '';
+            final caption = data['caption'] ?? '';
+            final username = data['user'] ?? '';
+            final likes = data['likes']?.toString() ?? '0';
+
+            return Card(
+              color: Colors.grey[900],
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(username, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Image.network(imageUrl),
+                    const SizedBox(height: 8),
+                    Text(caption, style: const TextStyle(color: Colors.white70)),
+                    const SizedBox(height: 4),
+                    Text('Likes: $likes', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text(timestamp, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  ],
+                ),
+              ),
+            );
+          }).toList();
+
+          return ListView(children: pictureWidgets);
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: currentIndex,
         onTap: (index) {
           setState(() => currentIndex = index);
-          _onTabTapped(index); // Navigate
+          _onTabTapped(index);
         },
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,

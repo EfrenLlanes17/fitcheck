@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/freinds_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
-import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -15,17 +15,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
-  int currentIndex = 3; // Profile tab index
+  int currentIndex = 3;
   bool _isLoggedIn = false;
   String _currentUsername = '';
-  String _storedPassword = '';
-  
-
   late TabController _tabController;
 
   final TextEditingController _signInUsernameController = TextEditingController();
   final TextEditingController _signInPasswordController = TextEditingController();
-
   final TextEditingController _createUsernameController = TextEditingController();
   final TextEditingController _createPasswordController = TextEditingController();
 
@@ -41,18 +37,15 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('username');
-    
+
     if (savedUsername != null) {
       final snapshot = await databaseRef.child('users/$savedUsername').get();
       if (snapshot.exists) {
-      final userData = snapshot.value as Map;
-      final storedPassword = userData['password'] ?? '';
-
-      setState(() {
-        _isLoggedIn = true;
-        _currentUsername = savedUsername;
-         _storedPassword = storedPassword;
-      });
+        final userData = snapshot.value as Map;
+        setState(() {
+          _isLoggedIn = true;
+          _currentUsername = savedUsername;
+        });
       }
     }
   }
@@ -97,7 +90,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
 
     try {
       final snapshot = await databaseRef.child('users/$username').get();
-
       if (snapshot.exists) {
         final userData = snapshot.value as Map;
         final storedPassword = userData['password'];
@@ -158,11 +150,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       'password': password,
       'createdAt': DateTime.now().toIso8601String(),
       'lastLogin': DateTime.now().toIso8601String(),
-      'email' : '',
-      'phone' : '',
-      'profilepicture' : '',
-      'bio' : '',
-
+      'email': '',
+      'phone': '',
+      'profilepicture': '',
+      'bio': '',
     });
 
     final prefs = await SharedPreferences.getInstance();
@@ -171,7 +162,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     setState(() {
       _isLoggedIn = true;
       _currentUsername = username;
-     
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -204,7 +194,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-       
         backgroundColor: Colors.black,
         bottom: !_isLoggedIn
             ? TabBar(
@@ -217,38 +206,88 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             : null,
       ),
       body: _isLoggedIn
-          ? Center(
-              child: FutureBuilder<DataSnapshot>(
-  future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
-  builder: (context, snapshot) {
-    String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7'; // fallback
+          ? FutureBuilder<DataSnapshot>(
+              future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
+              builder: (context, profileSnapshot) {
+                String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7';
+                if (profileSnapshot.hasData &&
+                    profileSnapshot.data!.value != null &&
+                    profileSnapshot.data!.value.toString().isNotEmpty) {
+                  profileUrl = profileSnapshot.data!.value.toString();
+                }
 
-    if (snapshot.hasData && snapshot.data!.value != null && snapshot.data!.value.toString().isNotEmpty) {
-      profileUrl = snapshot.data!.value.toString();
-    }
+                return FutureBuilder<DataSnapshot>(
+                  future: databaseRef.child('users/$_currentUsername/pictures').get(),
+                  builder: (context, pictureSnapshot) {
+                    if (pictureSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          radius: 60,
-          backgroundImage: NetworkImage(profileUrl),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'Welcome, $_currentUsername!',
-          style: const TextStyle(color: Colors.white, fontSize: 24),
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _signOut,
-          child: const Text('Sign Out'),
-        ),
-      ],
-    );
-  },
-),
+                    List<Widget> imageWidgets = [];
 
+                    if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {
+                      final picturesMap = Map<String, dynamic>.from(pictureSnapshot.data!.value as Map);
+                      imageWidgets = picturesMap.entries.map((entry) {
+                        final imageData = entry.value['imageData'] as String?;
+                        final timestamp = entry.value['timestamp'] as String?;
+
+                        if (imageData == null || imageData.isEmpty) return const SizedBox();
+
+                        try {
+                          final bytes = base64Decode(imageData);
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 12),
+                              Image.memory(bytes, height: 200),
+                              const SizedBox(height: 4),
+                              Text(
+                                timestamp ?? '',
+                                style: const TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              const Divider(color: Colors.grey),
+                            ],
+                          );
+                        } catch (_) {
+                          return const Text('Invalid image data', style: TextStyle(color: Colors.red));
+                        }
+                      }).toList();
+                    }
+
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundImage: NetworkImage(profileUrl),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Welcome, $_currentUsername!',
+                            style: const TextStyle(color: Colors.white, fontSize: 24),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: _signOut,
+                            child: const Text('Sign Out'),
+                          ),
+                          const SizedBox(height: 30),
+                          ...imageWidgets.isNotEmpty
+                              ? imageWidgets
+                              : [
+                                  const Text(
+                                    'No pictures uploaded yet.',
+                                    style: TextStyle(color: Colors.white70),
+                                  )
+                                ],
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
             )
           : Padding(
               padding: const EdgeInsets.all(24.0),
@@ -297,7 +336,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       ],
                     ),
                   ),
-
                   // Create Account Tab
                   SingleChildScrollView(
                     child: Column(
@@ -351,22 +389,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt_outlined),
-            label: 'Friends',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt_outlined),
-            label: 'FitCheck',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_2_outlined),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Friends'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt_outlined), label: 'FitCheck'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
         ],
       ),
     );

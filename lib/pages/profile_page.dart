@@ -229,7 +229,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       final picturesMap = Map<String, dynamic>.from(pictureSnapshot.data!.value as Map);
                       imageWidgets = picturesMap.entries.map((entry) {
                         final imageUrl = entry.value['url'] as String?;
-                        final timestamp = entry.value['timestamp'] as String?;
+                        
 
                         if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
 
@@ -238,12 +238,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                           children: [
                             const SizedBox(height: 12),
                             Image.network(imageUrl, height: 200, fit: BoxFit.cover),
-                            const SizedBox(height: 4),
-                            Text(
-                              timestamp ?? '',
-                              style: const TextStyle(color: Colors.grey, fontSize: 12),
-                            ),
-                            const Divider(color: Colors.grey),
+                            
+
+                            
                           ],
                         );
                       }).toList();

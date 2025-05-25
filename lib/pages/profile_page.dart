@@ -6,6 +6,10 @@ import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -33,6 +37,57 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     _tabController = TabController(length: 2, vsync: this);
     _loadUserData();
   }
+
+  Future<void> _pickAndUploadProfilePicture() async {
+  final picker = ImagePicker();
+  final pickedFile = await showModalBottomSheet<XFile?>(
+    context: context,
+    builder: (_) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Upload from gallery'),
+              onTap: () async {
+                final file = await picker.pickImage(source: ImageSource.gallery);
+                Navigator.pop(context, file);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  if (pickedFile == null) return;
+
+  final file = File(pickedFile.path);
+  final storageRef = FirebaseStorage.instance
+      .ref()
+      .child('profile_pictures')
+      .child('$_currentUsername.jpg');
+
+  try {
+    final metadata = SettableMetadata(contentType: 'image/jpeg');
+    await storageRef.putFile(file, metadata);
+
+    final downloadUrl = await storageRef.getDownloadURL();
+
+    await databaseRef.child('users/$_currentUsername/profilepicture').set(downloadUrl);
+
+    setState(() {}); // Reload profile picture
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile picture updated.')),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to upload image: $e')),
+    );
+  }
+}
+
 
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -252,10 +307,14 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircleAvatar(
-                            radius: 60,
-                            backgroundImage: NetworkImage(profileUrl),
+                          GestureDetector(
+                            onTap: _pickAndUploadProfilePicture,
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundImage: NetworkImage(profileUrl),
+                            ),
                           ),
+
                           const SizedBox(height: 20),
                           Text(
                             'Welcome, $_currentUsername!',

@@ -90,35 +90,64 @@ class _HomePageState extends State<HomePage> {
           }
 
           final picturesMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
-          final pictureWidgets = picturesMap.entries.map((entry) {
-            final data = Map<String, dynamic>.from(entry.value);
-            final imageUrl = data['url'] ?? '';
-            final timestamp = data['timestamp'] ?? '';
-            final caption = data['caption'] ?? '';
-            final username = data['user'] ?? '';
-            final likes = data['likes']?.toString() ?? '0';
 
-            return Card(
-              color: Colors.grey[900],
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(username, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Image.network(imageUrl),
-                    const SizedBox(height: 8),
-                    Text(caption, style: const TextStyle(color: Colors.white70)),
-                    const SizedBox(height: 4),
-                    Text('Likes: $likes', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                    Text(timestamp, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                  ],
-                ),
-              ),
-            );
-          }).toList();
+final sortedEntries = picturesMap.entries.toList()
+  ..sort((a, b) {
+    final aData = Map<String, dynamic>.from(a.value);
+    final bData = Map<String, dynamic>.from(b.value);
+
+    DateTime parseTimestamp(dynamic value) {
+      if (value is int) {
+        // If stored as milliseconds since epoch
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+      if (value is String) {
+        try {
+          return DateTime.parse(value); // Works for ISO 8601
+        } catch (_) {
+          return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
+        }
+      }
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+
+    final aTimestamp = parseTimestamp(aData['timestamp']);
+    final bTimestamp = parseTimestamp(bData['timestamp']);
+
+    return bTimestamp.compareTo(aTimestamp); // Most recent first
+  });
+
+
+
+    final pictureWidgets = sortedEntries.map((entry) {
+      final data = Map<String, dynamic>.from(entry.value);
+      final imageUrl = data['url'] ?? '';
+      final timestamp = data['timestamp'].toString();
+      final caption = data['caption'] ?? '';
+      final username = data['user'] ?? '';
+      final likes = data['likes']?.toString() ?? '0';
+
+      return Card(
+        color: Colors.grey[900],
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(username, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Image.network(imageUrl),
+              const SizedBox(height: 8),
+              Text(caption, style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 4),
+              Text('Likes: $likes', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              Text(timestamp, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            ],
+          ),
+        ),
+      );
+    }).toList();
 
           return ListView(children: pictureWidgets);
         },

@@ -62,20 +62,24 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
 
     final databaseRef = FirebaseDatabase.instance.ref();
-    await databaseRef.child('users/$_currentUsername/pictures').push().set({
-      'url': downloadUrl,
-      'timestamp': DateTime.now().toIso8601String(),
-      'likes' : 0,
-      'caption' : _descriptionController.text,
-    });
 
-    await databaseRef.child('pictures').push().set({
+
+    DatabaseReference newPicRef = databaseRef.child('pictures').push();
+    String pushedKey = newPicRef.key!;
+
+    // Step 2: Set full picture data under /pictures/{pushedKey}
+    await newPicRef.set({
       'url': downloadUrl,
       'timestamp': DateTime.now().toIso8601String(),
       'user': _currentUsername,
-      'likes' : 0,
-      'caption' : _descriptionController.text,
-    
+      'likes': 0,
+      'caption': _descriptionController.text,
+    });
+
+
+
+    await databaseRef.child('users/$_currentUsername/pictures/$pushedKey').set({
+      'url': downloadUrl,
     });
 
     print('Image uploaded and URL saved!');

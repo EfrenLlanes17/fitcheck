@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
 void main() => runApp(const MyApp());
@@ -107,25 +108,54 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+Future<int> _getUserStreak() async {
+  final snapshot = await FirebaseDatabase.instance
+      .ref('users/$_currentUsername/streak')
+      .get();
+
+  if (snapshot.exists && snapshot.value != null) {
+    return int.tryParse(snapshot.value.toString()) ?? 0;
+  }
+  return 0;
+}
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchPage()),
-              );
-            },
-          ),
-        ],
+     appBar: AppBar(
+      backgroundColor: Colors.black,
+      title: FutureBuilder<int>(
+        future: _getUserStreak(),
+        builder: (context, snapshot) {
+          final streak = snapshot.data ?? 0;
+          return Row(
+            children: [
+              const FaIcon(FontAwesomeIcons.shirt, color: Colors.orange),
+              const SizedBox(width: 6),
+              Text(
+                '$streak',
+                style: const TextStyle(color: Colors.orange, fontSize: 18),
+              ),
+            ],
+          );
+        },
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const SearchPage()),
+            );
+          },
+        ),
+      ],
+    ),
+
       body: FutureBuilder<DataSnapshot>(
         future: FirebaseDatabase.instance.ref().child('pictures').get(),
         builder: (context, snapshot) {

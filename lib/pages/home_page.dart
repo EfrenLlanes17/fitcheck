@@ -6,6 +6,8 @@ import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/search_page.dart';
 import 'package:fitcheck/main.dart'; // For `cameras`
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
+
 
 void main() => runApp(const MyApp());
 
@@ -295,8 +297,18 @@ final sortedEntries = picturesMap.entries.toList()
                                   });
                                 },
                               ),
+                              IconButton(
+                                icon: const Icon(Icons.share, color: Colors.white),
+                                onPressed: () async {
+                                  final shareText = '''Check out this outfit by $username! See More on FitCheck!
+                                  $imageUrl
+                                  $caption''';
+                                  await Share.share(shareText);
+                                },
+                              ),
                             ],
                           ),
+
                         ],
                       ),
 

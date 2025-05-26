@@ -167,23 +167,59 @@ final sortedEntries = picturesMap.entries.toList()
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: profilePicUrl.isNotEmpty
-                            ? NetworkImage(profilePicUrl)
-                            : null,
-                        backgroundColor: Colors.grey[700],
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        username,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                 // Inside your map() function
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage: profilePicUrl.isNotEmpty
+                          ? NetworkImage(profilePicUrl)
+                          : null,
+                      backgroundColor: Colors.grey[700],
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      username,
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(), // Pushes the 3 dots to the right
+                    IconButton(
+                      icon: const Icon(Icons.more_vert, color: Colors.white),
+                      onPressed: () async {
+                        await showModalBottomSheet(
+                          context: context,
+                          builder: (_) {
+                            return SafeArea(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.info),
+                                    title: const Text('Option 1'),
+                                    onTap: () {
+                                      // You can add behavior here later
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.delete),
+                                    title: const Text('Option 2'),
+                                    onTap: () {
+                                      // You can add behavior here later
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
                   const SizedBox(height: 8),
                   Image.network(imageUrl),
                   const SizedBox(height: 8),
@@ -221,6 +257,7 @@ final sortedEntries = picturesMap.entries.toList()
                                 .child('likedBy/$_currentUsername')
                                 .set(true);
                           }
+
 
 
                           setState(() {

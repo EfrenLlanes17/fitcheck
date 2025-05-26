@@ -7,6 +7,9 @@ import 'package:fitcheck/pages/search_page.dart';
 import 'package:fitcheck/main.dart'; // For `cameras`
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 
 void main() => runApp(const MyApp());
@@ -77,6 +80,33 @@ class _HomePageState extends State<HomePage> {
       
     }
   }
+
+ Future<void> shareImageFromUrl(String imageUrl) async {
+  try {
+    // Download the image
+    final response = await http.get(Uri.parse(imageUrl));
+    final bytes = response.bodyBytes;
+
+    // Get temporary directory
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/shared_image.jpg');
+
+    // Save image to file
+    await file.writeAsBytes(bytes);
+
+    // Share the image with text
+    final xFile = XFile(file.path);
+
+    await Share.shareXFiles(
+      [xFile],
+      text: 'Check out this picture from FitCheck!',
+      subject: 'Shared from FitCheck',
+    );
+  } catch (e) {
+    debugPrint('Error sharing image: $e');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -299,13 +329,9 @@ final sortedEntries = picturesMap.entries.toList()
                               ),
                               IconButton(
                                 icon: const Icon(Icons.share, color: Colors.white),
-                                onPressed: () async {
-                                  final shareText = '''Check out this outfit by $username! See More on FitCheck!
-                                  $imageUrl
-                                  $caption''';
-                                  await Share.share(shareText);
-                                },
+                                onPressed: () => shareImageFromUrl(imageUrl),
                               ),
+
                             ],
                           ),
 

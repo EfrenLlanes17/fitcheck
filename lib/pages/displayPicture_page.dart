@@ -38,6 +38,55 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     _loadUserData();
   }
 
+  Future<void> _updateLoginStreak() async {
+  final ref = FirebaseDatabase.instance.ref();
+  final userRef = ref.child('users/$_currentUsername');
+
+  final snapshot = await userRef.get();
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+
+  if (snapshot.exists) {
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+    final lastLoginRaw = data['lastLogin'];
+    final streak = data['streak'] ?? 0;
+
+    DateTime? lastLogin;
+    if (lastLoginRaw != null) {
+      if (lastLoginRaw is int) {
+        lastLogin = DateTime.fromMillisecondsSinceEpoch(lastLoginRaw);
+      } else if (lastLoginRaw is String) {
+        lastLogin = DateTime.tryParse(lastLoginRaw);
+      }
+    }
+
+    final lastLoginDate = lastLogin != null
+        ? DateTime(lastLogin.year, lastLogin.month, lastLogin.day)
+        : null;
+
+    int newStreak = streak;
+
+    if (lastLoginDate == null || today.difference(lastLoginDate).inDays > 1) {
+      newStreak = 1;
+    } else if (today.difference(lastLoginDate).inDays == 1) {
+      newStreak += 1;
+    }
+
+    await userRef.update({
+      'lastLogin': now.toIso8601String(),
+      'streak': newStreak,
+    });
+  } else {
+    // New user or no data
+    await userRef.set({
+      'lastLogin': now.toIso8601String(),
+      'streak': 1,
+    });
+  }
+}
+
+
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('username');
@@ -50,6 +99,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
       
     }
   }
+
 
   Future<void> uploadImageAndSaveUrl(String imagePath) async {
   try {
@@ -153,6 +203,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   final description = _descriptionController.text;
                   // You can pass this to ProfilePage or save it as needed
                    _loadUserData();
+                  await _updateLoginStreak();
                   await uploadImageAndSaveUrl(widget.imagePath);
                    Navigator.pushReplacement(
                      context,

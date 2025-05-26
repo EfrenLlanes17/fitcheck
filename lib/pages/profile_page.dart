@@ -209,6 +209,7 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       'phone': '',
       'profilepicture': '',
       'bio': '',
+      'streak' : 0
     });
 
     final prefs = await SharedPreferences.getInstance();

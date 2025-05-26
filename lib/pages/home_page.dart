@@ -5,6 +5,7 @@ import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/search_page.dart';
 import 'package:fitcheck/main.dart'; // For `cameras`
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const MyApp());
 
@@ -29,6 +30,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
+  String _currentUsername = '';
 
   void _onTabTapped(int index) {
     Widget page;
@@ -53,6 +55,25 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(builder: (context) => page),
     );
+  }
+
+   void initState() {
+    super.initState();
+    
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      setState(() {
+        _currentUsername = savedUsername;
+  
+      });
+      
+    }
   }
 
   @override
@@ -119,50 +140,105 @@ final sortedEntries = picturesMap.entries.toList()
 
 
 
-    final pictureWidgets = sortedEntries.map((entry) {
+   final pictureWidgets = sortedEntries.map((entry) {
   final data = Map<String, dynamic>.from(entry.value);
   final imageUrl = data['url'] ?? '';
   final timestamp = data['timestamp'].toString();
   final caption = data['caption'] ?? '';
   final username = data['user'] ?? '';
-  final likes = data['likes']?.toString() ?? '0';
-  final profilePicUrl = data['profilepicture'] ?? ''; // <-- added this line
+  final profilePicUrl = data['profilepicture'] ?? '';
+  final postKey = entry.key;
+  int likes = int.tryParse(data['likes'].toString()) ?? 0;
 
-  return Card(
-    color: Colors.grey[900],
-    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: profilePicUrl.isNotEmpty
-                    ? NetworkImage(profilePicUrl)
-                    : null,
-                backgroundColor: Colors.grey[700],
+  return FutureBuilder<DataSnapshot>(
+    future: FirebaseDatabase.instance
+        .ref('pictures/$postKey/likedBy/$_currentUsername')
+        .get(),
+    builder: (context, snapshot) {
+      bool isLiked = snapshot.data?.value == true;
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Card(
+            color: Colors.grey[900],
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: profilePicUrl.isNotEmpty
+                            ? NetworkImage(profilePicUrl)
+                            : null,
+                        backgroundColor: Colors.grey[700],
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        username,
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Image.network(imageUrl),
+                  const SizedBox(height: 8),
+                  Text(caption, style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Likes: $likes',
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 12)),
+                      IconButton(
+                        icon: Icon(
+                          isLiked
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: isLiked ? Colors.red : Colors.white,
+                        ),
+                        onPressed: () async {
+                          final ref = FirebaseDatabase.instance.ref();
+                          final postRef = ref.child('pictures/$postKey');
+
+                          if (isLiked) {
+                            // UNLIKE
+                            likes--;
+                            await postRef.child('likes').set(likes);
+                            await postRef
+                                .child('likedBy/$_currentUsername')
+                                .remove();
+                          } else {
+                            // LIKE
+                            likes++;
+                            await postRef.child('likes').set(likes);
+                            await postRef
+                                .child('likedBy/$_currentUsername')
+                                .set(true);
+                          }
+
+
+                          setState(() {
+                            isLiked = !isLiked;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Text(timestamp,
+                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                username,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Image.network(imageUrl),
-          const SizedBox(height: 8),
-          Text(caption, style: const TextStyle(color: Colors.white70)),
-          const SizedBox(height: 4),
-          Text('Likes: $likes', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-          Text(timestamp, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-        ],
-      ),
-    ),
+            ),
+          );
+        },
+      );
+    },
   );
 }).toList();
 

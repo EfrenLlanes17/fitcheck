@@ -120,34 +120,52 @@ final sortedEntries = picturesMap.entries.toList()
 
 
     final pictureWidgets = sortedEntries.map((entry) {
-      final data = Map<String, dynamic>.from(entry.value);
-      final imageUrl = data['url'] ?? '';
-      final timestamp = data['timestamp'].toString();
-      final caption = data['caption'] ?? '';
-      final username = data['user'] ?? '';
-      final likes = data['likes']?.toString() ?? '0';
+  final data = Map<String, dynamic>.from(entry.value);
+  final imageUrl = data['url'] ?? '';
+  final timestamp = data['timestamp'].toString();
+  final caption = data['caption'] ?? '';
+  final username = data['user'] ?? '';
+  final likes = data['likes']?.toString() ?? '0';
+  final profilePicUrl = data['profilepicture'] ?? ''; // <-- added this line
 
-      return Card(
-        color: Colors.grey[900],
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  return Card(
+    color: Colors.grey[900],
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Text(username, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Image.network(imageUrl),
-              const SizedBox(height: 8),
-              Text(caption, style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 4),
-              Text('Likes: $likes', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-              Text(timestamp, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: profilePicUrl.isNotEmpty
+                    ? NetworkImage(profilePicUrl)
+                    : null,
+                backgroundColor: Colors.grey[700],
+              ),
+              const SizedBox(width: 8),
+              Text(
+                username,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
-        ),
-      );
-    }).toList();
+          const SizedBox(height: 8),
+          Image.network(imageUrl),
+          const SizedBox(height: 8),
+          Text(caption, style: const TextStyle(color: Colors.white70)),
+          const SizedBox(height: 4),
+          Text('Likes: $likes', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(timestamp, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        ],
+      ),
+    ),
+  );
+}).toList();
+
 
           return ListView(children: pictureWidgets);
         },

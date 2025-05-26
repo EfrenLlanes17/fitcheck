@@ -228,7 +228,7 @@ final sortedEntries = picturesMap.entries.toList()
                       const SizedBox(height: 8),
                       Text(caption, style: const TextStyle(color: Colors.white70)),
                       const SizedBox(height: 8),
-                      Row(
+                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Likes: $likes',
@@ -243,19 +243,19 @@ final sortedEntries = picturesMap.entries.toList()
                                 onPressed: () async {
                                   final ref = FirebaseDatabase.instance.ref();
                                   final postRef = ref.child('pictures/$postKey');
+                                  final userLikesRef =
+                                      ref.child('users/$_currentUsername/likedpictures/$postKey');
 
                                   if (isLiked) {
                                     likes--;
                                     await postRef.child('likes').set(likes);
-                                    await postRef
-                                        .child('likedBy/$_currentUsername')
-                                        .remove();
+                                    await postRef.child('likedBy/$_currentUsername').remove();
+                                    await userLikesRef.remove();
                                   } else {
                                     likes++;
                                     await postRef.child('likes').set(likes);
-                                    await postRef
-                                        .child('likedBy/$_currentUsername')
-                                        .set(true);
+                                    await postRef.child('likedBy/$_currentUsername').set(true);
+                                    await userLikesRef.set(true);
                                   }
 
                                   setState(() {
@@ -271,25 +271,23 @@ final sortedEntries = picturesMap.entries.toList()
                                 onPressed: () async {
                                   final ref = FirebaseDatabase.instance.ref();
                                   final postRef = ref.child('pictures/$postKey');
+                                  final userSavesRef =
+                                      ref.child('users/$_currentUsername/savedpictures/$postKey');
 
                                   if (isSaved) {
                                     await postRef.child('saves').runTransaction((value) {
                                       final current = (value ?? 0) as int;
                                       return Transaction.success(current > 0 ? current - 1 : 0);
-
                                     });
-                                    await postRef
-                                        .child('savedBy/$_currentUsername')
-                                        .remove();
+                                    await postRef.child('savedBy/$_currentUsername').remove();
+                                    await userSavesRef.remove();
                                   } else {
                                     await postRef.child('saves').runTransaction((value) {
                                       final current = (value ?? 0) as int;
                                       return Transaction.success(current + 1);
-
                                     });
-                                    await postRef
-                                        .child('savedBy/$_currentUsername')
-                                        .set(true);
+                                    await postRef.child('savedBy/$_currentUsername').set(true);
+                                    await userSavesRef.set(true);
                                   }
 
                                   setState(() {
@@ -301,6 +299,7 @@ final sortedEntries = picturesMap.entries.toList()
                           ),
                         ],
                       ),
+
                       Text(timestamp,
                           style: const TextStyle(color: Colors.grey, fontSize: 12)),
                     ],

@@ -74,7 +74,9 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
       'user': _currentUsername,
       'likes': 0,
       'caption': _descriptionController.text,
+      'saves' : 0,
       'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'
+      
     });
 
 

@@ -260,6 +260,35 @@ final TextEditingController _bioController = TextEditingController();
                 ],
               )
             : null,
+            actions: _isLoggedIn
+      ? [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () async {
+              await showModalBottomSheet(
+                context: context,
+                builder: (_) {
+                  return SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.logout),
+                          title: const Text('Sign Out'),
+                          onTap: () {
+                            Navigator.pop(context);
+                            _signOut();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ]
+      : [],
       ),
       body: _isLoggedIn
     ? FutureBuilder<DataSnapshot>(
@@ -452,10 +481,10 @@ final TextEditingController _bioController = TextEditingController();
                             ),
 
                             const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: _signOut,
-                              child: const Text('Sign Out'),
-                            ),
+                            // ElevatedButton(
+                            //   onPressed: _signOut,
+                            //   child: const Text('Sign Out'),
+                            // ),
                             const SizedBox(height: 30),
                             ...imageWidgets.isNotEmpty
                                 ? imageWidgets

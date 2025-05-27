@@ -24,6 +24,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   String _currentUsername = '';
   late TabController _tabController;
 
+  bool _isEditingBio = false;
+final TextEditingController _bioController = TextEditingController();
+
   final TextEditingController _signInUsernameController = TextEditingController();
   final TextEditingController _signInPasswordController = TextEditingController();
   final TextEditingController _createUsernameController = TextEditingController();
@@ -305,6 +308,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                     followersCount = followersMap.length;
                   }
 
+                  
+
+                  
+
                   // New: FutureBuilder for following count
                   return FutureBuilder<DataSnapshot>(
                     future: databaseRef.child('users/$_currentUsername/following').get(),
@@ -335,6 +342,82 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                             ),
 
                             const SizedBox(height: 12),
+
+// Editable bio widget
+                            FutureBuilder<DataSnapshot>(
+                              future: databaseRef.child('users/$_currentUsername/bio').get(),
+                              builder: (context, bioSnapshot) {
+                                if (bioSnapshot.connectionState == ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                }
+
+                                String currentBio = '';
+                                if (bioSnapshot.hasData && bioSnapshot.data!.value != null) {
+                                  currentBio = bioSnapshot.data!.value.toString();
+                                }
+
+                                if (!_isEditingBio) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _isEditingBio = true;
+                                        _bioController.text = currentBio;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                      child: Text(
+                                        currentBio.isEmpty ? 'Tap to add a bio' : currentBio,
+                                        style: TextStyle(
+                                          color: currentBio.isEmpty ? Colors.white54 : Colors.white70,
+                                          fontStyle: currentBio.isEmpty ? FontStyle.italic : FontStyle.normal,
+                                          fontSize: 16,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                    child: TextField(
+                                      controller: _bioController,
+                                      autofocus: true,
+                                      maxLines: null,
+                                      style: const TextStyle(color: Colors.white),
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter your bio',
+                                        hintStyle: const TextStyle(color: Colors.white54),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white54),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white),
+                                        ),
+                                        suffixIcon: IconButton(
+                                          icon: const Icon(Icons.check, color: Colors.white),
+                                          onPressed: () async {
+                                            final newBio = _bioController.text.trim();
+                                            await databaseRef.child('users/$_currentUsername/bio').set(newBio);
+                                            setState(() {
+                                              _isEditingBio = false;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      onSubmitted: (value) async {
+                                        final newBio = value.trim();
+                                        await databaseRef.child('users/$_currentUsername/bio').set(newBio);
+                                        setState(() {
+                                          _isEditingBio = false;
+                                        });
+                                      },
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+
 
                             // Display followers/following counts here
                             Row(

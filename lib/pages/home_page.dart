@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fitcheck/pages/commentinputfeild.dart';
 
 
 void main() => runApp(const MyApp());
@@ -239,9 +240,10 @@ final sortedEntries = picturesMap.entries.toList()
             .get(),
         builder: (context, saveSnapshot) {
           bool isSaved = saveSnapshot.data?.value == true;
-
+          bool showComments = false;
           return StatefulBuilder(
             builder: (context, setState) {
+              
               return Card(
                 color: Colors.grey[900],
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -335,6 +337,7 @@ final sortedEntries = picturesMap.entries.toList()
                           );
                         },
                       ),
+                     
                     ],
                   ),
 
@@ -414,6 +417,16 @@ final sortedEntries = picturesMap.entries.toList()
                                 icon: const Icon(Icons.share, color: Colors.white),
                                 onPressed: () => shareImageFromUrl(imageUrl),
                               ),
+                               IconButton(
+                    icon: Icon(Icons.comment, color: Colors.white),
+                    onPressed: () {
+                      setState(() {
+                        showComments = !showComments;
+                      });
+                    },
+                  ),
+                  
+
 
                             ],
                           ),
@@ -423,6 +436,48 @@ final sortedEntries = picturesMap.entries.toList()
 
                       Text(timestamp,
                           style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      if (showComments) ...[
+                 StreamBuilder<DatabaseEvent>(
+                  stream: FirebaseDatabase.instance.ref('pictures/$postKey/comments').onValue,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    final data = snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
+                    final commentList = data.entries.toList()
+                      ..sort((a, b) => b.value['timestamp'].compareTo(a.value['timestamp']));
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Divider(color: Colors.white24),
+                        ...commentList.map((entry) {
+                          final comment = entry.value as Map<dynamic, dynamic>;
+                          final user = comment['user'] ?? 'Unknown';
+                          final text = comment['text'] ?? '';
+                          final ts = DateTime.fromMillisecondsSinceEpoch(comment['timestamp'] ?? 0);
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              '$user: $text\n${ts.toLocal()}',
+                              style: const TextStyle(color: Colors.white70, fontSize: 13),
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 8),
+                        CommentInputField(postKey: postKey, currentUser: _currentUsername),
+                      ],
+                    );
+                  },
+                )
+
+                ],
+                      
+   
                     ],
                   ),
                 ),

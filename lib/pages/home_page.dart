@@ -14,6 +14,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/commentinputfeild.dart';
 
 
+
+
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -127,39 +129,40 @@ Future<int> _getUserStreak() async {
     return Scaffold(
       backgroundColor: Colors.black,
     appBar: AppBar(
-      backgroundColor: Colors.black,
-      title: Stack(
-        alignment: Alignment.center,
-        children: [
-          const Text(
-            'FITCHECK',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FutureBuilder<int>(
-              future: _getUserStreak(),
-              builder: (context, snapshot) {
-                final streak = snapshot.data ?? 0;
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const FaIcon(FontAwesomeIcons.shirt, color: Colors.orange),
-                    const SizedBox(width: 6),
-                    Text(
-                      '$streak',
-                      style: const TextStyle(color: Colors.orange, fontSize: 18),
-                    ),
-                  ],
-                );
-              },
+  backgroundColor: Colors.black,
+  elevation: 0,
+  title: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    child: Row(
+      children: [
+        const FaIcon(FontAwesomeIcons.shirt, color: Color(0xFFFF681F), size: 24),
+        const SizedBox(width: 8),
+        FutureBuilder<int>(
+          future: _getUserStreak(),
+          builder: (context, snapshot) {
+            final streak = snapshot.data ?? 0;
+            return Text(
+              '$streak',
+              style: const TextStyle(color: Color(0xFFFF681F), fontSize: 18),
+            );
+          },
+        ),
+        Expanded(
+          child: Center(
+            child: Text(
+              'FITCHECK',
+              style: TextStyle(
+              fontFamily: 'Roboto', // Or any built-in font
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+
             ),
           ),
-        ],
-      ),
-      actions: [
+        ),
         IconButton(
-          icon: const Icon(Icons.search),
+          icon: const FaIcon(FontAwesomeIcons.search, color: Colors.white, size: 24),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -169,6 +172,9 @@ Future<int> _getUserStreak() async {
         ),
       ],
     ),
+  ),
+),
+
 
 
       body: FutureBuilder<DataSnapshot>(

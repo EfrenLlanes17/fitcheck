@@ -317,13 +317,8 @@ final TextEditingController _bioController = TextEditingController();
 
                   if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 12),
-                      Image.network(imageUrl, height: 200, fit: BoxFit.cover),
-                    ],
-                  );
+                  return Image.network(imageUrl, fit: BoxFit.cover);
+
                 }).toList();
               }
 
@@ -486,14 +481,20 @@ final TextEditingController _bioController = TextEditingController();
                             //   child: const Text('Sign Out'),
                             // ),
                             const SizedBox(height: 30),
-                            ...imageWidgets.isNotEmpty
-                                ? imageWidgets
-                                : [
-                                    const Text(
-                                      'No pictures uploaded yet.',
-                                      style: TextStyle(color: Colors.white70),
-                                    )
-                                  ],
+                            imageWidgets.isNotEmpty
+                            ? GridView.count(
+                                crossAxisCount: 3,
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                                childAspectRatio: 0.75,
+                                children: imageWidgets,
+                              )
+                            : const Text(
+                                'No pictures uploaded yet.',
+                                style: TextStyle(color: Colors.white70),
+                              ),
                           ],
                         ),
                       );

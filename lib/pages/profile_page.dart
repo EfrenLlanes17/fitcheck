@@ -150,9 +150,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         final storedPassword = userData['password'];
 
         if (storedPassword == password) {
-          await databaseRef.child('users/$username').update({
-            'lastLogin': DateTime.now().toIso8601String(),
-          });
 
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('username', username);

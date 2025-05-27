@@ -125,23 +125,36 @@ Future<int> _getUserStreak() async {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-     appBar: AppBar(
+    appBar: AppBar(
       backgroundColor: Colors.black,
-      title: FutureBuilder<int>(
-        future: _getUserStreak(),
-        builder: (context, snapshot) {
-          final streak = snapshot.data ?? 0;
-          return Row(
-            children: [
-              const FaIcon(FontAwesomeIcons.shirt, color: Colors.orange),
-              const SizedBox(width: 6),
-              Text(
-                '$streak',
-                style: const TextStyle(color: Colors.orange, fontSize: 18),
-              ),
-            ],
-          );
-        },
+      title: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Text(
+            'FITCHECK',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FutureBuilder<int>(
+              future: _getUserStreak(),
+              builder: (context, snapshot) {
+                final streak = snapshot.data ?? 0;
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const FaIcon(FontAwesomeIcons.shirt, color: Colors.orange),
+                    const SizedBox(width: 6),
+                    Text(
+                      '$streak',
+                      style: const TextStyle(color: Colors.orange, fontSize: 18),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
       actions: [
         IconButton(
@@ -155,6 +168,7 @@ Future<int> _getUserStreak() async {
         ),
       ],
     ),
+
 
       body: FutureBuilder<DataSnapshot>(
         future: FirebaseDatabase.instance.ref().child('pictures').get(),
@@ -236,55 +250,94 @@ final sortedEntries = picturesMap.entries.toList()
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 20,
-                            backgroundImage: profilePicUrl.isNotEmpty
-                                ? NetworkImage(profilePicUrl)
-                                : null,
-                            backgroundColor: Colors.grey[700],
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            username,
-                            style: const TextStyle(
-                                color: Colors.white, fontWeight: FontWeight.bold),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.more_vert, color: Colors.white),
-                            onPressed: () async {
-                              await showModalBottomSheet(
-                                context: context,
-                                builder: (_) {
-                                  return SafeArea(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        ListTile(
-                                          leading: const Icon(Icons.info),
-                                          title: const Text('Option 1'),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                        ListTile(
-                                          leading: const Icon(Icons.delete),
-                                          title: const Text('Option 2'),
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ],
+                     Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundImage: profilePicUrl.isNotEmpty
+                            ? NetworkImage(profilePicUrl)
+                            : null,
+                        backgroundColor: Colors.grey[700],
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        username,
+                        style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+
+                      // Only show follow button if viewing someone else's post
+                      if (username != _currentUsername)
+                        FutureBuilder<DataSnapshot>(
+                          future: FirebaseDatabase.instance
+                              .ref('users/$_currentUsername/following/$username')
+                              .get(),
+                          builder: (context, followSnapshot) {
+                            bool isFollowing = followSnapshot.data?.value == true;
+
+                            return TextButton(
+                              onPressed: () async {
+                                final followingRef = FirebaseDatabase.instance
+                                    .ref('users/$_currentUsername/following/$username');
+                                final followersRef = FirebaseDatabase.instance
+                                    .ref('users/$username/followers/$_currentUsername');
+
+                                if (isFollowing) {
+                                  await followingRef.remove();
+                                  await followersRef.remove();
+                                } else {
+                                  await followingRef.set(true);
+                                  await followersRef.set(true);
+                                }
+
+                                setState(() {}); // Refresh UI
+                              },
+                              child: Text(
+                                isFollowing ? 'Following' : 'Follow',
+                                style: TextStyle(
+                                  color: isFollowing ? Colors.grey[300] : Colors.blue[300],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                      const Spacer(),
+
+                      IconButton(
+                        icon: const Icon(Icons.more_vert, color: Colors.white),
+                        onPressed: () async {
+                          await showModalBottomSheet(
+                            context: context,
+                            builder: (_) {
+                              return SafeArea(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: const Icon(Icons.info),
+                                      title: const Text('Option 1'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
                                     ),
-                                  );
-                                },
+                                    ListTile(
+                                      leading: const Icon(Icons.delete),
+                                      title: const Text('Option 2'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
                               );
                             },
-                          ),
-                        ],
+                          );
+                        },
                       ),
+                    ],
+                  ),
+
                       const SizedBox(height: 8),
                       Image.network(imageUrl),
                       const SizedBox(height: 8),

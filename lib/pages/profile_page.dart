@@ -259,86 +259,142 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             : null,
       ),
       body: _isLoggedIn
-          ? FutureBuilder<DataSnapshot>(
-              future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
-              builder: (context, profileSnapshot) {
-                String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7';
-                if (profileSnapshot.hasData &&
-                    profileSnapshot.data!.value != null &&
-                    profileSnapshot.data!.value.toString().isNotEmpty) {
-                  profileUrl = profileSnapshot.data!.value.toString();
-                }
+    ? FutureBuilder<DataSnapshot>(
+        future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
+        builder: (context, profileSnapshot) {
+          String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7';
+          if (profileSnapshot.hasData &&
+              profileSnapshot.data!.value != null &&
+              profileSnapshot.data!.value.toString().isNotEmpty) {
+            profileUrl = profileSnapshot.data!.value.toString();
+          }
 
-                return FutureBuilder<DataSnapshot>(
-                  future: databaseRef.child('users/$_currentUsername/pictures').get(),
-                  builder: (context, pictureSnapshot) {
-                    if (pictureSnapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+          return FutureBuilder<DataSnapshot>(
+            future: databaseRef.child('users/$_currentUsername/pictures').get(),
+            builder: (context, pictureSnapshot) {
+              if (pictureSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                    List<Widget> imageWidgets = [];
+              List<Widget> imageWidgets = [];
 
-                    if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {
-                      final picturesMap = Map<String, dynamic>.from(pictureSnapshot.data!.value as Map);
-                      imageWidgets = picturesMap.entries.map((entry) {
-                        final imageUrl = entry.value['url'] as String?;
-                        
+              if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {
+                final picturesMap = Map<String, dynamic>.from(pictureSnapshot.data!.value as Map);
+                imageWidgets = picturesMap.entries.map((entry) {
+                  final imageUrl = entry.value['url'] as String?;
 
-                        if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
+                  if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 12),
+                      Image.network(imageUrl, height: 200, fit: BoxFit.cover),
+                    ],
+                  );
+                }).toList();
+              }
+
+              // New: FutureBuilder for followers count
+              return FutureBuilder<DataSnapshot>(
+                future: databaseRef.child('users/$_currentUsername/followers').get(),
+                builder: (context, followersSnapshot) {
+                  int followersCount = 0;
+                  if (followersSnapshot.hasData && followersSnapshot.data!.value != null) {
+                    final followersMap = Map<String, dynamic>.from(followersSnapshot.data!.value as Map);
+                    followersCount = followersMap.length;
+                  }
+
+                  // New: FutureBuilder for following count
+                  return FutureBuilder<DataSnapshot>(
+                    future: databaseRef.child('users/$_currentUsername/following').get(),
+                    builder: (context, followingSnapshot) {
+                      int followingCount = 0;
+                      if (followingSnapshot.hasData && followingSnapshot.data!.value != null) {
+                        final followingMap = Map<String, dynamic>.from(followingSnapshot.data!.value as Map);
+                        followingCount = followingMap.length;
+                      }
+
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 12),
-                            Image.network(imageUrl, height: 200, fit: BoxFit.cover),
-                            
-
-                            
-                          ],
-                        );
-                      }).toList();
-                    }
-
-
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: _pickAndUploadProfilePicture,
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundImage: NetworkImage(profileUrl),
+                            GestureDetector(
+                              onTap: _pickAndUploadProfilePicture,
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundImage: NetworkImage(profileUrl),
+                              ),
                             ),
-                          ),
 
-                          const SizedBox(height: 20),
-                          Text(
-                            'Welcome, $_currentUsername!',
-                            style: const TextStyle(color: Colors.white, fontSize: 24),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: _signOut,
-                            child: const Text('Sign Out'),
-                          ),
-                          const SizedBox(height: 30),
-                          ...imageWidgets.isNotEmpty
-                              ? imageWidgets
-                              : [
-                                  const Text(
-                                    'No pictures uploaded yet.',
-                                    style: TextStyle(color: Colors.white70),
-                                  )
-                                ],
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-            )
+                            const SizedBox(height: 20),
+                            Text(
+                              'Welcome, $_currentUsername!',
+                              style: const TextStyle(color: Colors.white, fontSize: 24),
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            // Display followers/following counts here
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      '$followersCount',
+                                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                    const Text(
+                                      'Followers',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 40),
+                                Column(
+                                  children: [
+                                    Text(
+                                      '$followingCount',
+                                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                    const Text(
+                                      'Following',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: _signOut,
+                              child: const Text('Sign Out'),
+                            ),
+                            const SizedBox(height: 30),
+                            ...imageWidgets.isNotEmpty
+                                ? imageWidgets
+                                : [
+                                    const Text(
+                                      'No pictures uploaded yet.',
+                                      style: TextStyle(color: Colors.white70),
+                                    )
+                                  ],
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
+      )
+     // your else part for not logged in users
+
           : Padding(
               padding: const EdgeInsets.all(24.0),
               child: TabBarView(

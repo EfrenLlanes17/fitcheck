@@ -223,7 +223,12 @@ final sortedEntries = picturesMap.entries.toList()
 
 
 
-  final pictureWidgets = sortedEntries.map((entry) {
+  // The following code updates the visual style of each post to match the UI file
+// while keeping the full functionality of likes, saves, shares, comments, and follows.
+
+// Updated version of pictureWidgets to reflect UI style with full backend functionality
+
+final pictureWidgets = sortedEntries.map((entry) {
   final data = Map<String, dynamic>.from(entry.value);
   final imageUrl = data['url'] ?? '';
   final timestamp = data['timestamp'].toString();
@@ -234,258 +239,262 @@ final sortedEntries = picturesMap.entries.toList()
   int likes = int.tryParse(data['likes'].toString()) ?? 0;
 
   return FutureBuilder<DataSnapshot>(
-    future: FirebaseDatabase.instance
-        .ref('pictures/$postKey/likedBy/$_currentUsername')
-        .get(),
+    future: FirebaseDatabase.instance.ref('pictures/$postKey/likedBy/$_currentUsername').get(),
     builder: (context, likeSnapshot) {
       bool isLiked = likeSnapshot.data?.value == true;
 
       return FutureBuilder<DataSnapshot>(
-        future: FirebaseDatabase.instance
-            .ref('pictures/$postKey/savedBy/$_currentUsername')
-            .get(),
+        future: FirebaseDatabase.instance.ref('pictures/$postKey/savedBy/$_currentUsername').get(),
         builder: (context, saveSnapshot) {
           bool isSaved = saveSnapshot.data?.value == true;
           bool showComments = false;
           return StatefulBuilder(
             builder: (context, setState) {
               
-              return Card(
-                color: Colors.grey[900],
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF181818),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                     Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundImage: profilePicUrl.isNotEmpty
-                            ? NetworkImage(profilePicUrl)
-                            : null,
-                        backgroundColor: Colors.grey[700],
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        username,
-                        style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-
-                      // Only show follow button if viewing someone else's post
-                      if (username != _currentUsername)
-                        FutureBuilder<DataSnapshot>(
-                          future: FirebaseDatabase.instance
-                              .ref('users/$_currentUsername/following/$username')
-                              .get(),
-                          builder: (context, followSnapshot) {
-                            bool isFollowing = followSnapshot.data?.value == true;
-
-                            return TextButton(
-                              onPressed: () async {
-                                final followingRef = FirebaseDatabase.instance
-                                    .ref('users/$_currentUsername/following/$username');
-                                final followersRef = FirebaseDatabase.instance
-                                    .ref('users/$username/followers/$_currentUsername');
-
-                                if (isFollowing) {
-                                  await followingRef.remove();
-                                  await followersRef.remove();
-                                } else {
-                                  await followingRef.set(true);
-                                  await followersRef.set(true);
-                                }
-
-                                setState(() {}); // Refresh UI
-                              },
-                              child: Text(
-                                isFollowing ? 'Following' : 'Follow',
-                                style: TextStyle(
-                                  color: isFollowing ? Colors.grey[300] : Colors.blue[300],
-                                ),
-                              ),
-                            );
-                          },
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: profilePicUrl.isNotEmpty ? NetworkImage(profilePicUrl) : null,
+                          backgroundColor: Colors.grey[700],
                         ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '$username    ',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '• ${timestamp.substring(0, 10)}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (username != _currentUsername)
+                          FutureBuilder<DataSnapshot>(
+                            future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/$username').get(),
+                            builder: (context, followSnapshot) {
+                              bool isFollowing = followSnapshot.data?.value == true;
 
-                      const Spacer(),
+                              return TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color(0xFF434343),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                ),
+                                onPressed: () async {
+                                  final followingRef = FirebaseDatabase.instance
+                                      .ref('users/$_currentUsername/following/$username');
+                                  final followersRef = FirebaseDatabase.instance
+                                      .ref('users/$username/followers/$_currentUsername');
 
-                      IconButton(
-                        icon: const Icon(Icons.more_vert, color: Colors.white),
-                        onPressed: () async {
-                          await showModalBottomSheet(
-                            context: context,
-                            builder: (_) {
-                              return SafeArea(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ListTile(
-                                      leading: const Icon(Icons.info),
-                                      title: const Text('Option 1'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    ListTile(
-                                      leading: const Icon(Icons.delete),
-                                      title: const Text('Option 2'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ],
+                                  if (isFollowing) {
+                                    await followingRef.remove();
+                                    await followersRef.remove();
+                                  } else {
+                                    await followingRef.set(true);
+                                    await followersRef.set(true);
+                                  }
+
+                                  setState(() {});
+                                },
+                                child: Text(
+                                  isFollowing ? 'Following' : 'Follow',
+                                  style: const TextStyle(color: Colors.white, fontSize: 14),
                                 ),
                               );
                             },
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.more_vert, color: Colors.white),
+                          onPressed: () async {
+                            await showModalBottomSheet(
+                              context: context,
+                              builder: (_) {
+                                return SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ListTile(
+                                        leading: const Icon(Icons.info),
+                                        title: const Text('Option 1'),
+                                        onTap: () => Navigator.pop(context),
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.delete),
+                                        title: const Text('Option 2'),
+                                        onTap: () => Navigator.pop(context),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.network(
+                        imageUrl,
+                        width: MediaQuery.of(context).size.width * 0.95,
+                        height: 400,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        caption,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            isLiked ? Icons.favorite : Icons.favorite_border,
+                            color: isLiked ? Colors.red : Colors.white,
+                          ),
+                          onPressed: () async {
+                            final ref = FirebaseDatabase.instance.ref();
+                            final postRef = ref.child('pictures/$postKey');
+                            final userLikesRef = ref.child('users/$_currentUsername/likedpictures/$postKey');
+
+                            if (isLiked) {
+                              likes--;
+                              await postRef.child('likes').set(likes);
+                              await postRef.child('likedBy/$_currentUsername').remove();
+                              await userLikesRef.remove();
+                            } else {
+                              likes++;
+                              await postRef.child('likes').set(likes);
+                              await postRef.child('likedBy/$_currentUsername').set(true);
+                              await userLikesRef.set(true);
+                            }
+
+                            setState(() {
+                              isLiked = !isLiked;
+                            });
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_border,
+                            color: isSaved ? Colors.blue : Colors.white,
+                          ),
+                          onPressed: () async {
+                            final ref = FirebaseDatabase.instance.ref();
+                            final postRef = ref.child('pictures/$postKey');
+                            final userSavesRef = ref.child('users/$_currentUsername/savedpictures/$postKey');
+
+                            if (isSaved) {
+                              await postRef.child('saves').runTransaction((value) {
+                                final current = (value ?? 0) as int;
+                                return Transaction.success(current > 0 ? current - 1 : 0);
+                              });
+                              await postRef.child('savedBy/$_currentUsername').remove();
+                              await userSavesRef.remove();
+                            } else {
+                              await postRef.child('saves').runTransaction((value) {
+                                final current = (value ?? 0) as int;
+                                return Transaction.success(current + 1);
+                              });
+                              await postRef.child('savedBy/$_currentUsername').set(true);
+                              await userSavesRef.set(true);
+                            }
+
+                            setState(() {
+                              isSaved = !isSaved;
+                            });
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share, color: Colors.white),
+                          onPressed: () => shareImageFromUrl(imageUrl),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.comment, color: Colors.white),
+                          onPressed: () => setState(() => showComments = !showComments),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$likes',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          const TextSpan(
+                            text: ' likes',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (showComments) ...[
+                      const Divider(color: Colors.white24),
+                      StreamBuilder<DatabaseEvent>(
+                        stream: FirebaseDatabase.instance.ref('pictures/$postKey/comments').onValue,
+                        builder: (context, snapshot) {
+                          final data = snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
+                          final commentList = data.entries.toList()
+                            ..sort((a, b) => b.value['timestamp'].compareTo(a.value['timestamp']));
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ...commentList.map((entry) {
+                                final comment = entry.value as Map<dynamic, dynamic>;
+                                final user = comment['user'] ?? 'Unknown';
+                                final text = comment['text'] ?? '';
+                                final ts = DateTime.fromMillisecondsSinceEpoch(comment['timestamp'] ?? 0);
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Text(
+                                    '$user: $text\n${ts.toLocal()}',
+                                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                  ),
+                                );
+                              }),
+                              const SizedBox(height: 8),
+                              CommentInputField(postKey: postKey, currentUser: _currentUsername),
+                            ],
                           );
                         },
                       ),
-                     
                     ],
-                  ),
-
-                      const SizedBox(height: 8),
-                      Image.network(imageUrl),
-                      const SizedBox(height: 8),
-                      Text(caption, style: const TextStyle(color: Colors.white70)),
-                      const SizedBox(height: 8),
-                     Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Likes: $likes',
-                              style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  isLiked ? Icons.favorite : Icons.favorite_border,
-                                  color: isLiked ? Colors.red : Colors.white,
-                                ),
-                                onPressed: () async {
-                                  final ref = FirebaseDatabase.instance.ref();
-                                  final postRef = ref.child('pictures/$postKey');
-                                  final userLikesRef =
-                                      ref.child('users/$_currentUsername/likedpictures/$postKey');
-
-                                  if (isLiked) {
-                                    likes--;
-                                    await postRef.child('likes').set(likes);
-                                    await postRef.child('likedBy/$_currentUsername').remove();
-                                    await userLikesRef.remove();
-                                  } else {
-                                    likes++;
-                                    await postRef.child('likes').set(likes);
-                                    await postRef.child('likedBy/$_currentUsername').set(true);
-                                    await userLikesRef.set(true);
-                                  }
-
-                                  setState(() {
-                                    isLiked = !isLiked;
-                                  });
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  isSaved ? Icons.bookmark : Icons.bookmark_border,
-                                  color: isSaved ? Colors.blue : Colors.white,
-                                ),
-                                onPressed: () async {
-                                  final ref = FirebaseDatabase.instance.ref();
-                                  final postRef = ref.child('pictures/$postKey');
-                                  final userSavesRef =
-                                      ref.child('users/$_currentUsername/savedpictures/$postKey');
-
-                                  if (isSaved) {
-                                    await postRef.child('saves').runTransaction((value) {
-                                      final current = (value ?? 0) as int;
-                                      return Transaction.success(current > 0 ? current - 1 : 0);
-                                    });
-                                    await postRef.child('savedBy/$_currentUsername').remove();
-                                    await userSavesRef.remove();
-                                  } else {
-                                    await postRef.child('saves').runTransaction((value) {
-                                      final current = (value ?? 0) as int;
-                                      return Transaction.success(current + 1);
-                                    });
-                                    await postRef.child('savedBy/$_currentUsername').set(true);
-                                    await userSavesRef.set(true);
-                                  }
-
-                                  setState(() {
-                                    isSaved = !isSaved;
-                                  });
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.share, color: Colors.white),
-                                onPressed: () => shareImageFromUrl(imageUrl),
-                              ),
-                               IconButton(
-                    icon: Icon(Icons.comment, color: Colors.white),
-                    onPressed: () {
-                      setState(() {
-                        showComments = !showComments;
-                      });
-                    },
-                  ),
-                  
-
-
-                            ],
-                          ),
-
-                        ],
-                      ),
-
-                      Text(timestamp,
-                          style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                      if (showComments) ...[
-                 StreamBuilder<DatabaseEvent>(
-                  stream: FirebaseDatabase.instance.ref('pictures/$postKey/comments').onValue,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-
-                    final data = snapshot.data?.snapshot.value as Map<dynamic, dynamic>? ?? {};
-                    final commentList = data.entries.toList()
-                      ..sort((a, b) => b.value['timestamp'].compareTo(a.value['timestamp']));
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Divider(color: Colors.white24),
-                        ...commentList.map((entry) {
-                          final comment = entry.value as Map<dynamic, dynamic>;
-                          final user = comment['user'] ?? 'Unknown';
-                          final text = comment['text'] ?? '';
-                          final ts = DateTime.fromMillisecondsSinceEpoch(comment['timestamp'] ?? 0);
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
-                              '$user: $text\n${ts.toLocal()}',
-                              style: const TextStyle(color: Colors.white70, fontSize: 13),
-                            ),
-                          );
-                        }),
-                        const SizedBox(height: 8),
-                        CommentInputField(postKey: postKey, currentUser: _currentUsername),
-                      ],
-                    );
-                  },
-                )
-
-                ],
-                      
-   
-                    ],
-                  ),
+                  ],
                 ),
               );
             },
@@ -495,6 +504,8 @@ final sortedEntries = picturesMap.entries.toList()
     },
   );
 }).toList();
+
+
 
 
 

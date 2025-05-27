@@ -481,20 +481,121 @@ final TextEditingController _bioController = TextEditingController();
                             //   child: const Text('Sign Out'),
                             // ),
                             const SizedBox(height: 30),
-                            imageWidgets.isNotEmpty
-                            ? GridView.count(
-                                crossAxisCount: 3,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                crossAxisSpacing: 8,
-                                mainAxisSpacing: 8,
-                                childAspectRatio: 0.75,
-                                children: imageWidgets,
-                              )
-                            : const Text(
-                                'No pictures uploaded yet.',
-                                style: TextStyle(color: Colors.white70),
+                            // TabController for switching views
+                            DefaultTabController(
+                              length: 3,
+                              child: Column(
+                                children: [
+                                  const TabBar(
+                                    indicatorColor: Colors.white,
+                                    labelColor: Colors.white,
+                                    unselectedLabelColor: Colors.white54,
+                                    tabs: [
+                                      Tab(text: 'Uploads'),
+                                      Tab(text: 'Liked'),
+                                      Tab(text: 'Saved'),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  SizedBox(
+                                    height: 500, // Adjust height as needed
+                                    child: TabBarView(
+                                      children: [
+                                        // --- UPLOADED PICTURES ---
+                                        imageWidgets.isNotEmpty
+                                            ? GridView.count(
+                                                crossAxisCount: 3,
+                                                shrinkWrap: true,
+                                                physics: const NeverScrollableScrollPhysics(),
+                                                crossAxisSpacing: 8,
+                                                mainAxisSpacing: 8,
+                                                childAspectRatio: 0.75,
+                                                children: imageWidgets,
+                                              )
+                                            : const Center(
+                                                child: Text(
+                                                  'No pictures uploaded yet.',
+                                                  style: TextStyle(color: Colors.white70),
+                                                ),
+                                              ),
+
+                                        // --- LIKED PICTURES ---
+                                        FutureBuilder<DataSnapshot>(
+                                          future: databaseRef.child('users/$_currentUsername/likedpictures').get(),
+                                          builder: (context, likedSnapshot) {
+                                            if (likedSnapshot.connectionState == ConnectionState.waiting) {
+                                              return const Center(child: CircularProgressIndicator());
+                                            }
+
+                                            List<Widget> likedImages = [];
+                                            if (likedSnapshot.hasData && likedSnapshot.data!.value != null) {
+                                              final likedMap = Map<String, dynamic>.from(likedSnapshot.data!.value as Map);
+                                              likedImages = likedMap.entries.map((entry) {
+                                                final url = entry.value['url'] as String?;
+                                                if (url == null || url.isEmpty) return const SizedBox();
+                                                return Image.network(url, fit: BoxFit.cover);
+                                              }).toList();
+                                            }
+
+                                            return likedImages.isNotEmpty
+                                                ? GridView.count(
+                                                    crossAxisCount: 3,
+                                                    crossAxisSpacing: 8,
+                                                    mainAxisSpacing: 8,
+                                                    childAspectRatio: 0.75,
+                                                    children: likedImages,
+                                                  )
+                                                : const Center(
+                                                    child: Text(
+                                                      'No liked pictures.',
+                                                      style: TextStyle(color: Colors.white70),
+                                                    ),
+                                                  );
+                                          },
+                                        ),
+
+                                        // --- SAVED PICTURES ---
+                                        FutureBuilder<DataSnapshot>(
+                                          future: databaseRef.child('users/$_currentUsername/savedpictures').get(),
+                                          builder: (context, savedSnapshot) {
+                                            if (savedSnapshot.connectionState == ConnectionState.waiting) {
+                                              return const Center(child: CircularProgressIndicator());
+                                            }
+
+                                            List<Widget> savedImages = [];
+                                           if (savedSnapshot.hasData && savedSnapshot.data!.value != null) {
+                                            final savedMap = Map<String, dynamic>.from(savedSnapshot.data!.value as Map);
+                                            savedImages = savedMap.entries.map((entry) {
+                                              final pictureData = Map<String, dynamic>.from(entry.value);
+                                              final url = pictureData['url'] as String?;
+                                              if (url == null || url.isEmpty) return const SizedBox();
+                                              return Image.network(url, fit: BoxFit.cover);
+                                            }).toList();
+                                          }
+
+                                            return savedImages.isNotEmpty
+                                                ? GridView.count(
+                                                    crossAxisCount: 3,
+                                                    crossAxisSpacing: 8,
+                                                    mainAxisSpacing: 8,
+                                                    childAspectRatio: 0.75,
+                                                    children: savedImages,
+                                                  )
+                                                : const Center(
+                                                    child: Text(
+                                                      'No saved pictures.',
+                                                      style: TextStyle(color: Colors.white70),
+                                                    ),
+                                                  );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+
                           ],
                         ),
                       );

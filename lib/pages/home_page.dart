@@ -387,7 +387,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                           onPressed: () async {
                             final ref = FirebaseDatabase.instance.ref();
                             final postRef = ref.child('pictures/$postKey');
-                            final userLikesRef = ref.child('users/$_currentUsername/likedpictures/$postKey');
+                            final userLikesRef = ref.child('users/$_currentUsername/likedpictures');
 
                             if (isLiked) {
                               likes--;
@@ -398,7 +398,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                               likes++;
                               await postRef.child('likes').set(likes);
                               await postRef.child('likedBy/$_currentUsername').set(true);
-                              await userLikesRef.set(true);
+                              await userLikesRef.push().set({'url': imageUrl});
                             }
 
                             setState(() {
@@ -414,7 +414,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                           onPressed: () async {
                             final ref = FirebaseDatabase.instance.ref();
                             final postRef = ref.child('pictures/$postKey');
-                            final userSavesRef = ref.child('users/$_currentUsername/savedpictures/$postKey');
+                            final userSavesRef = ref.child('users/$_currentUsername/savedpictures');
 
                             if (isSaved) {
                               await postRef.child('saves').runTransaction((value) {
@@ -429,7 +429,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                                 return Transaction.success(current + 1);
                               });
                               await postRef.child('savedBy/$_currentUsername').set(true);
-                              await userSavesRef.set(true);
+                              await userSavesRef.push().set({'url': imageUrl});
                             }
 
                             setState(() {

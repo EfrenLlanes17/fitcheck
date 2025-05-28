@@ -40,6 +40,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
   String _currentUsername = '';
+  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+
 
   void _onTabTapped(int index) {
     Widget page;
@@ -120,6 +122,66 @@ Future<int> _getUserStreak() async {
     return int.tryParse(snapshot.value.toString()) ?? 0;
   }
   return 0;
+}
+
+void showReportBottomSheet(BuildContext context, String postKey) {
+  final TextEditingController reportController = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Report Post',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Please let us know why you are reporting this post:',
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: reportController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Enter your report here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final reportText = reportController.text.trim();
+                  if (reportText.isNotEmpty) {
+                    await databaseRef.child('reports').push().set({
+      'text': reportText, 'reporter' : _currentUsername, 'postreported' : postKey
+      
+    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Send'),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 
@@ -348,6 +410,14 @@ final pictureWidgets = sortedEntries.map((entry) {
                                         title: const Text('Option 2'),
                                         onTap: () => Navigator.pop(context),
                                       ),
+                                       ListTile(
+              leading: const Icon(Icons.flag),
+              title: const Text('Report Post'),
+              onTap: () {
+                Navigator.pop(context);
+                showReportBottomSheet(context, postKey);
+              },
+            ),
                                     ],
                                   ),
                                 );

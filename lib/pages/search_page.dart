@@ -89,18 +89,41 @@ class _SearchPageState extends State<SearchPage> {
                   return username.contains(searchQuery);
                 }).toList();
 
-                return ListView.builder(
-                  itemCount: filteredUsers.length,
-                  itemBuilder: (context, index) {
-                    final username = filteredUsers[index].key;
-                    return ListTile(
-                      title: Text(username, style: const TextStyle(color: Colors.white)),
-                      onTap: () {
-                        // You can navigate to their profile or show a dialog
-                      },
-                    );
-                  },
-                );
+               return ListView.builder(
+                itemCount: filteredUsers.length,
+                itemBuilder: (context, index) {
+                  final username = filteredUsers[index].key;
+                  final userData = Map<String, dynamic>.from(filteredUsers[index].value);
+
+                  final profileUrl = userData['profilepicture'] ?? 'https://via.placeholder.com/150';
+
+                  return FutureBuilder<DataSnapshot>(
+                    future: FirebaseDatabase.instance.ref('users/$username/followers').get(),
+                    builder: (context, followerSnapshot) {
+                      int followerCount = 0;
+                      if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
+                        final followersMap = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
+                        followerCount = followersMap.length;
+                      }
+
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(profileUrl),
+                        ),
+                        title: Text(username, style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(
+                          '$followerCount followers',
+                          style: const TextStyle(color: Colors.white54),
+                        ),
+                        onTap: () {
+                          // Navigate to user's profile if needed
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+
               },
             ),
 

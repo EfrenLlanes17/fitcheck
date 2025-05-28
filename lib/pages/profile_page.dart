@@ -564,7 +564,7 @@ FutureBuilder<DataSnapshot>(
                                   ),
                                   const SizedBox(height: 10),
                                   SizedBox(
-                                    height: 500, // Adjust height as needed
+                                    height: MediaQuery.of(context).size.height, // Adjust height as needed
                                     child: TabBarView(
                                       children: [
                                         // --- UPLOADED PICTURES ---

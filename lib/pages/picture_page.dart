@@ -30,6 +30,9 @@ class _PicturePageState extends State<PicturePage> {
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  late List<CameraDescription> _cameras;
+  int _currentCameraIndex = 0;
+
   
 
   @override
@@ -39,9 +42,30 @@ class _PicturePageState extends State<PicturePage> {
       widget.camera,
       ResolutionPreset.max,
     );
-    _initializeControllerFuture = _controller.initialize();
+    //_initializeControllerFuture = _controller.initialize();
+    _initializeCamera();
     
   }
+
+  Future<void> _initializeCamera() async {
+  _cameras = cameras; // From main.dart, already initialized
+  _currentCameraIndex = _cameras.indexOf(widget.camera);
+  _controller = CameraController(_cameras[_currentCameraIndex], ResolutionPreset.max);
+  _initializeControllerFuture = _controller.initialize();
+  setState(() {}); // Refresh to show preview
+}
+
+void _flipCamera() async {
+  if (_cameras.length < 2) return;
+
+  _currentCameraIndex = (_currentCameraIndex + 1) % _cameras.length;
+
+  await _controller.dispose();
+  _controller = CameraController(_cameras[_currentCameraIndex], ResolutionPreset.max);
+  _initializeControllerFuture = _controller.initialize();
+
+  setState(() {});
+}
 
   
 
@@ -125,43 +149,58 @@ class _PicturePageState extends State<PicturePage> {
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
         ],
       ),
-      floatingActionButton: Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 190),
-          child: GestureDetector(
-            onTap: () async {
-              try {
-                await _initializeControllerFuture;
-                final image = await _controller.takePicture();
 
-                if (!mounted) return;
+      floatingActionButton: Column(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Padding(
+      padding: const EdgeInsets.only(bottom: 230),
+      child: FloatingActionButton(
+        heroTag: 'flip',
+        backgroundColor: Colors.white10,
+        onPressed: _flipCamera,
+        child: const Icon(Icons.flip_camera_ios, color: Colors.white),
+      ),
+    ),
+    Padding(
+      padding: const EdgeInsets.only(bottom: 120),
+      child: GestureDetector(
+        onTap: () async {
+          try {
+            await _initializeControllerFuture;
+            final image = await _controller.takePicture();
 
-                
+            if (!mounted) return;
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DisplayPictureScreen(imagePath: image.path),
-                  ),
-                );
-              } catch (e) {
-                print('Error taking picture: $e');
-              }
-            },
-            child: Container(
-              width: 85,
-              height: 85,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 7),
-                color: Colors.transparent,
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DisplayPictureScreen(imagePath: image.path),
               ),
-            ),
+            );
+          } catch (e) {
+            print('Error taking picture: $e');
+          }
+        },
+        child: Container(
+          width: 85,
+          height: 85,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 7),
+            color: Colors.transparent,
           ),
         ),
       ),
+    ),
+  ],
+),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+
+
+      
     );
   }
 }

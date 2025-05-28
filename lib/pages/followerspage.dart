@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fitcheck/pages/diffrentuserpage.dart'; // <-- Make sure this import matches your file name
 
 class FollowersPage extends StatelessWidget {
   final String username;
@@ -47,6 +48,14 @@ class FollowersPage extends StatelessWidget {
                   followerUsername,
                   style: const TextStyle(color: Colors.white),
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => diffrentProfilePage(username: followerUsername),
+                    ),
+                  );
+                },
               );
             },
           );

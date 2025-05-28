@@ -515,9 +515,9 @@ final TextEditingController _bioController = TextEditingController();
                                     labelColor: Colors.white,
                                     unselectedLabelColor: Colors.white54,
                                     tabs: [
-                                      Tab(text: 'Uploads'),
-                                      Tab(text: 'Liked'),
-                                      Tab(text: 'Saved'),
+                                      Tab(icon: Icon(Icons.camera_alt)),   // Uploads
+                                      Tab(icon: Icon(Icons.favorite)),     // Liked
+                                      Tab(icon: Icon(Icons.bookmark)),     // Saved
                                     ],
                                   ),
                                   const SizedBox(height: 10),

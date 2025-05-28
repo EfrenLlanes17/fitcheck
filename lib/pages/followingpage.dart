@@ -30,15 +30,20 @@ class FollowingPage extends StatelessWidget {
           }
 
           final followingMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
-          final followingList = followingMap.keys.toList();
 
           return ListView.builder(
-            itemCount: followingList.length,
+            itemCount: followingMap.length,
             itemBuilder: (context, index) {
-              final followingUser = followingList[index];
+              final key = followingMap.keys.elementAt(index);
+              final userData = Map<String, dynamic>.from(followingMap[key]);
+              final profileUrl = userData['profilepicture'] ?? '';
+              
               return ListTile(
-                title: Text(followingUser, style: const TextStyle(color: Colors.white)),
-                leading: const Icon(Icons.person_outline, color: Colors.white70),
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(profileUrl),
+                  backgroundColor: Colors.grey[800],
+                ),
+                title: Text(key, style: const TextStyle(color: Colors.white)),
               );
             },
           );

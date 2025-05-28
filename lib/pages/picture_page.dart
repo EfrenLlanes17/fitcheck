@@ -123,7 +123,14 @@ void _flipCamera() async {
                       fit: BoxFit.cover,
                       child: SizedBox(
                         height: MediaQuery.of(context).size.width + kBottomNavigationBarHeight,
+                        child: Transform(
+                        alignment: Alignment.center,
+                        transform: _cameras[_currentCameraIndex].lensDirection == CameraLensDirection.front
+                            ? Matrix4.rotationY(3.1415926535)  // Flip horizontally (π radians)
+                            : Matrix4.identity(),              // No flip for rear camera
                         child: CameraPreview(_controller),
+                      ),
+
                       ),
                     ),
                   ),

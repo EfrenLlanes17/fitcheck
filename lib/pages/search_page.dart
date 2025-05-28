@@ -47,28 +47,55 @@ class _SearchPageState extends State<SearchPage> {
       length: 2,
       child: Scaffold(
         backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          title: TextField(
-            onChanged: (value) {
-              setState(() {
-                searchQuery = value.trim().toLowerCase();
-              });
-            },
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
-              hintText: 'Search users or posts',
-              hintStyle: TextStyle(color: Colors.white54),
-              border: InputBorder.none,
+        appBar: PreferredSize(
+  preferredSize: const Size.fromHeight(110),
+  child: AppBar(
+    backgroundColor: Colors.black,
+    automaticallyImplyLeading: false,
+    elevation: 0,
+    flexibleSpace: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 60, 16, 8),
+      child: Row(
+        children: [
+          
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0x38989898),
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.trim().toLowerCase();
+                  });
+                },
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  hintText: 'Search...',
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  border: InputBorder.none,
+                ),
+              ),
             ),
           ),
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.person), text: 'Users'),
-              Tab(icon: Icon(Icons.image), text: 'Posts'),
-            ],
-          ),
-        ),
+        ],
+      ),
+    ),
+    bottom: const TabBar(
+      labelColor: Colors.white,
+      unselectedLabelColor: Colors.white54,
+      indicatorColor: Color(0xFFD0D0D0),
+      indicatorWeight: 2,
+      tabs: [
+        Tab(text: 'Accounts'),
+        Tab(text: 'Posts'),
+      ],
+    ),
+  ),
+),
+
         body: TabBarView(
           children: [
             // USERS TAB
@@ -88,6 +115,16 @@ class _SearchPageState extends State<SearchPage> {
                   final username = entry.key.toLowerCase();
                   return username.contains(searchQuery);
                 }).toList();
+
+                if (filteredUsers.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No users found.',
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                );
+              }
+
 
                return ListView.builder(
                 itemCount: filteredUsers.length,
@@ -146,6 +183,15 @@ class _SearchPageState extends State<SearchPage> {
                   return caption.contains(searchQuery);
                 }).toList();
 
+                if (filteredPosts.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No Posts found.',
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                );
+              }
+
                 return GridView.count(
                   crossAxisCount: 3,
                   crossAxisSpacing: 4,
@@ -157,6 +203,8 @@ class _SearchPageState extends State<SearchPage> {
                     final url = data['url'] ?? '';
                     return Image.network(url, fit: BoxFit.cover);
                   }).toList(),
+
+                  
                 );
               },
             ),

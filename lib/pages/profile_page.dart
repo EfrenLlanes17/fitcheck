@@ -11,6 +11,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitcheck/pages/termsofservice.dart';
 import 'package:fitcheck/pages/privacypolicy.dart';
+import 'package:fitcheck/pages/followerspage.dart';
+import 'package:fitcheck/pages/followingpage.dart';
+
+
 
 
 class ProfilePage extends StatefulWidget {
@@ -427,22 +431,58 @@ final TextEditingController _bioController = TextEditingController();
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '$followersCount',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            GestureDetector(
+            behavior: HitTestBehavior.opaque, // 👈 ensures the entire area responds to taps
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FollowersPage(username: _currentUsername),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$followersCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'Followers',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ],
               ),
             ),
-            const Text(
-              'Followers',
-              style: TextStyle(color: Colors.white70),
-            ),
+          ),
+
+
           ],
         ),
         const SizedBox(height: 12),
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FollowingPage(username: _currentUsername),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -457,6 +497,11 @@ final TextEditingController _bioController = TextEditingController();
               'Following',
               style: TextStyle(color: Colors.white70),
             ),
+          ],
+        ),
+      ),
+    ),
+
           ],
         ),
         const SizedBox(height: 12),

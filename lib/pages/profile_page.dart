@@ -250,17 +250,29 @@ final TextEditingController _bioController = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        bottom: !_isLoggedIn
-            ? TabBar(
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Sign In'),
-                  Tab(text: 'Create Account'),
-                ],
-              )
-            : null,
-            actions: _isLoggedIn
+  backgroundColor: Colors.black,
+  title: _isLoggedIn
+      ? Text(
+          _currentUsername,
+          style: const TextStyle(
+            fontFamily: 'Roboto',
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      : null,
+  centerTitle: true, // Important: center the title on both iOS and Android
+  bottom: !_isLoggedIn
+      ? TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Sign In'),
+            Tab(text: 'Create Account'),
+          ],
+        )
+      : null,
+  actions: _isLoggedIn
       ? [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
@@ -289,7 +301,8 @@ final TextEditingController _bioController = TextEditingController();
           ),
         ]
       : [],
-      ),
+),
+
       body: _isLoggedIn
     ? FutureBuilder<DataSnapshot>(
         future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
@@ -300,6 +313,8 @@ final TextEditingController _bioController = TextEditingController();
               profileSnapshot.data!.value.toString().isNotEmpty) {
             profileUrl = profileSnapshot.data!.value.toString();
           }
+
+
 
           return FutureBuilder<DataSnapshot>(
             future: databaseRef.child('users/$_currentUsername/pictures').get(),
@@ -362,24 +377,87 @@ final TextEditingController _bioController = TextEditingController();
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            GestureDetector(
-                              onTap: _pickAndUploadProfilePicture,
-                              child: CircleAvatar(
-                                radius: 60,
-                                backgroundImage: NetworkImage(profileUrl),
-                              ),
-                            ),
+                            Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    // Profile Picture
+    GestureDetector(
+      onTap: _pickAndUploadProfilePicture,
+      child: CircleAvatar(
+        radius: 80,
+        backgroundImage: NetworkImage(profileUrl),
+      ),
+    ),
 
-                            const SizedBox(height: 20),
-                            Text(
-                              'Welcome, $_currentUsername!',
-                              style: const TextStyle(color: Colors.white, fontSize: 24),
-                            ),
+    const SizedBox(width: 24), // space between picture and stats
 
-                            const SizedBox(height: 12),
+    // Stats vertically stacked
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$followersCount',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              'Followers',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$followingCount',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              'Following',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$pictureCount',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              'Posts',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+),
 
-// Editable bio widget
-                            FutureBuilder<DataSnapshot>(
+
+                            
+
+FutureBuilder<DataSnapshot>(
                               future: databaseRef.child('users/$_currentUsername/bio').get(),
                               builder: (context, bioSnapshot) {
                                 if (bioSnapshot.connectionState == ConnectionState.waiting) {
@@ -453,58 +531,7 @@ final TextEditingController _bioController = TextEditingController();
                               },
                             ),
 
-
-                            // Display followers/following counts here
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      '$followersCount',
-                                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Followers',
-                                      style: TextStyle(color: Colors.white70),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 40),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '$followingCount',
-                                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Following',
-                                      style: TextStyle(color: Colors.white70),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 40),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '$pictureCount',
-                                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Posts',
-                                      style: TextStyle(color: Colors.white70),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
                             const SizedBox(height: 20),
-                            // ElevatedButton(
-                            //   onPressed: _signOut,
-                            //   child: const Text('Sign Out'),
-                            // ),
-                            const SizedBox(height: 30),
                             // TabController for switching views
                             DefaultTabController(
                               length: 3,

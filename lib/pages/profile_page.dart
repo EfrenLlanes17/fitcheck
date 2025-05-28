@@ -413,7 +413,7 @@ final TextEditingController _bioController = TextEditingController();
     GestureDetector(
       onTap: _pickAndUploadProfilePicture,
       child: CircleAvatar(
-        radius: 80,
+        radius: 90,
         backgroundImage: NetworkImage(profileUrl),
       ),
     ),
@@ -514,7 +514,7 @@ FutureBuilder<DataSnapshot>(
                                           fontStyle: currentBio.isEmpty ? FontStyle.italic : FontStyle.normal,
                                           fontSize: 16,
                                         ),
-                                        textAlign: TextAlign.center,
+                                        textAlign: TextAlign.left,
                                       ),
                                     ),
                                   );

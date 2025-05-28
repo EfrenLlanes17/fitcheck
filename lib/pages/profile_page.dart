@@ -346,6 +346,17 @@ final TextEditingController _bioController = TextEditingController();
                         followingCount = followingMap.length;
                       }
 
+                    return FutureBuilder<DataSnapshot>(
+                    future: databaseRef.child('users/$_currentUsername/pictures').get(),
+                    builder: (context, pictureSnapshot) {
+                      int pictureCount = 0;
+                      if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {
+                        final picturesMap = Map<String, dynamic>.from(pictureSnapshot.data!.value as Map);
+                        pictureCount = picturesMap.length;
+                      }  
+
+                  
+
                       return SingleChildScrollView(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -468,6 +479,19 @@ final TextEditingController _bioController = TextEditingController();
                                     ),
                                     const Text(
                                       'Following',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 40),
+                                Column(
+                                  children: [
+                                    Text(
+                                      '$pictureCount',
+                                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                    ),
+                                    const Text(
+                                      'Posts',
                                       style: TextStyle(color: Colors.white70),
                                     ),
                                   ],
@@ -599,6 +623,8 @@ final TextEditingController _bioController = TextEditingController();
                           ],
                         ),
                       );
+                      },
+                  );
                     },
                   );
                 },

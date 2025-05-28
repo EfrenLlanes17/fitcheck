@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitcheck/pages/termsofservice.dart';
+import 'package:fitcheck/pages/privacypolicy.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -306,6 +307,18 @@ final TextEditingController _bioController = TextEditingController();
                   _signOut();
                 },
               ),
+              ListTile(
+              leading: const Icon(Icons.privacy_tip),
+              title: const Text('Privacy Policy'),
+              onTap: () {
+                Navigator.pop(context); // Close modal
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+                );
+              },
+            ),
+
             ],
           ),
         );

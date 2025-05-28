@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fitcheck/pages/termsofservice.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -275,30 +276,44 @@ final TextEditingController _bioController = TextEditingController();
   actions: _isLoggedIn
       ? [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () async {
-              await showModalBottomSheet(
-                context: context,
-                builder: (_) {
-                  return SafeArea(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.logout),
-                          title: const Text('Sign Out'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _signOut();
-                          },
-                        ),
-                      ],
+  icon: const Icon(Icons.settings, color: Colors.white),
+  onPressed: () async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.description),
+                title: const Text('Terms of Service'),
+                onTap: () {
+                  Navigator.pop(context); // Close the BottomSheet
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const TermsOfServicePage(),
                     ),
                   );
                 },
-              );
-            },
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Sign Out'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _signOut();
+                },
+              ),
+            ],
           ),
+        );
+      },
+    );
+  },
+)
+
         ]
       : [],
 ),

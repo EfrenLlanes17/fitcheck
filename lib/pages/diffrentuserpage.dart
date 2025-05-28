@@ -104,7 +104,7 @@ final TextEditingController _bioController = TextEditingController();
   actions: true
       ? [
           IconButton(
-  icon: const Icon(Icons.settings, color: Colors.white),
+  icon: const Icon(Icons.more_vert, color: Colors.white),
   onPressed: () async {
     await showModalBottomSheet(
       context: context,
@@ -115,8 +115,8 @@ final TextEditingController _bioController = TextEditingController();
             children: [
               
               ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Report'),
+                leading: const Icon(Icons.flag),
+                title: const Text('Report User'),
                 onTap: () {
                   Navigator.pop(context);
                   
@@ -317,7 +317,8 @@ final TextEditingController _bioController = TextEditingController();
   ],
 ),
 
-FutureBuilder<DataSnapshot>(
+                          
+                              FutureBuilder<DataSnapshot>(
                               future: databaseRef.child('users/$_currentUsername/bio').get(),
                               builder: (context, bioSnapshot) {
                                 if (bioSnapshot.connectionState == ConnectionState.waiting) {
@@ -329,67 +330,25 @@ FutureBuilder<DataSnapshot>(
                                   currentBio = bioSnapshot.data!.value.toString();
                                 }
 
-                                if (!_isEditingBio) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _isEditingBio = true;
-                                        _bioController.text = currentBio;
-                                      });
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                      child: Text(
-                                        currentBio.isEmpty ? 'no bio' : currentBio,
-                                        style: TextStyle(
-                                          color: currentBio.isEmpty ? Colors.white54 : Colors.white70,
-                                          fontStyle: currentBio.isEmpty ? FontStyle.italic : FontStyle.normal,
-                                          fontSize: 16,
-                                        ),
-                                        textAlign: TextAlign.left,
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      currentBio.isEmpty ? 'no bio' : currentBio,
+                                      style: TextStyle(
+                                        color: currentBio.isEmpty ? Colors.white54 : Colors.white70,
+                                        fontStyle: currentBio.isEmpty ? FontStyle.italic : FontStyle.normal,
+                                        fontSize: 16,
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  );
-                                } else {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                    child: TextField(
-                                      controller: _bioController,
-                                      autofocus: true,
-                                      maxLines: null,
-                                      style: const TextStyle(color: Colors.white),
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter your bio',
-                                        hintStyle: const TextStyle(color: Colors.white54),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white54),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white),
-                                        ),
-                                        suffixIcon: IconButton(
-                                          icon: const Icon(Icons.check, color: Colors.white),
-                                          onPressed: () async {
-                                            final newBio = _bioController.text.trim();
-                                            await databaseRef.child('users/$_currentUsername/bio').set(newBio);
-                                            setState(() {
-                                              _isEditingBio = false;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                      onSubmitted: (value) async {
-                                        final newBio = value.trim();
-                                        await databaseRef.child('users/$_currentUsername/bio').set(newBio);
-                                        setState(() {
-                                          _isEditingBio = false;
-                                        });
-                                      },
-                                    ),
-                                  );
-                                }
+                                  ),
+                                );
                               },
                             ),
+
+
 
                             const SizedBox(height: 20),
                             // TabController for switching views

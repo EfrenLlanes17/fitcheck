@@ -296,7 +296,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                           FutureBuilder<DataSnapshot>(
                             future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/$username').get(),
                             builder: (context, followSnapshot) {
-                              bool isFollowing = followSnapshot.data?.value == true;
+                              bool isFollowing = followSnapshot.data?.hasChild('profilepicture') == true;
 
                               return TextButton(
                                 style: TextButton.styleFrom(
@@ -315,8 +315,8 @@ final pictureWidgets = sortedEntries.map((entry) {
                                     await followingRef.remove();
                                     await followersRef.remove();
                                   } else {
-                                    await followingRef.set(true);
-                                    await followersRef.set(true);
+                                    await followingRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$username.jpg?alt=media'});
+                                    await followersRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'});
                                   }
 
                                   setState(() {});

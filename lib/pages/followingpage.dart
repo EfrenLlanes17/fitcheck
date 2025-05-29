@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/diffrentuserpage.dart'; // Add this import
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:fitcheck/pages/profile_page.dart';
 
-class FollowingPage extends StatelessWidget {
+
+
+
+class FollowingPage extends StatefulWidget {
   final String username;
+  const FollowingPage({super.key,  required this.username});
 
-  const FollowingPage({super.key, required this.username});
+  @override
+  State<FollowingPage> createState() => _FollowingPage();
+}
+
+class _FollowingPage extends State<FollowingPage> {
+   late String username;
+   String _currentloggedInUsername = '';
+
+  @override
+  void initState() {
+    super.initState();
+    username = widget.username; // ✅ Proper use
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      setState(() {
+        _currentloggedInUsername = savedUsername;
+  
+      });
+      
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,16 +83,28 @@ class FollowingPage extends StatelessWidget {
                   style: const TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => diffrentProfilePage(
-                        username: followingUsername,
-                        usernameOfLoggedInUser: username,
-                      ),
-                    ),
-                  );
-                },
+              if (followingUsername != _currentloggedInUsername) {
+  print('Navigating to different user profile: $followingUsername currently loged in $_currentloggedInUsername' );
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => diffrentProfilePage(
+        username: followingUsername,
+        usernameOfLoggedInUser: _currentloggedInUsername,
+      ),
+    ),
+  );
+} else {
+  print('Navigating to current user profile: $_currentloggedInUsername clicked on $followingUsername');
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const ProfilePage(),
+    ),
+  );
+}
+
+            },
               );
             },
           );

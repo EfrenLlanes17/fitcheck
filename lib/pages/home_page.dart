@@ -166,7 +166,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
                 onPressed: () async {
                   final reportText = reportController.text.trim();
                   if (reportText.isNotEmpty) {
-                    await databaseRef.child('reports').push().set({
+                    await databaseRef.child('postreports').push().set({
       'text': reportText, 'reporter' : _currentUsername, 'postreported' : postKey
       
     });

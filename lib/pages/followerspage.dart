@@ -52,7 +52,7 @@ class FollowersPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => diffrentProfilePage(username: followerUsername),
+                      builder: (context) => diffrentProfilePage(username: followerUsername, usernameOfLoggedInUser: username),
                     ),
                   );
                 },

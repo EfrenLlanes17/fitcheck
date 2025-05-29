@@ -19,7 +19,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class diffrentProfilePage extends StatefulWidget {
   final String username;
-  const diffrentProfilePage({super.key, required this.username});
+  final String usernameOfLoggedInUser;
+  const diffrentProfilePage({super.key, required this.username, required this.usernameOfLoggedInUser});
 
   @override
   State<diffrentProfilePage> createState() => _DiffrentProfilePageState();
@@ -28,6 +29,7 @@ class diffrentProfilePage extends StatefulWidget {
 class _DiffrentProfilePageState extends State<diffrentProfilePage> with SingleTickerProviderStateMixin {
   int currentIndex = 3;
   String _currentUsername = '';
+  String usernameOfLoggedInUser = "";
   late TabController _tabController;
 
   bool _isEditingBio = false;
@@ -45,7 +47,68 @@ final TextEditingController _bioController = TextEditingController();
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
      _currentUsername = widget.username;
+     usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
   }
+
+  void showReportBottomSheet(BuildContext context) {
+  final TextEditingController reportController = TextEditingController();
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Report User',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Please let us know why you are reporting this user:',
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: reportController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Enter your report here...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final reportText = reportController.text.trim();
+                  if (reportText.isNotEmpty) {
+                    await databaseRef.child('userreports').push().set({
+      'text': reportText, 'reporter' : usernameOfLoggedInUser, 'reported' : _currentUsername
+      
+    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Send'),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
+    },
+  );
+}
 
   void _onTabTapped(int index) {
     if (index == currentIndex) return;
@@ -121,7 +184,7 @@ final TextEditingController _bioController = TextEditingController();
                 title: const Text('Report User'),
                 onTap: () {
                   Navigator.pop(context);
-                  
+                  showReportBottomSheet(context);
                 },
               ),
 

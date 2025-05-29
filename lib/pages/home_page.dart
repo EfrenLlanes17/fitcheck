@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/commentinputfeild.dart';
+import 'package:fitcheck/pages/diffrentuserpage.dart';
 
 
 
@@ -326,34 +327,57 @@ final pictureWidgets = sortedEntries.map((entry) {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: profilePicUrl.isNotEmpty ? NetworkImage(profilePicUrl) : null,
-                          backgroundColor: Colors.grey[700],
-                        ),
-                        const SizedBox(width: 8),
                         Expanded(
-                          child: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '$username    ',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '• ${timestamp.substring(0, 10)}',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => diffrentProfilePage(
+          username: username,
+          usernameOfLoggedInUser: _currentUsername,
+        ),
+      ),
+    );
+  },
+  child: Row(
+    children: [
+      CircleAvatar(
+        radius: 20,
+        backgroundImage: profilePicUrl.isNotEmpty
+            ? NetworkImage(profilePicUrl)
+            : null,
+        backgroundColor: Colors.grey[700],
+      ),
+      const SizedBox(width: 8),
+      Text(
+        username,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ],
+  ),
+),
+
+      const SizedBox(height: 2), // Optional spacing
+      Text(
+        '• ${timestamp.substring(0, 10)}',
+        style: const TextStyle(
+          color: Colors.white70,
+          fontWeight: FontWeight.w300,
+        ),
+      ),
+    ],
+  ),
+),
+
+                          
+                        
                         if (username != _currentUsername)
                           FutureBuilder<DataSnapshot>(
                             future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/$username').get(),

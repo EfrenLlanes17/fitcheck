@@ -27,7 +27,6 @@ class diffrentProfilePage extends StatefulWidget {
 }
 
 class _DiffrentProfilePageState extends State<diffrentProfilePage> with SingleTickerProviderStateMixin {
-  int currentIndex = 3;
   String _currentUsername = '';
   String usernameOfLoggedInUser = "";
   late TabController _tabController;
@@ -48,17 +47,7 @@ void initState() {
 
   _currentUsername = widget.username;
   usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
-
-  if (_currentUsername == usernameOfLoggedInUser) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ProfilePage()),
-      );
-    });
-  } else {
-    _tabController = TabController(length: 2, vsync: this);
-  }
+  _tabController = TabController(length: 2, vsync: this);
 }
 
 
@@ -122,32 +111,7 @@ void initState() {
   );
 }
 
-  void _onTabTapped(int index) {
-    if (index == currentIndex) return;
-
-    Widget page;
-    switch (index) {
-      case 0:
-        page = const HomePage();
-        break;
-      case 1:
-        page = const FreindsPage();
-        break;
-      case 2:
-        page = PicturePage(camera: cameras.first);
-        break;
-      case 3:
-        page = const ProfilePage();
-        break;
-      default:
-        return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
-  }
+  
 
   @override
   void dispose() {
@@ -650,20 +614,7 @@ void initState() {
               padding: const EdgeInsets.all(24.0),
               
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        currentIndex: currentIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Friends'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt_outlined), label: 'FitCheck'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
-        ],
-      ),
+      
     );
   }
 }

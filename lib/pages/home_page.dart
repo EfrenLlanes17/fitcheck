@@ -333,6 +333,7 @@ final pictureWidgets = sortedEntries.map((entry) {
     children: [
       GestureDetector(
   onTap: () {
+  if (username != _currentUsername) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -342,7 +343,16 @@ final pictureWidgets = sortedEntries.map((entry) {
         ),
       ),
     );
-  },
+  } else {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(),
+      ),
+    );
+  }
+},
+
   child: Row(
     children: [
       CircleAvatar(

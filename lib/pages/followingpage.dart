@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fitcheck/pages/diffrentuserpage.dart'; // Add this import
 
 class FollowingPage extends StatelessWidget {
   final String username;
@@ -34,16 +35,30 @@ class FollowingPage extends StatelessWidget {
           return ListView.builder(
             itemCount: followingMap.length,
             itemBuilder: (context, index) {
-              final key = followingMap.keys.elementAt(index);
-              final userData = Map<String, dynamic>.from(followingMap[key]);
-              final profileUrl = userData['profilepicture'] ?? '';
-              
+              final followingUsername = followingMap.keys.elementAt(index);
+              final followingData = Map<String, dynamic>.from(followingMap[followingUsername]);
+              final profileUrl = followingData['profilepicture'] ?? '';
+
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(profileUrl),
                   backgroundColor: Colors.grey[800],
                 ),
-                title: Text(key, style: const TextStyle(color: Colors.white)),
+                title: Text(
+                  followingUsername,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => diffrentProfilePage(
+                        username: followingUsername,
+                        usernameOfLoggedInUser: username,
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );

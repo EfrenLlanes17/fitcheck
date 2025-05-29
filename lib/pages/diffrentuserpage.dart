@@ -42,13 +42,25 @@ final TextEditingController _bioController = TextEditingController();
 
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
 
-  @override
-  void initState() {
-    super.initState();
+ @override
+void initState() {
+  super.initState();
+
+  _currentUsername = widget.username;
+  usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
+
+  if (_currentUsername == usernameOfLoggedInUser) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfilePage()),
+      );
+    });
+  } else {
     _tabController = TabController(length: 2, vsync: this);
-     _currentUsername = widget.username;
-     usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
   }
+}
+
 
   void showReportBottomSheet(BuildContext context) {
   final TextEditingController reportController = TextEditingController();

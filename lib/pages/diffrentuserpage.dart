@@ -14,6 +14,8 @@ import 'package:fitcheck/pages/privacypolicy.dart';
 import 'package:fitcheck/pages/followerspage.dart';
 import 'package:fitcheck/pages/followingpage.dart';
 import 'package:fitcheck/pages/profile_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class diffrentProfilePage extends StatefulWidget {
   final String username;
@@ -208,10 +210,48 @@ final TextEditingController _bioController = TextEditingController();
     // Profile Picture
 
      
-     CircleAvatar(
-        radius: 90,
-        backgroundImage: NetworkImage(profileUrl),
+     Stack(
+  children: [
+    // Profile Picture
+    CircleAvatar(
+      radius: 90,
+      backgroundImage: NetworkImage(profileUrl),
+    ),
+
+    
+
+    // Orange T-shirt Icon with streak
+    Positioned(
+      bottom: -5,
+      left: 0,
+      child: FutureBuilder<DataSnapshot>(
+        future: databaseRef.child('users/$_currentUsername/streak').get(),
+        builder: (context, snapshot) {
+          int streak = 0;
+          if (snapshot.hasData && snapshot.data!.value != null) {
+            streak = int.tryParse(snapshot.data!.value.toString()) ?? 0;
+          }
+
+          return Row(
+            children: [
+              const FaIcon(FontAwesomeIcons.shirt, color: Color(0xFFFF681F), size: 22),
+              const SizedBox(width: 2),
+              Text(
+                '$streak',
+                style: const TextStyle(
+                  color: Color(0xFFFF681F),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          );
+        },
       ),
+    ),
+  ],
+),
+
    
     const SizedBox(width: 24), // space between picture and stats
 

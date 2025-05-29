@@ -13,6 +13,7 @@ import 'package:fitcheck/pages/termsofservice.dart';
 import 'package:fitcheck/pages/privacypolicy.dart';
 import 'package:fitcheck/pages/followerspage.dart';
 import 'package:fitcheck/pages/followingpage.dart';
+import 'package:fitcheck/pages/moresettings.dart';
 
 
 
@@ -322,6 +323,20 @@ final TextEditingController _bioController = TextEditingController();
                 );
               },
             ),
+
+            ListTile(
+                leading: const Icon(Icons.settings_suggest_outlined),
+                title: const Text('More Settings'),
+                onTap: () {
+                  Navigator.pop(context); // Close the BottomSheet
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const MoreSettingsPage(),
+                    ),
+                  );
+                },
+              ),
 
             ],
           ),

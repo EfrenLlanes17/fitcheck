@@ -74,11 +74,11 @@ class _SearchPageState extends State<SearchPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         appBar: PreferredSize(
   preferredSize: const Size.fromHeight(110),
   child: AppBar(
-    backgroundColor: Colors.black,
+    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
     automaticallyImplyLeading: false,
     elevation: 0,
     flexibleSpace: Padding(
@@ -89,7 +89,7 @@ class _SearchPageState extends State<SearchPage> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0x38989898),
+                color: const Color.fromARGB(56, 172, 171, 171),
                 borderRadius: BorderRadius.circular(32),
               ),
               child: TextField(
@@ -98,11 +98,11 @@ class _SearchPageState extends State<SearchPage> {
                     searchQuery = value.trim().toLowerCase();
                   });
                 },
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Color(0xFFFFBA76)),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   hintText: 'Search...',
-                  hintStyle: const TextStyle(color: Colors.white54),
+                  hintStyle: const TextStyle(color: Color.fromARGB(255, 231, 167, 102)),
                   border: InputBorder.none,
                 ),
               ),
@@ -112,9 +112,9 @@ class _SearchPageState extends State<SearchPage> {
       ),
     ),
     bottom: const TabBar(
-      labelColor: Colors.white,
-      unselectedLabelColor: Colors.white54,
-      indicatorColor: Color(0xFFD0D0D0),
+      labelColor: Color(0xFFFFBA76),
+      unselectedLabelColor:Color.fromARGB(255, 231, 167, 102),
+      indicatorColor: Color(0xFFFFBA76),
       indicatorWeight: 2,
       tabs: [
         Tab(text: 'Accounts'),
@@ -135,7 +135,7 @@ class _SearchPageState extends State<SearchPage> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.value == null) {
-                  return const Center(child: Text('No users found', style: TextStyle(color: Colors.white70)));
+                  return const Center(child: Text('No users found', style: TextStyle(color: Color(0xFFFFBA76))));
                 }
 
                 final userMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
@@ -148,7 +148,7 @@ class _SearchPageState extends State<SearchPage> {
                 return const Center(
                   child: Text(
                     'No users found.',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                    style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
                   ),
                 );
               }
@@ -196,10 +196,10 @@ class _SearchPageState extends State<SearchPage> {
           leading: CircleAvatar(
             backgroundImage: NetworkImage(profileUrl),
           ),
-          title: Text(username, style: const TextStyle(color: Colors.white)),
+          title: Text(username, style: const TextStyle(color: Color(0xFFFFBA76))),
           subtitle: Text(
             '$followerCount followers',
-            style: const TextStyle(color: Colors.white54),
+            style: const TextStyle(color: Color(0xFFFFBA76)),
           ),
         ),
       );
@@ -235,7 +235,7 @@ class _SearchPageState extends State<SearchPage> {
                 return const Center(
                   child: Text(
                     'No Posts found.',
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                    style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
                   ),
                 );
               }
@@ -259,14 +259,14 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           currentIndex: currentIndex,
           onTap: (index) {
             setState(() => currentIndex = index);
             _onTabTapped(index);
           },
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
+          selectedItemColor: Color(0xFFFFBA76),
+        unselectedItemColor: Color.fromARGB(255, 231, 167, 102),
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

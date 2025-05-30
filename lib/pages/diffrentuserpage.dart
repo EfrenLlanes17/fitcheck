@@ -455,43 +455,64 @@ void initState() {
                             bool isFollowing =
                                 followSnapshot.data?.hasChild('profilepicture') == true;
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12.0),
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFF434343),
-                                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                                  shape:
-                                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                ),
-                                onPressed: () async {
-                                  final followingRef = FirebaseDatabase.instance
-                                      .ref('users/$usernameOfLoggedInUser/following/$_currentUsername');
-                                  final followersRef = FirebaseDatabase.instance
-                                      .ref('users/$_currentUsername/followers/$usernameOfLoggedInUser');
+                            return Align(
+  alignment: AlignmentDirectional(-1, -1),
+  child: Padding(
+    padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+    child: Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 40,
+            child: OutlinedButton(
+              onPressed: () async {
+                final followingRef = FirebaseDatabase.instance
+                    .ref('users/$usernameOfLoggedInUser/following/$_currentUsername');
+                final followersRef = FirebaseDatabase.instance
+                    .ref('users/$_currentUsername/followers/$usernameOfLoggedInUser');
 
-                                  if (isFollowing) {
-                                    await followingRef.remove();
-                                    await followersRef.remove();
-                                  } else {
-                                    await followingRef.set({
-                                      'profilepicture':
-                                          'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'
-                                    });
-                                    await followersRef.set({
-                                      'profilepicture':
-                                          'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$usernameOfLoggedInUser.jpg?alt=media'
-                                    });
-                                  }
+                if (isFollowing) {
+                  await followingRef.remove();
+                  await followersRef.remove();
+                } else {
+                  await followingRef.set({
+                    'profilepicture':
+                        'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'
+                  });
+                  await followersRef.set({
+                    'profilepicture':
+                        'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$usernameOfLoggedInUser.jpg?alt=media'
+                  });
+                }
 
-                                  setState(() {}); // Refresh button label
-                                },
-                                child: Text(
-                                  isFollowing ? 'Following' : 'Follow',
-                                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                                ),
-                              ),
-                            );
+                setState(() {});
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.black,
+                side: const BorderSide(color: Colors.white, width: 1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                isFollowing ? 'Following' : 'Follow',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
                           },
                         ),
 

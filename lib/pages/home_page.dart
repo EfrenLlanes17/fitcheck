@@ -639,7 +639,7 @@ final pictureWidgets = sortedEntries.map((entry) {
           _onTabTapped(index);
         },
         selectedItemColor: Color(0xFFFFBA76),
-        unselectedItemColor: Color.fromARGB(255, 231, 167, 102),
+        unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
@@ -647,7 +647,7 @@ final pictureWidgets = sortedEntries.map((entry) {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt_outlined),
+            icon: Icon(Icons.people_outline_outlined),
             label: 'Friends',
           ),
           BottomNavigationBarItem(
@@ -655,7 +655,7 @@ final pictureWidgets = sortedEntries.map((entry) {
             label: 'FitCheck',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_2_outlined),
+            icon: Icon(Icons.person_outlined),
             label: 'Profile',
           ),
         ],

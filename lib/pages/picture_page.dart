@@ -128,9 +128,9 @@ void _flipCamera() async {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Padding(
-        padding: const EdgeInsets.only(top: 60),
+        padding: const EdgeInsets.only(top: 25),
         child: SizedBox(
           width: double.infinity,
           child: FutureBuilder<void>(
@@ -164,44 +164,36 @@ void _flipCamera() async {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         currentIndex: currentIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Color(0xFFFFBA76),
+        unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Friends'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt_outlined), label: 'FitCheck'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.people_outlined), label: 'Friends'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'FitCheck'),
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
         ],
       ),
 
-      floatingActionButton: Column(
-  mainAxisSize: MainAxisSize.min,
-  children: [
-    Padding(
-      padding: const EdgeInsets.only(bottom: 300),
-      child: FloatingActionButton(
+      bottomSheet: Container(
+        color: Color.fromARGB(255, 255, 255, 255),
+  padding: const EdgeInsets.only(bottom: 30),
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      // Gallery Button
+      FloatingActionButton(
         heroTag: 'gallery',
-        backgroundColor: Colors.white10,
+        backgroundColor: Color(0xFFFFBA76),
         onPressed: _pickImageFromGallery,
-        child: const Icon(Icons.photo_library, color: Colors.white),
+        child: const Icon(Icons.photo_library, color: Color.fromARGB(255, 255, 255, 255)),
       ),
-    ),
-    Padding(
-      padding: const EdgeInsets.only(bottom: 230),
-      child: FloatingActionButton(
-        heroTag: 'flip',
-        backgroundColor: Colors.white10,
-        onPressed: _flipCamera,
-        child: const Icon(Icons.flip_camera_ios, color: Colors.white),
-      ),
-    ),
-    Padding(
-      padding: const EdgeInsets.only(bottom: 120),
-      child: GestureDetector(
+
+      // Take Picture Button
+      GestureDetector(
         onTap: () async {
           try {
             await _initializeControllerFuture;
@@ -220,28 +212,34 @@ void _flipCamera() async {
           }
         },
         child: Container(
-  width: 85,
-  height: 85,
-  decoration: BoxDecoration(
-    shape: BoxShape.circle,
-    border: Border.all(color: Colors.white, width: 7),
-    color: Colors.transparent,
-  ),
-  child: Center(
-    child: Icon(
-      Icons.pets_rounded,
-      size: 40, // Adjust to your liking
-      color: Colors.white, // Hollow look = icon outline color
-    ),
-  ),
-),
-
+          width: 85,
+          height: 85,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Color(0xFFFFBA76), width: 7),
+            color: Colors.transparent,
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.pets_rounded,
+              size: 40,
+              color: Color(0xFFFFBA76),
+            ),
+          ),
+        ),
       ),
-    ),
-  ],
+
+      // Flip Camera Button
+      FloatingActionButton(
+        heroTag: 'flip',
+        backgroundColor: const Color(0xFFFFBA76),
+        onPressed: _flipCamera,
+        child: const Icon(Icons.flip_camera_ios, color: Color.fromARGB(255, 255, 255, 255)),
+      ),
+    ],
+  ),
 ),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
 
 

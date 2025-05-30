@@ -266,13 +266,13 @@ class _SearchPageState extends State<SearchPage> {
             _onTabTapped(index);
           },
           selectedItemColor: Color(0xFFFFBA76),
-        unselectedItemColor: Color.fromARGB(255, 231, 167, 102),
+        unselectedItemColor: Color(0xFFFFBA76),
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Friends'),
+            BottomNavigationBarItem(icon: Icon(Icons.people_outlined), label: 'Friends'),
             BottomNavigationBarItem(icon: Icon(Icons.camera_alt_outlined), label: 'FitCheck'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outlined), label: 'Profile'),
           ],
         ),
       ),

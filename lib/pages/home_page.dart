@@ -13,6 +13,8 @@ import 'dart:io';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/commentinputfeild.dart';
 import 'package:fitcheck/pages/diffrentuserpage.dart';
+import 'package:flutter/services.dart';
+
 
 
 
@@ -189,16 +191,22 @@ void showReportBottomSheet(BuildContext context, String postKey) {
 
   @override
   Widget build(BuildContext context) {
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Color.fromARGB(255, 255, 255, 255), // your desired color
+    systemNavigationBarIconBrightness: Brightness.light, // or Brightness.light depending on contrast
+  ));
     return Scaffold(
       
     appBar: AppBar(
-  backgroundColor: Colors.black,
+  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
   elevation: 0,
   title: Padding(
     padding: const EdgeInsets.symmetric(horizontal: 24.0),
     child: Row(
       children: [
-        const FaIcon(FontAwesomeIcons.shirt, color: Color(0xFFFF681F), size: 24),
+        const FaIcon(FontAwesomeIcons.paw, color: Color(0xFFFFBA76)
+, size: 24),
         const SizedBox(width: 8),
         FutureBuilder<int>(
           future: _getUserStreak(),
@@ -206,17 +214,17 @@ void showReportBottomSheet(BuildContext context, String postKey) {
             final streak = snapshot.data ?? 0;
             return Text(
               '$streak',
-              style: const TextStyle(color: Color(0xFFFF681F), fontSize: 18),
+              style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
             );
           },
         ),
         Expanded(
           child: Center(
             child: Text(
-              'FITCHECK',
+              'PAWPRINT',
               style: TextStyle(
               fontFamily: 'Roboto', // Or any built-in font
-              color: Colors.white,
+              color: Color(0xFFFFBA76),
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -225,7 +233,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
           ),
         ),
         IconButton(
-          icon: const FaIcon(FontAwesomeIcons.search, color: Colors.white, size: 24),
+          icon: const FaIcon(FontAwesomeIcons.magnifyingGlass, color: Color(0xFFFFBA76), size: 24),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -327,7 +335,7 @@ final pictureWidgets = sortedEntries.map((entry) {
 
               return Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF181818),
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -370,13 +378,13 @@ final pictureWidgets = sortedEntries.map((entry) {
         backgroundImage: profilePicUrl.isNotEmpty
             ? NetworkImage(profilePicUrl)
             : null,
-        backgroundColor: Colors.grey[700],
+        backgroundColor: Color(0xFFFFBA76),
       ),
       const SizedBox(width: 8),
       Text(
         username,
         style: const TextStyle(
-          color: Colors.white,
+          color: Color(0xFFFFBA76),
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -388,7 +396,7 @@ final pictureWidgets = sortedEntries.map((entry) {
       Text(
         '• ${timestamp.substring(0, 10)}',
         style: const TextStyle(
-          color: Colors.white70,
+          color: Color(0xFFFFBA76),
           fontWeight: FontWeight.w300,
         ),
       ),
@@ -406,7 +414,7 @@ final pictureWidgets = sortedEntries.map((entry) {
 
                               return TextButton(
                                 style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFF434343),
+                                  backgroundColor: const Color(0xFFFFBA76),
                                   padding: const EdgeInsets.symmetric(horizontal: 14),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12)),
@@ -435,7 +443,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                             },
                           ),
                         IconButton(
-                          icon: const Icon(Icons.more_vert, color: Colors.white),
+                          icon: const Icon(Icons.more_vert, color: Color(0xFFFFBA76)),
                           onPressed: () async {
                             await showModalBottomSheet(
                               context: context,
@@ -486,7 +494,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         caption,
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 14),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -496,7 +504,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                         IconButton(
                           icon: Icon(
                             isLiked ? Icons.favorite : Icons.favorite_border,
-                            color: isLiked ? Colors.red : Colors.white,
+                            color: isLiked ? Colors.red : Color(0xFFFFBA76),
                           ),
                           onPressed: () async {
                             final ref = FirebaseDatabase.instance.ref();
@@ -523,7 +531,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                         IconButton(
                           icon: Icon(
                             isSaved ? Icons.bookmark : Icons.bookmark_border,
-                            color: isSaved ? Colors.blue : Colors.white,
+                            color: isSaved ? Colors.blue : Color(0xFFFFBA76),
                           ),
                           onPressed: () async {
                             final ref = FirebaseDatabase.instance.ref();
@@ -552,11 +560,11 @@ final pictureWidgets = sortedEntries.map((entry) {
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.share, color: Colors.white),
+                          icon: const Icon(Icons.share, color: Color(0xFFFFBA76)),
                           onPressed: () => shareImageFromUrl(imageUrl),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.comment, color: Colors.white),
+                          icon: const Icon(Icons.comment, color: Color(0xFFFFBA76)),
                           onPressed: () => setState(() => showComments = !showComments),
                         ),
                       ],
@@ -567,11 +575,11 @@ final pictureWidgets = sortedEntries.map((entry) {
                         children: [
                           TextSpan(
                             text: '$likes',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: Color(0xFFFFBA76), fontWeight: FontWeight.bold),
                           ),
                           const TextSpan(
                             text: ' likes',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Color(0xFFFFBA76)),
                           ),
                         ],
                       ),
@@ -629,14 +637,14 @@ final pictureWidgets = sortedEntries.map((entry) {
       ],
  ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         currentIndex: currentIndex,
         onTap: (index) {
           setState(() => currentIndex = index);
           _onTabTapped(index);
         },
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Color(0xFFFFBA76),
+        unselectedItemColor: Color.fromARGB(255, 231, 167, 102),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(

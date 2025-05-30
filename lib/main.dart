@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/startpage.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 
 late final List<CameraDescription> cameras;
@@ -15,6 +16,11 @@ late final List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Color.fromARGB(255, 255, 255, 255), // your desired color
+    systemNavigationBarIconBrightness: Brightness.light, // or Brightness.light depending on contrast
+  ));
 
   // Initialize Firebase
   await Firebase.initializeApp();
@@ -47,11 +53,11 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: ThemeData.dark().copyWith(
-              scaffoldBackgroundColor: Colors.black,
+            theme: ThemeData.light().copyWith(
+              scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
             ),
             home: const Scaffold(
-              backgroundColor: Colors.black,
+              backgroundColor: Color.fromARGB(255, 255, 255, 255),
               body: Center(child: CircularProgressIndicator()),
             ),
           );
@@ -61,10 +67,10 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: Colors.black,
+            scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
           ),
           home: snapshot.data == true
-              ? const ProfilePage()
+              ? const HomePage()
               : const StarterPage(),
         );
       },

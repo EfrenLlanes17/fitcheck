@@ -48,6 +48,14 @@ dependencies:
   share_plus: ^7.2.1
   http: ^0.13.6
   font_awesome_flutter: ^10.7.0
+  flutter_launcher_icons: ^0.13.1  # check for the latest version
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/pawprintlogoicon.png"  # your icon file path
+  adaptive_icon_foreground: "assets/icon/pawprintlogoicon.png"
+  adaptive_icon_background: "#00000000"  # Fully transparent
 
 
 dev_dependencies:

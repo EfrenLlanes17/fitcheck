@@ -194,7 +194,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Color.fromARGB(255, 255, 255, 255), // your desired color
-    systemNavigationBarIconBrightness: Brightness.light, // or Brightness.light depending on contrast
+    systemNavigationBarIconBrightness: Brightness.dark, // or Brightness.light depending on contrast
   ));
     return Scaffold(
       
@@ -449,30 +449,25 @@ final pictureWidgets = sortedEntries.map((entry) {
                               context: context,
                               builder: (_) {
                                 return SafeArea(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ListTile(
-                                        leading: const Icon(Icons.info),
-                                        title: const Text('Option 1'),
-                                        onTap: () => Navigator.pop(context),
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(Icons.delete),
-                                        title: const Text('Option 2'),
-                                        onTap: () => Navigator.pop(context),
-                                      ),
-                                       ListTile(
-              leading: const Icon(Icons.flag),
-              title: const Text('Report Post'),
-              onTap: () {
-                Navigator.pop(context);
-                showReportBottomSheet(context, postKey);
-              },
-            ),
-                                    ],
-                                  ),
-                                );
+                              child: Container(
+                                color: Colors.white, // Background color of the bottom sheet
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    
+                                    ListTile(
+                                      leading: Icon(Icons.flag, color: Color(0xFFFFBA76)),
+                                      title: Text('Report Post', style: TextStyle(color: Color(0xFFFFBA76))),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        showReportBottomSheet(context, postKey);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+
                               },
                             );
                           },

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fitcheck/pages/profile_page.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -8,16 +11,61 @@ class CreateAccountPage extends StatefulWidget {
 }
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _createUsernameController = TextEditingController();
+  final TextEditingController _createPasswordController = TextEditingController();
+    final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+
 
   @override
   void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    _createUsernameController.dispose();
+    _createPasswordController.dispose();
     super.dispose();
+  }
+
+  void _createAccount() async {
+    final username = _createUsernameController.text.trim();
+    final password = _createPasswordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter username and password')),
+      );
+      return;
+    }
+
+    final snapshot = await databaseRef.child('users/$username').get();
+    if (snapshot.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Username already exists')),
+      );
+      return;
+    }
+
+    await databaseRef.child('users/$username').set({
+      'password': password,
+      'createdAt': DateTime.now().toIso8601String(),
+      'lastLogin': DateTime.now().toIso8601String(),
+      'email': '',
+      'phone': '',
+      'profilepicture': '',
+      'bio': '',
+      'streak' : 0
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Account created successfully')),
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(),
+      ),
+    );
   }
 
   @override
@@ -33,7 +81,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         child: Column(
           children: [
             TextField(
-              controller: usernameController,
+              controller: _createUsernameController,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 labelText: 'Username',
@@ -44,20 +92,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
             ),
             const SizedBox(height: 20),
+            
             TextField(
-              controller: emailController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: passwordController,
+              controller: _createPasswordController,
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
@@ -76,7 +113,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 foregroundColor: Colors.black,
               ),
               onPressed: () {
-                // TODO: Add account creation logic
+                _createAccount();
               },
               child: const Text('Create Account'),
             ),

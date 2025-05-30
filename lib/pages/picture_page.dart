@@ -10,6 +10,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/main.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class PicturePage extends StatefulWidget {
   final CameraDescription camera;
@@ -33,7 +35,26 @@ class _PicturePageState extends State<PicturePage> {
   late List<CameraDescription> _cameras;
   int _currentCameraIndex = 0;
 
-  
+  Future<void> _pickImageFromGallery() async {
+  try {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DisplayPictureScreen(imagePath: pickedFile.path),
+        ),
+      );
+    }
+  } catch (e) {
+    print('Error picking image from gallery: $e');
+  }
+}
+
 
   @override
   void initState() {
@@ -160,6 +181,15 @@ void _flipCamera() async {
       floatingActionButton: Column(
   mainAxisSize: MainAxisSize.min,
   children: [
+    Padding(
+      padding: const EdgeInsets.only(bottom: 300),
+      child: FloatingActionButton(
+        heroTag: 'gallery',
+        backgroundColor: Colors.white10,
+        onPressed: _pickImageFromGallery,
+        child: const Icon(Icons.photo_library, color: Colors.white),
+      ),
+    ),
     Padding(
       padding: const EdgeInsets.only(bottom: 230),
       child: FloatingActionButton(

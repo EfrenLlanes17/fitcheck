@@ -1,15 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/diffrentuserpage.dart'; // <-- Make sure this import matches your file name
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:fitcheck/pages/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class FollowersPage extends StatelessWidget {
+
+class FollowersPage extends StatefulWidget {
   final String username;
 
   const FollowersPage({super.key, required this.username});
 
   @override
+  State<FollowersPage> createState() => _FollowersPageState();
+}
+
+class _FollowersPageState extends State<FollowersPage> {
+    late String username;
+    String _currentloggedInUsername = '';
+
+
+   @override
+  void initState() {
+    super.initState();
+    username = widget.username; // ✅ Proper use
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      setState(() {
+        _currentloggedInUsername = savedUsername;
+  
+      });
+      
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final databaseRef = FirebaseDatabase.instance.ref();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -48,14 +83,29 @@ class FollowersPage extends StatelessWidget {
                   followerUsername,
                   style: const TextStyle(color: Colors.white),
                 ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => diffrentProfilePage(username: followerUsername, usernameOfLoggedInUser: username),
-                    ),
-                  );
-                },
+                 onTap: () {
+              if (followerUsername != _currentloggedInUsername) {
+  print('Navigating to different user profile: $followerUsername currently loged in $_currentloggedInUsername' );
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => diffrentProfilePage(
+        username: followerUsername,
+        usernameOfLoggedInUser: _currentloggedInUsername,
+      ),
+    ),
+  );
+} else {
+  print('Navigating to current user profile: $_currentloggedInUsername clicked on $followerUsername');
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const ProfilePage(),
+    ),
+  );
+}
+
+            },
               );
             },
           );

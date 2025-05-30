@@ -190,7 +190,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      
     appBar: AppBar(
   backgroundColor: Colors.black,
   elevation: 0,
@@ -239,8 +239,18 @@ void showReportBottomSheet(BuildContext context, String postKey) {
 ),
 
 
+ body: Stack(
+      children: [
 
-      body: FutureBuilder<DataSnapshot>(
+        Positioned.fill(
+      child: Image.asset(
+        'assets/images/background.png', // ✅ Make sure it's declared in pubspec.yaml
+        fit: BoxFit.cover,
+      ),
+    ),
+        
+        
+    FutureBuilder<DataSnapshot>(
         future: FirebaseDatabase.instance.ref().child('pictures').get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -610,12 +620,14 @@ final pictureWidgets = sortedEntries.map((entry) {
 }).toList();
 
 
-
+      
 
 
           return ListView(children: pictureWidgets);
         },
       ),
+      ],
+ ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         currentIndex: currentIndex,

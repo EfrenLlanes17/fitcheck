@@ -580,7 +580,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                       ),
                     ),
                     if (showComments) ...[
-                      const Divider(color: Colors.white24),
+                      const Divider(color: Color(0xFFFFBA76)),
                       StreamBuilder<DatabaseEvent>(
                         stream: FirebaseDatabase.instance.ref('pictures/$postKey/comments').onValue,
                         builder: (context, snapshot) {
@@ -600,7 +600,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                                   padding: const EdgeInsets.symmetric(vertical: 4),
                                   child: Text(
                                     '$user: $text\n${ts.toLocal()}',
-                                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                    style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 13),
                                   ),
                                 );
                               }),

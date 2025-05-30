@@ -56,10 +56,10 @@ class _CommentInputFieldState extends State<CommentInputField> {
         Expanded(
           child: TextField(
             controller: _controller,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Color(0xFFFFBA76)),
             decoration: const InputDecoration(
               hintText: 'Add a comment...',
-              hintStyle: TextStyle(color: Colors.white54),
+              hintStyle: TextStyle(color: Color(0xFFFFBA76)),
               border: InputBorder.none,
             ),
           ),
@@ -67,7 +67,7 @@ class _CommentInputFieldState extends State<CommentInputField> {
         IconButton(
           icon: _isSending
               ? const CircularProgressIndicator()
-              : const Icon(Icons.send, color: Colors.blue),
+              : const Icon(Icons.send, color: Color(0xFFFFBA76)),
           onPressed: _isSending ? null : _submitComment,
         ),
       ],

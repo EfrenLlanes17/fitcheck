@@ -190,14 +190,22 @@ void _flipCamera() async {
           }
         },
         child: Container(
-          width: 85,
-          height: 85,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 7),
-            color: Colors.transparent,
-          ),
-        ),
+  width: 85,
+  height: 85,
+  decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    border: Border.all(color: Colors.white, width: 7),
+    color: Colors.transparent,
+  ),
+  child: Center(
+    child: Icon(
+      Icons.pets_rounded,
+      size: 40, // Adjust to your liking
+      color: Colors.white, // Hollow look = icon outline color
+    ),
+  ),
+),
+
       ),
     ),
   ],

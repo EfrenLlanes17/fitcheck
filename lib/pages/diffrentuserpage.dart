@@ -249,20 +249,26 @@ void initState() {
     // Profile Picture
 
      
-     Stack(
+    Stack(
   children: [
     // Profile Picture
-    CircleAvatar(
-      radius: 90,
-      backgroundImage: NetworkImage(profileUrl),
+    Container(
+      width: 180,
+      height: 180,
+      clipBehavior: Clip.antiAlias,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+      ),
+      child: Image.network(
+        profileUrl,
+        fit: BoxFit.cover,
+      ),
     ),
 
-    
-
-    // Orange T-shirt Icon with streak
+    // Shirt Icon and Streak Bottom-Left
     Positioned(
-      bottom: -5,
-      left: 0,
+      bottom: 8,
+      left: 8,
       child: FutureBuilder<DataSnapshot>(
         future: databaseRef.child('users/$_currentUsername/streak').get(),
         builder: (context, snapshot) {
@@ -271,25 +277,37 @@ void initState() {
             streak = int.tryParse(snapshot.data!.value.toString()) ?? 0;
           }
 
-          return Row(
-            children: [
-              const FaIcon(FontAwesomeIcons.shirt, color: Color(0xFFFF681F), size: 22),
-              const SizedBox(width: 2),
-              Text(
-                '$streak',
-                style: const TextStyle(
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.6),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const FaIcon(
+                  FontAwesomeIcons.shirt,
                   color: Color(0xFFFF681F),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  size: 16,
                 ),
-              ),
-            ],
+                const SizedBox(width: 4),
+                Text(
+                  '$streak',
+                  style: const TextStyle(
+                    color: Color(0xFFFF681F),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
     ),
   ],
 ),
+
 
    
     const SizedBox(width: 24), // space between picture and stats

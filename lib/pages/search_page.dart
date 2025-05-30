@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/freinds_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
-import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
+import 'package:fitcheck/pages/diffrentuserpage.dart'; // <-- Make sure this import matches your file name
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:fitcheck/pages/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -16,6 +21,29 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   int currentIndex = 0;
   String searchQuery = '';
+  String _currentloggedInUsername = '';
+
+
+   @override
+  void initState() {
+    super.initState();
+    
+    _loadUserData();
+  }
+
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      setState(() {
+        _currentloggedInUsername = savedUsername;
+  
+      });
+      
+    }
+  }
 
   void _onTabTapped(int index) {
     Widget page;
@@ -129,36 +157,56 @@ class _SearchPageState extends State<SearchPage> {
                return ListView.builder(
                 itemCount: filteredUsers.length,
                 itemBuilder: (context, index) {
-                  final username = filteredUsers[index].key;
-                  final userData = Map<String, dynamic>.from(filteredUsers[index].value);
+  final username = filteredUsers[index].key;
+  final userData = Map<String, dynamic>.from(filteredUsers[index].value);
 
-                  final profileUrl = userData['profilepicture'] ?? 'https://via.placeholder.com/150';
+  final profileUrl = userData['profilepicture'] ?? 'https://via.placeholder.com/150';
 
-                  return FutureBuilder<DataSnapshot>(
-                    future: FirebaseDatabase.instance.ref('users/$username/followers').get(),
-                    builder: (context, followerSnapshot) {
-                      int followerCount = 0;
-                      if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
-                        final followersMap = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
-                        followerCount = followersMap.length;
-                      }
+  return FutureBuilder<DataSnapshot>(
+    future: FirebaseDatabase.instance.ref('users/$username/followers').get(),
+    builder: (context, followerSnapshot) {
+      int followerCount = 0;
+      if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
+        final followersMap = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
+        followerCount = followersMap.length;
+      }
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(profileUrl),
-                        ),
-                        title: Text(username, style: const TextStyle(color: Colors.white)),
-                        subtitle: Text(
-                          '$followerCount followers',
-                          style: const TextStyle(color: Colors.white54),
-                        ),
-                        onTap: () {
-                          // Navigate to user's profile if needed
-                        },
-                      );
-                    },
-                  );
-                },
+      return GestureDetector(
+        onTap: () {
+          if (username != _currentloggedInUsername) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => diffrentProfilePage(
+                  username: username,
+                  usernameOfLoggedInUser: _currentloggedInUsername,
+                ),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ),
+            );
+          }
+        },
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(profileUrl),
+          ),
+          title: Text(username, style: const TextStyle(color: Colors.white)),
+          subtitle: Text(
+            '$followerCount followers',
+            style: const TextStyle(color: Colors.white54),
+          ),
+        ),
+      );
+    },
+  );
+},
+
               );
 
               },

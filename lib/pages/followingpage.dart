@@ -84,7 +84,6 @@ class _FollowingPage extends State<FollowingPage> {
                 ),
                 onTap: () {
               if (followingUsername != _currentloggedInUsername) {
-  print('Navigating to different user profile: $followingUsername currently loged in $_currentloggedInUsername' );
   Navigator.push(
     context,
     MaterialPageRoute(
@@ -95,7 +94,6 @@ class _FollowingPage extends State<FollowingPage> {
     ),
   );
 } else {
-  print('Navigating to current user profile: $_currentloggedInUsername clicked on $followingUsername');
   Navigator.push(
     context,
     MaterialPageRoute(

@@ -166,14 +166,14 @@ final TextEditingController _bioController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-  backgroundColor: Colors.black,
+  backgroundColor: Colors.white,
   title:  Text(
           _currentUsername,
           style: const TextStyle(
             fontFamily: 'Roboto',
-            color: Colors.white,
+            color: Color(0xFFFFBA76),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -182,7 +182,7 @@ final TextEditingController _bioController = TextEditingController();
   centerTitle: true, // Important: center the title on both iOS and Android
   actions:  [
           IconButton(
-  icon: const Icon(Icons.settings, color: Colors.white),
+  icon: const Icon(Icons.settings, color: Color(0xFFFFBA76)),
   onPressed: () async {
     await showModalBottomSheet(
       context: context,
@@ -362,14 +362,14 @@ final TextEditingController _bioController = TextEditingController();
                   Text(
                     '$followersCount',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFFFBA76),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Text(
                     'Followers',
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Color(0xFFFFBA76)),
                   ),
                 ],
               ),
@@ -401,14 +401,14 @@ final TextEditingController _bioController = TextEditingController();
             Text(
               '$followingCount',
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFFFFBA76),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const Text(
               'Following',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: Color(0xFFFFBA76)),
             ),
           ],
         ),
@@ -424,14 +424,14 @@ final TextEditingController _bioController = TextEditingController();
             Text(
               '$pictureCount',
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFFFFBA76),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const Text(
               'Posts',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: Color(0xFFFFBA76)),
             ),
           ],
         ),
@@ -468,7 +468,7 @@ FutureBuilder<DataSnapshot>(
                                       child: Text(
                                         currentBio.isEmpty ? 'Tap to add a bio' : currentBio,
                                         style: TextStyle(
-                                          color: currentBio.isEmpty ? Colors.white54 : Colors.white70,
+                                          color: currentBio.isEmpty ? Color(0xFFFFBA76) : Color(0xFFFFBA76),
                                           fontStyle: currentBio.isEmpty ? FontStyle.italic : FontStyle.normal,
                                           fontSize: 16,
                                         ),
@@ -486,15 +486,15 @@ FutureBuilder<DataSnapshot>(
                                       style: const TextStyle(color: Colors.white),
                                       decoration: InputDecoration(
                                         hintText: 'Enter your bio',
-                                        hintStyle: const TextStyle(color: Colors.white54),
+                                        hintStyle: const TextStyle(color: Color(0xFFFFBA76)),
                                         enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white54),
+                                          borderSide: BorderSide(color: Color(0xFFFFBA76)),
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(color: Colors.white),
+                                          borderSide: BorderSide(color: Color(0xFFFFBA76)),
                                         ),
                                         suffixIcon: IconButton(
-                                          icon: const Icon(Icons.check, color: Colors.white),
+                                          icon: const Icon(Icons.check, color: Color(0xFFFFBA76)),
                                           onPressed: () async {
                                             final newBio = _bioController.text.trim();
                                             await databaseRef.child('users/$_currentUsername/bio').set(newBio);
@@ -524,9 +524,9 @@ FutureBuilder<DataSnapshot>(
                               child: Column(
                                 children: [
                                   const TabBar(
-                                    indicatorColor: Colors.white,
-                                    labelColor: Colors.white,
-                                    unselectedLabelColor: Colors.white54,
+                                    labelColor: Color(0xFFFFBA76),
+                                    unselectedLabelColor:Color.fromARGB(255, 231, 167, 102),
+                                    indicatorColor: Color(0xFFFFBA76),
                                     tabs: [
                                       Tab(icon: Icon(Icons.camera_alt)),   // Uploads
                                       Tab(icon: Icon(Icons.favorite)),     // Liked
@@ -552,7 +552,7 @@ FutureBuilder<DataSnapshot>(
                                             : const Center(
                                                 child: Text(
                                                   'No pictures uploaded yet.',
-                                                  style: TextStyle(color: Colors.white70),
+                                                  style: TextStyle(color: Color(0xFFFFBA76)),
                                                 ),
                                               ),
 
@@ -585,7 +585,7 @@ FutureBuilder<DataSnapshot>(
                                                 : const Center(
                                                     child: Text(
                                                       'No liked pictures.',
-                                                      style: TextStyle(color: Colors.white70),
+                                                      style: TextStyle(color: Color(0xFFFFBA76)),
                                                     ),
                                                   );
                                           },
@@ -621,7 +621,7 @@ FutureBuilder<DataSnapshot>(
                                                 : const Center(
                                                     child: Text(
                                                       'No saved pictures.',
-                                                      style: TextStyle(color: Colors.white70),
+                                                      style: TextStyle(color: Color(0xFFFFBA76)),
                                                     ),
                                                   );
                                           },
@@ -649,11 +649,11 @@ FutureBuilder<DataSnapshot>(
      // your else part for not logged in users
   
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         currentIndex: currentIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Color(0xFFFFBA76),
+        unselectedItemColor: Color.fromARGB(255, 231, 167, 102),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

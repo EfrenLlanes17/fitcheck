@@ -4,6 +4,9 @@ import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/startpage.dart';
+import 'package:fitcheck/pages/profile_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 late final List<CameraDescription> cameras;
 // final firebaseApp = Firebase.app();
@@ -27,21 +30,45 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  Future<bool> hasSavedUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey('username');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-       theme: ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: Colors.black,
-  ),
-      home: const StarterPage(),
-      
+    return FutureBuilder<bool>(
+      future: hasSavedUsername(),
+      builder: (context, snapshot) {
+        // While checking SharedPreferences
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData.dark().copyWith(
+              scaffoldBackgroundColor: Colors.black,
+            ),
+            home: const Scaffold(
+              backgroundColor: Colors.black,
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
+        // Once the check is complete
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: Colors.black,
+          ),
+          home: snapshot.data == true
+              ? const ProfilePage()
+              : const StarterPage(),
+        );
+      },
     );
   }
 }
+

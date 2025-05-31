@@ -15,6 +15,8 @@ import 'package:fitcheck/pages/followerspage.dart';
 import 'package:fitcheck/pages/followingpage.dart';
 import 'package:fitcheck/pages/moresettings.dart';
 import 'package:fitcheck/pages/startpage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fitcheck/pages/message_page.dart';
 
 
 
@@ -127,6 +129,9 @@ final TextEditingController _bioController = TextEditingController();
         break;
       case 3:
         page = const ProfilePage();
+        break;
+      case 4:
+        page = const MessagePage();
         break;
       default:
         return;
@@ -652,14 +657,22 @@ FutureBuilder<DataSnapshot>(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         currentIndex: currentIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Color(0xFFFFBA76),
-        unselectedItemColor: Color.fromARGB(255, 231, 167, 102),
+        selectedItemColor: Color.fromARGB(255, 250, 144, 39),
+        unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: 'Friends'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt_outlined), label: 'FitCheck'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: const [
+    Icon(FontAwesomeIcons.cat),
+    SizedBox(width: 4),
+   Icon(FontAwesomeIcons.dove),
+  ],
+), label: 'Friends'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
+          BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),
         ],
       ),
     );

@@ -12,6 +12,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fitcheck/pages/message_page.dart';
+
+
+
 
 
 
@@ -125,6 +130,9 @@ void _flipCamera() async {
       case 3:
         page = const ProfilePage();
         break;
+      case 4:
+        page = const MessagePage();
+        break;
       default:
         return;
     }
@@ -192,13 +200,7 @@ void _flipCamera() async {
             decoration: BoxDecoration(
               color: Color(0xFFFFBA76),
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: Offset(2, 2),
-                ),
-              ],
+              
             ),
             child: IconButton(
               iconSize: 36,
@@ -228,13 +230,7 @@ void _flipCamera() async {
             decoration: BoxDecoration(
               color: Color(0xFFFFBA76),
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: Offset(2, 2),
-                ),
-              ],
+              
             ),
             child: IconButton(
               iconSize: 36,
@@ -269,14 +265,22 @@ void _flipCamera() async {
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         currentIndex: currentIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Color(0xFFFFBA76),
+        selectedItemColor: Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_outlined), label: 'Friends'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'FitCheck'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: const [
+    Icon(FontAwesomeIcons.cat),
+    SizedBox(width: 4),
+   Icon(FontAwesomeIcons.dove),
+  ],
+), label: 'Friends'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
+          BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),
         ],
       ),
 
@@ -290,6 +294,7 @@ void _flipCamera() async {
       FloatingActionButton(
         heroTag: 'gallery',
         backgroundColor: Color(0xFFFFBA76),
+        elevation: 0,
         onPressed: _pickImageFromGallery,
         child: const Icon(Icons.photo_library, color: Color.fromARGB(255, 255, 255, 255)),
       ),
@@ -335,6 +340,7 @@ void _flipCamera() async {
       FloatingActionButton(
         heroTag: 'flip',
         backgroundColor: const Color(0xFFFFBA76),
+        elevation: 0,
         onPressed: _flipCamera,
         child: const Icon(Icons.flip_camera_ios, color: Color.fromARGB(255, 255, 255, 255)),
       ),

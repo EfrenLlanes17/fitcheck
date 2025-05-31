@@ -138,6 +138,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    backgroundColor: Colors.white,
     builder: (BuildContext context) {
       return Padding(
         padding: EdgeInsets.only(
@@ -152,25 +153,32 @@ void showReportBottomSheet(BuildContext context, String postKey) {
           children: [
             const Text(
               'Report Post',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFFFBA76)),
             ),
             const SizedBox(height: 10),
             const Text(
-              'Please let us know why you are reporting this post:',
+              'Please let us know why you are reporting this post:',  style: TextStyle(color: Color(0xFFFFBA76)),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: reportController,
               maxLines: 4,
+              style: const TextStyle(color: Color(0xFFFFBA76)),
               decoration: const InputDecoration(
                 hintText: 'Enter your report here...',
+                hintStyle: TextStyle(color: Color(0xFFFFBA76)),
                 border: OutlineInputBorder(),
+                
               ),
             ),
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                 
+                  backgroundColor: const Color(0xFFFFBA76), // Button background
+                ),
                 onPressed: () async {
                   final reportText = reportController.text.trim();
                   if (reportText.isNotEmpty) {
@@ -181,7 +189,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Send'),
+                child: const Text('Send', style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
               ),
             ),
             const SizedBox(height: 20),

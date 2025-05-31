@@ -14,6 +14,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/commentinputfeild.dart';
 import 'package:fitcheck/pages/diffrentuserpage.dart';
 import 'package:flutter/services.dart';
+import 'package:fitcheck/pages/message_page.dart';
 
 
 
@@ -60,6 +61,10 @@ class _HomePageState extends State<HomePage> {
         break;
       case 3:
         page = const ProfilePage();
+        break;
+
+      case 4:
+        page = const MessagePage();
         break;
       default:
         return;
@@ -638,7 +643,7 @@ final pictureWidgets = sortedEntries.map((entry) {
           setState(() => currentIndex = index);
           _onTabTapped(index);
         },
-        selectedItemColor: Color(0xFFFFBA76),
+        selectedItemColor: Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
@@ -647,16 +652,28 @@ final pictureWidgets = sortedEntries.map((entry) {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline_outlined),
+            icon: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: const [
+    Icon(FontAwesomeIcons.cat),
+    SizedBox(width: 4),
+   Icon(FontAwesomeIcons.dove),
+  ],
+)
+,
             label: 'Friends',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt_outlined),
-            label: 'FitCheck',
+            icon: Icon(Icons.camera_alt),
+            label: 'Camera',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outlined),
+            icon: Icon(FontAwesomeIcons.dog),
             label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Message',
           ),
         ],
       ),

@@ -22,6 +22,11 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.light, // or Brightness.light depending on contrast
   ));
 
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   // Initialize Firebase
   await Firebase.initializeApp();
   final firebaseApp = Firebase.app();

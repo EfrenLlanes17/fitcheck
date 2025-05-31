@@ -34,10 +34,6 @@ class _DiffrentProfilePageState extends State<diffrentProfilePage> with SingleTi
   bool _isEditingBio = false;
 final TextEditingController _bioController = TextEditingController();
 
-  final TextEditingController _signInUsernameController = TextEditingController();
-  final TextEditingController _signInPasswordController = TextEditingController();
-  final TextEditingController _createUsernameController = TextEditingController();
-  final TextEditingController _createPasswordController = TextEditingController();
 
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
 
@@ -116,25 +112,21 @@ void initState() {
   @override
   void dispose() {
     _tabController.dispose();
-    _signInUsernameController.dispose();
-    _signInPasswordController.dispose();
-    _createUsernameController.dispose();
-    _createPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-  backgroundColor: Colors.black,
+  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
   title: true
       ? Text(
           _currentUsername,
           style: const TextStyle(
             fontFamily: 'Roboto',
-            color: Colors.white,
+            color: Color(0xFFFFBA76),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -145,7 +137,7 @@ void initState() {
   actions: true
       ? [
           IconButton(
-  icon: const Icon(Icons.more_vert, color: Colors.white),
+  icon: const Icon(Icons.more_vert, color: Color(0xFFFFBA76)),
   onPressed: () async {
     await showModalBottomSheet(
       context: context,
@@ -280,21 +272,21 @@ void initState() {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
                 const FaIcon(
-                  FontAwesomeIcons.shirt,
-                  color: Color(0xFFFF681F),
+                  FontAwesomeIcons.paw,
+                  color: Color(0xFFFFBA76),
                   size: 16,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '$streak',
                   style: const TextStyle(
-                    color: Color(0xFFFF681F),
+                    color: Color(0xFFFFBA76),
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -337,14 +329,14 @@ void initState() {
                   Text(
                     '$followersCount',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFFFFBA76),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Text(
                     'Followers',
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Color(0xFFFFBA76)),
                   ),
                 ],
               ),
@@ -375,14 +367,14 @@ void initState() {
             Text(
               '$followingCount',
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFFFFBA76),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const Text(
               'Following',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: Color(0xFFFFBA76)),
             ),
           ],
         ),
@@ -398,14 +390,14 @@ void initState() {
             Text(
               '$pictureCount',
               style: const TextStyle(
-                color: Colors.white,
+                color: Color(0xFFFFBA76),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const Text(
               'Posts',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: Color(0xFFFFBA76)),
             ),
           ],
         ),
@@ -434,7 +426,7 @@ void initState() {
                                     child: Text(
                                       currentBio.isEmpty ? 'no bio' : currentBio,
                                       style: TextStyle(
-                                        color: currentBio.isEmpty ? Colors.white54 : Colors.white70,
+                                        color: currentBio.isEmpty ? Color(0xFFFFBA76) : Color(0xFFFFBA76),
                                         fontStyle: currentBio.isEmpty ? FontStyle.italic : FontStyle.normal,
                                         fontSize: 16,
                                       ),
@@ -490,9 +482,9 @@ void initState() {
                 setState(() {});
               },
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.black,
-                side: const BorderSide(color: Colors.white, width: 1),
+                foregroundColor: Color(0xFFFFBA76),
+                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFFFFBA76), width: 1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -525,9 +517,9 @@ void initState() {
                               child: Column(
                                 children: [
                                   const TabBar(
-                                    indicatorColor: Colors.white,
-                                    labelColor: Colors.white,
-                                    unselectedLabelColor: Colors.white54,
+                                    labelColor: Color(0xFFFFBA76),
+                                    unselectedLabelColor:Color.fromARGB(255, 231, 167, 102),
+                                    indicatorColor: Color(0xFFFFBA76),
                                     tabs: [
                                       Tab(icon: Icon(Icons.camera_alt)),   // Uploads
                                       Tab(icon: Icon(Icons.favorite)),     // Liked
@@ -553,7 +545,7 @@ void initState() {
                                             : const Center(
                                                 child: Text(
                                                   'No pictures uploaded yet.',
-                                                  style: TextStyle(color: Colors.white70),
+                                                  style: TextStyle(color: Color(0xFFFFBA76)),
                                                 ),
                                               ),
 
@@ -586,7 +578,7 @@ void initState() {
                                                 : const Center(
                                                     child: Text(
                                                       'No liked pictures.',
-                                                      style: TextStyle(color: Colors.white70),
+                                                      style: TextStyle(color: Color(0xFFFFBA76)),
                                                     ),
                                                   );
                                           },
@@ -622,7 +614,7 @@ void initState() {
                                                 : const Center(
                                                     child: Text(
                                                       'No saved pictures.',
-                                                      style: TextStyle(color: Colors.white70),
+                                                      style: TextStyle(color: Color(0xFFFFBA76)),
                                                     ),
                                                   );
                                           },

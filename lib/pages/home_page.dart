@@ -82,6 +82,28 @@ class _HomePageState extends State<HomePage> {
     _loadUserData();
   }
 
+  String _getTimeAgo(DateTime postDate) {
+  final now = DateTime.now();
+  final difference = now.difference(postDate);
+
+  if (difference.inSeconds < 60) {
+    return '${difference.inSeconds} secs ago';
+  } else if (difference.inMinutes < 60) {
+    return '${difference.inMinutes} mins ago';
+  } else if (difference.inHours < 24) {
+    return '${difference.inHours} hours ago';
+  } else if (difference.inDays < 7) {
+    return '${difference.inDays} days ago';
+  } else if (difference.inDays < 30) {
+    return '${(difference.inDays / 7).floor()} weeks ago';
+  } else if (difference.inDays < 365) {
+    return '${(difference.inDays / 30).floor()} months ago';
+  } else {
+    return '${(difference.inDays / 365).floor()} years ago';
+  }
+}
+
+
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('username');
@@ -407,12 +429,13 @@ final pictureWidgets = sortedEntries.map((entry) {
 
       const SizedBox(height: 2), // Optional spacing
       Text(
-        '• ${timestamp.substring(0, 10)}',
-        style: const TextStyle(
-          color: Color(0xFFFFBA76),
-          fontWeight: FontWeight.w300,
-        ),
-      ),
+  '• ${_getTimeAgo(DateTime.parse(timestamp))}',
+  style: const TextStyle(
+    color: Color(0xFFFFBA76),
+    fontWeight: FontWeight.w300,
+  ),
+),
+
     ],
   ),
 ),

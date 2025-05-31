@@ -52,6 +52,10 @@ class _PicturePageState extends State<PicturePage> {
     _audioPlayer.play(AssetSource('sounds/meow.mp3'));
   }
 
+  void _playSqueakSound() {
+    _audioPlayer.play(AssetSource('sounds/squeak.mp3'));
+  }
+
   Future<void> _pickImageFromGallery() async {
   try {
     final picker = ImagePicker();
@@ -187,7 +191,7 @@ void _flipCamera() async {
 
       // Bark button overlayed in top-right corner
      Positioned(
-  top: 25,
+  top: 35,
   left: 0,
   right: 0,
   child: Row(
@@ -242,6 +246,34 @@ void _flipCamera() async {
           const SizedBox(height: 4),
           const Text(
             'Meow!',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFBA76),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(width: 24),
+
+      Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xFFFFBA76),
+              shape: BoxShape.circle,
+              
+            ),
+            child: IconButton(
+              iconSize: 36,
+              icon: const Icon(Icons.volume_up, color: Colors.white),
+              tooltip: 'Toy!',
+              onPressed: _playSqueakSound, // Replace this with the actual Meow function
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Toy!',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

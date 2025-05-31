@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/main.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:audioplayers/audioplayers.dart';
+
 
 
 class PicturePage extends StatefulWidget {
@@ -34,6 +36,16 @@ class _PicturePageState extends State<PicturePage> {
   late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
   int _currentCameraIndex = 0;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+
+  void _playBarkSound() {
+    _audioPlayer.play(AssetSource('sounds/bark.mp3'));
+  }
+
+   void _playMeowSound() {
+    _audioPlayer.play(AssetSource('sounds/meow.mp3'));
+  }
 
   Future<void> _pickImageFromGallery() async {
   try {
@@ -130,39 +142,129 @@ void _flipCamera() async {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Padding(
-        padding: const EdgeInsets.only(top: 25),
-        child: SizedBox(
-          width: double.infinity,
-          child: FutureBuilder<void>(
-            future: _initializeControllerFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return ClipRect(
-                  child: OverflowBox(
-                    alignment: Alignment.center,
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.width + kBottomNavigationBarHeight,
-                        child: Transform(
+  padding: const EdgeInsets.only(top: 25),
+  child: Stack(
+    children: [
+      // Camera preview
+      SizedBox(
+        width: double.infinity,
+        child: FutureBuilder<void>(
+          future: _initializeControllerFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return ClipRect(
+                child: OverflowBox(
+                  alignment: Alignment.center,
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.width + kBottomNavigationBarHeight,
+                      child: Transform(
                         alignment: Alignment.center,
                         transform: _cameras[_currentCameraIndex].lensDirection == CameraLensDirection.front
-                            ? Matrix4.rotationY(3.1415926535)  // Flip horizontally (π radians)
-                            : Matrix4.identity(),              // No flip for rear camera
+                            ? Matrix4.rotationY(3.1415926535)
+                            : Matrix4.identity(),
                         child: CameraPreview(_controller),
-                      ),
-
                       ),
                     ),
                   ),
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
+                ),
+              );
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
         ),
       ),
+
+      // Bark button overlayed in top-right corner
+     Positioned(
+  top: 25,
+  left: 0,
+  right: 0,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      // Bark Button
+      Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xFFFFBA76),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: Offset(2, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              iconSize: 36,
+              icon: const Icon(Icons.volume_up, color: Colors.white),
+              tooltip: 'Bark!',
+              onPressed: _playBarkSound,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Bark!',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFBA76),
+            ),
+          ),
+        ],
+      ),
+
+      const SizedBox(width: 24), // spacing between Bark and Meow
+
+      // Meow Button
+      Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Color(0xFFFFBA76),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: Offset(2, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              iconSize: 36,
+              icon: const Icon(Icons.volume_up, color: Colors.white),
+              tooltip: 'Meow!',
+              onPressed: _playMeowSound, // Replace this with the actual Meow function
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Meow!',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFBA76),
+            ),
+          ),
+        ],
+      ),
+    ],
+  ),
+),
+
+  
+
+    ],
+  ),
+),
+
+      
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         currentIndex: currentIndex,
@@ -236,6 +338,7 @@ void _flipCamera() async {
         onPressed: _flipCamera,
         child: const Icon(Icons.flip_camera_ios, color: Color.fromARGB(255, 255, 255, 255)),
       ),
+      
     ],
   ),
 ),

@@ -49,6 +49,7 @@ dependencies:
   http: ^0.13.6
   font_awesome_flutter: ^10.7.0
   flutter_launcher_icons: ^0.13.1  # check for the latest version
+  audioplayers: ^5.2.1 
 
 flutter_icons:
   android: true
@@ -81,6 +82,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/background.png
+    - assets/sounds/bark.mp3
+    - assets/sounds/meow.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

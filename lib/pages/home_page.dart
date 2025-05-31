@@ -493,7 +493,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                       child: Image.network(
                         imageUrl,
                         width: MediaQuery.of(context).size.width * 0.95,
-                        height: 400,
+                        height: 500,
                         fit: BoxFit.cover,
                       ),
                     ),

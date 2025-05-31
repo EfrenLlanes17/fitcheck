@@ -191,14 +191,15 @@ final TextEditingController _bioController = TextEditingController();
   onPressed: () async {
     await showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       builder: (_) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.description),
-                title: const Text('Terms of Service'),
+                leading: const Icon(Icons.description, color: Color(0xFFFFBA76)),
+                title: const Text('Terms of Service', style: TextStyle(color: Color(0xFFFFBA76))),
                 onTap: () {
                   Navigator.pop(context); // Close the BottomSheet
                   Navigator.push(
@@ -210,16 +211,16 @@ final TextEditingController _bioController = TextEditingController();
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Sign Out'),
+                leading: const Icon(Icons.logout, color: Color(0xFFFFBA76)),
+                title: const Text('Sign Out', style: TextStyle(color: Color(0xFFFFBA76))),
                 onTap: () {
                   Navigator.pop(context);
                   _signOut();
                 },
               ),
               ListTile(
-              leading: const Icon(Icons.privacy_tip),
-              title: const Text('Privacy Policy'),
+              leading: const Icon(Icons.privacy_tip, color: Color(0xFFFFBA76)),
+              title: const Text('Privacy Policy', style: TextStyle(color: Color(0xFFFFBA76))),
               onTap: () {
                 Navigator.pop(context); // Close modal
                 Navigator.push(
@@ -230,8 +231,8 @@ final TextEditingController _bioController = TextEditingController();
             ),
 
             ListTile(
-                leading: const Icon(Icons.settings_suggest_outlined),
-                title: const Text('More Settings'),
+                leading: const Icon(Icons.settings_suggest_outlined, color: Color(0xFFFFBA76)),
+                title: const Text('More Settings', style: TextStyle(color: Color(0xFFFFBA76))),
                 onTap: () {
                   Navigator.pop(context); // Close the BottomSheet
                   Navigator.push(

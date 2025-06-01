@@ -156,6 +156,15 @@ void initState() {
                 },
               ),
 
+              ListTile(
+                leading: const Icon(Icons.block),
+                title: const Text('Block User'),
+                onTap: () {
+                  Navigator.pop(context);
+                 
+                },
+              ),
+
             ],
           ),
         );

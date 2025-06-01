@@ -198,6 +198,14 @@ final TextEditingController _bioController = TextEditingController();
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
+                leading: const Icon(FontAwesomeIcons.frog, color: Color(0xFFFFBA76)),
+                title: const Text('Invite a Freind', style: TextStyle(color: Color(0xFFFFBA76))),
+                onTap: () {
+                  Navigator.pop(context); // Close the BottomSheet
+                  
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.description, color: Color(0xFFFFBA76)),
                 title: const Text('Terms of Service', style: TextStyle(color: Color(0xFFFFBA76))),
                 onTap: () {

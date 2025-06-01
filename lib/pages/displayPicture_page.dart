@@ -133,6 +133,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
     await databaseRef.child('users/$_currentUsername/pictures/$pushedKey').set({
       'url': downloadUrl,
+      'timestamp': DateTime.now().toIso8601String(),
     });
 
     print('Image uploaded and URL saved!');

@@ -546,12 +546,12 @@ final pictureWidgets = sortedEntries.map((entry) {
                               likes--;
                               await postRef.child('likes').set(likes);
                               await postRef.child('likedBy/$_currentUsername').remove();
-                              await userLikesRef.remove();
+                              await userLikesRef.child(postKey).remove();
                             } else {
                               likes++;
                               await postRef.child('likes').set(likes);
                               await postRef.child('likedBy/$_currentUsername').set(true);
-                              await userLikesRef.push().set({'url': imageUrl});
+                              await userLikesRef.child(postKey).set({'url': imageUrl, 'timestamp': DateTime.now().toIso8601String()});
                             }
 
                             setState(() {
@@ -582,7 +582,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                                 return Transaction.success(current + 1);
                               });
                               await postRef.child('savedBy/$_currentUsername').set(true);
-                              await userSavesRef.push().set({'url': imageUrl});
+                              await userSavesRef.push().set({'url': imageUrl, 'timestamp': DateTime.now().toIso8601String()});
                             }
 
                             setState(() {

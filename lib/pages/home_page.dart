@@ -575,14 +575,14 @@ final pictureWidgets = sortedEntries.map((entry) {
                                 return Transaction.success(current > 0 ? current - 1 : 0);
                               });
                               await postRef.child('savedBy/$_currentUsername').remove();
-                              await userSavesRef.remove();
+                              await userSavesRef.child(postKey).remove();
                             } else {
                               await postRef.child('saves').runTransaction((value) {
                                 final current = (value ?? 0) as int;
                                 return Transaction.success(current + 1);
                               });
                               await postRef.child('savedBy/$_currentUsername').set(true);
-                              await userSavesRef.push().set({'url': imageUrl, 'timestamp': DateTime.now().toIso8601String()});
+                              await userSavesRef.child(postKey).set({'url': imageUrl, 'timestamp': DateTime.now().toIso8601String()});
                             }
 
                             setState(() {

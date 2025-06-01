@@ -666,7 +666,32 @@ FutureBuilder<DataSnapshot>(
                                             List<Widget> savedImages = [];
                                            if (savedSnapshot.hasData && savedSnapshot.data!.value != null) {
                                             final savedMap = Map<String, dynamic>.from(savedSnapshot.data!.value as Map);
-                                            savedImages = savedMap.entries.map((entry) {
+                                            final sortedEntries = savedMap.entries.toList()
+  ..sort((a, b) {
+    final aData = Map<String, dynamic>.from(a.value);
+    final bData = Map<String, dynamic>.from(b.value);
+
+    DateTime parseTimestamp(dynamic value) {
+      if (value is int) {
+        // If stored as milliseconds since epoch
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+      if (value is String) {
+        try {
+          return DateTime.parse(value); // Works for ISO 8601
+        } catch (_) {
+          return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
+        }
+      }
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+
+    final aTimestamp = parseTimestamp(aData['timestamp']);
+    final bTimestamp = parseTimestamp(bData['timestamp']);
+
+    return bTimestamp.compareTo(aTimestamp); // Most recent first
+  });
+                                            savedImages = sortedEntries.map((entry) {
                                               final pictureData = Map<String, dynamic>.from(entry.value);
                                               final url = pictureData['url'] as String?;
                                               if (url == null || url.isEmpty) return const SizedBox();

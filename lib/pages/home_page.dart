@@ -635,7 +635,8 @@ final pictureWidgets = sortedEntries.map((entry) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 4),
                                   child: Text(
-                                    '$user: $text\n${ts.toLocal()}',
+                                    
+                                    '$user: $text\n${_getTimeAgo(ts.toLocal())}',
                                     style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 13),
                                   ),
                                 );

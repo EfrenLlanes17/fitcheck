@@ -47,10 +47,15 @@ class _FollowingPage extends State<FollowingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Following'),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+  title: const Text(
+    'Following',
+    style: TextStyle(color: Color(0xFFFFBA76)), // Change text color here
+  ),
+  backgroundColor: Colors.white,
+  iconTheme: const IconThemeData(color: Color(0xFFFFBA76)), // Also changes back button/icon color
+),
+
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: FutureBuilder<DataSnapshot>(
         future: databaseRef.child('users/$username/following').get(),
         builder: (context, snapshot) {
@@ -60,7 +65,7 @@ class _FollowingPage extends State<FollowingPage> {
 
           if (!snapshot.hasData || snapshot.data!.value == null) {
             return const Center(
-              child: Text('Not following anyone yet.', style: TextStyle(color: Colors.white70)),
+              child: Text('Not following anyone yet.', style: TextStyle(color: Color(0xFFFFBA76))),
             );
           }
 
@@ -76,11 +81,11 @@ class _FollowingPage extends State<FollowingPage> {
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(profileUrl),
-                  backgroundColor: Colors.grey[800],
+                  backgroundColor: Color(0xFFFFBA76),
                 ),
                 title: Text(
                   followingUsername,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFFFBA76)),
                 ),
                 onTap: () {
               if (followingUsername != _currentloggedInUsername) {

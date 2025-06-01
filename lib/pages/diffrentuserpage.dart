@@ -121,6 +121,7 @@ void initState() {
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
   backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+  iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
   title: true
       ? Text(
           _currentUsername,

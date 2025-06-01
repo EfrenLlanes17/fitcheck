@@ -48,10 +48,14 @@ class _FollowersPageState extends State<FollowersPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Followers'),
-        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
+        title: const Text(
+    'Followers',
+    style: TextStyle(color: Color(0xFFFFBA76)), // Change text color here
+  ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: FutureBuilder<DataSnapshot>(
         future: databaseRef.child('users/$username/followers').get(),
         builder: (context, snapshot) {
@@ -61,7 +65,7 @@ class _FollowersPageState extends State<FollowersPage> {
 
           if (!snapshot.hasData || snapshot.data!.value == null) {
             return const Center(
-              child: Text('No followers yet.', style: TextStyle(color: Colors.white70)),
+              child: Text('No followers yet.', style: TextStyle(color: Color(0xFFFFBA76))),
             );
           }
 
@@ -77,11 +81,11 @@ class _FollowersPageState extends State<FollowersPage> {
               return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(profileUrl),
-                  backgroundColor: Colors.grey[800],
+                  backgroundColor: Color(0xFFFFBA76),
                 ),
                 title: Text(
                   followerUsername,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Color(0xFFFFBA76)),
                 ),
                  onTap: () {
               if (followerUsername != _currentloggedInUsername) {

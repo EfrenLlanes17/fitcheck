@@ -15,6 +15,8 @@ import 'package:fitcheck/pages/followerspage.dart';
 import 'package:fitcheck/pages/followingpage.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fitcheck/pages/postveiwer.dart';
+
 
 
 class diffrentProfilePage extends StatefulWidget {
@@ -225,14 +227,39 @@ void initState() {
 
     return bTimestamp.compareTo(aTimestamp); // Most recent first
   });
-                imageWidgets = sortedEntries.map((entry) {
-                  final imageUrl = entry.value['url'] as String?;
+                imageWidgets = List.generate(sortedEntries.length, (index) {
+        final entry = sortedEntries[index];
+        final data = Map<String, dynamic>.from(entry.value);
+        final imageUrl = data['url'] as String?;
+        if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
 
-                  if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
+        return GestureDetector(
+          onTap: () {
+            final postDataList = sortedEntries.map((entry) {
+              final item = Map<String, dynamic>.from(entry.value);
+              return {
+                'imageUrl': item['url'] ?? '',
+                'timestamp': item['timestamp'].toString(),
+                'caption': item['caption'] ?? '',
+                'username': item['user'] ?? '',
+                'profilePicUrl': item['profilepicture'] ?? '',
+                'postKey': entry.key,
+              };
+            }).toList();
 
-                  return Image.network(imageUrl, fit: BoxFit.cover);
-
-                }).toList();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PostViewerPage(
+                  postDataList: postDataList,
+                  initialIndex: index,
+                ),
+              ),
+            );
+          },
+          child: Image.network(imageUrl, fit: BoxFit.cover),
+        );
+      });
               }
 
               // New: FutureBuilder for followers count
@@ -620,10 +647,37 @@ void initState() {
 
     return bTimestamp.compareTo(aTimestamp); // Most recent first
   });
-                                              likedImages = sortedEntries.map((entry) {
-                                                final url = entry.value['url'] as String?;
-                                                if (url == null || url.isEmpty) return const SizedBox();
-                                                return Image.network(url, fit: BoxFit.cover);
+                                             likedImages = List.generate(sortedEntries.length, (index) {
+        final entry = sortedEntries[index];
+        final pictureData = Map<String, dynamic>.from(entry.value);
+        final url = pictureData['url'] as String?;
+        if (url == null || url.isEmpty) return const SizedBox();
+                                                return GestureDetector(
+          onTap: () {
+            final postDataList = sortedEntries.map((entry) {
+              final data = Map<String, dynamic>.from(entry.value);
+              return {
+                'imageUrl': data['url'] ?? '',
+                'timestamp': data['timestamp'].toString(),
+                'caption': data['caption'] ?? '',
+                'username': data['user'] ?? '',
+                'profilePicUrl': data['profilepicture'] ?? '',
+                'postKey': entry.key,
+              };
+            }).toList();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PostViewerPage(
+                  postDataList: postDataList,
+                  initialIndex: index,
+                ),
+              ),
+            );
+          },
+          child: Image.network(url, fit: BoxFit.cover),
+        );
                                               }).toList();
                                             }
 
@@ -680,12 +734,39 @@ void initState() {
 
     return bTimestamp.compareTo(aTimestamp); // Most recent first
   });
-                                            savedImages = sortedEntries.map((entry) {
-                                              final pictureData = Map<String, dynamic>.from(entry.value);
-                                              final url = pictureData['url'] as String?;
-                                              if (url == null || url.isEmpty) return const SizedBox();
-                                              return Image.network(url, fit: BoxFit.cover);
-                                            }).toList();
+                                            savedImages = List.generate(sortedEntries.length, (index) {
+  final entry = sortedEntries[index];
+  final pictureData = Map<String, dynamic>.from(entry.value);
+  final url = pictureData['url'] as String?;
+  if (url == null || url.isEmpty) return const SizedBox();
+
+  return GestureDetector(
+    onTap: () {
+      final postDataList = sortedEntries.map((entry) {
+        final data = Map<String, dynamic>.from(entry.value);
+        return {
+          'imageUrl': data['url'] ?? '',
+          'timestamp': data['timestamp'].toString(),
+          'caption': data['caption'] ?? '',
+          'username': data['user'] ?? '',
+          'profilePicUrl': data['profilepicture'] ?? '',
+          'postKey': entry.key,
+        };
+      }).toList();
+      
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PostViewerPage(
+            postDataList: postDataList,
+            initialIndex: index,
+          ),
+        ),
+      );
+    },
+    child: Image.network(url, fit: BoxFit.cover),
+  );
+});
                                           }
 
                                             return savedImages.isNotEmpty

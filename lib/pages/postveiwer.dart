@@ -51,7 +51,14 @@ final ItemScrollController _itemScrollController = ItemScrollController();
     _pageController = PageController(initialPage: widget.initialIndex);
     
     _loadUserData();
-    
+   WidgetsBinding.instance.addPostFrameCallback((_) {
+  _itemScrollController.scrollTo(
+    index: widget.initialIndex,
+    duration: Duration(milliseconds: 0),
+  );
+});
+
+
   }
 
   String _getTimeAgo(DateTime postDate) {
@@ -266,6 +273,7 @@ final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
   int likes = int.tryParse(data['likes'].toString()) ?? 0;
   
 
+
   return FutureBuilder<DataSnapshot>(
     future: FirebaseDatabase.instance.ref('pictures/$postKey/likedBy/$_currentUsername').get(),
     builder: (context, likeSnapshot) {
@@ -451,6 +459,7 @@ final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
                         style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 14),
                       ),
                     ),
+                    
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -588,7 +597,6 @@ final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
       );
     },
   );
-
 
 
       

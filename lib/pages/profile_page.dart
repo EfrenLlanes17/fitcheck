@@ -312,14 +312,39 @@ final TextEditingController _bioController = TextEditingController();
 
     return bTimestamp.compareTo(aTimestamp); // Most recent first
   });
-                imageWidgets = sortedEntries.map((entry) {
-                  final imageUrl = entry.value['url'] as String?;
+                imageWidgets = List.generate(sortedEntries.length, (index) {
+        final entry = sortedEntries[index];
+        final data = Map<String, dynamic>.from(entry.value);
+        final imageUrl = data['url'] as String?;
+        if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
 
-                  if (imageUrl == null || imageUrl.isEmpty) return const SizedBox();
+        return GestureDetector(
+          onTap: () {
+            final postDataList = sortedEntries.map((entry) {
+              final item = Map<String, dynamic>.from(entry.value);
+              return {
+                'imageUrl': item['url'] ?? '',
+                'timestamp': item['timestamp'].toString(),
+                'caption': item['caption'] ?? '',
+                'username': item['user'] ?? '',
+                'profilePicUrl': item['profilepicture'] ?? '',
+                'postKey': entry.key,
+              };
+            }).toList();
 
-                  return Image.network(imageUrl, fit: BoxFit.cover);
-
-                }).toList();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PostViewerPage(
+                  postDataList: postDataList,
+                  initialIndex: index,
+                ),
+              ),
+            );
+          },
+          child: Image.network(imageUrl, fit: BoxFit.cover),
+        );
+      });
               }
 
               // New: FutureBuilder for followers count

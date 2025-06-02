@@ -17,6 +17,7 @@ import 'package:fitcheck/pages/moresettings.dart';
 import 'package:fitcheck/pages/startpage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
+import 'package:fitcheck/pages/postveiwer.dart';
 
 
 
@@ -691,12 +692,40 @@ FutureBuilder<DataSnapshot>(
 
     return bTimestamp.compareTo(aTimestamp); // Most recent first
   });
-                                            savedImages = sortedEntries.map((entry) {
-                                              final pictureData = Map<String, dynamic>.from(entry.value);
-                                              final url = pictureData['url'] as String?;
-                                              if (url == null || url.isEmpty) return const SizedBox();
-                                              return Image.network(url, fit: BoxFit.cover);
-                                            }).toList();
+                                            savedImages = List.generate(sortedEntries.length, (index) {
+  final entry = sortedEntries[index];
+  final pictureData = Map<String, dynamic>.from(entry.value);
+  final url = pictureData['url'] as String?;
+  if (url == null || url.isEmpty) return const SizedBox();
+
+  return GestureDetector(
+    onTap: () {
+      final postDataList = sortedEntries.map((entry) {
+        final data = Map<String, dynamic>.from(entry.value);
+        return {
+          'imageUrl': data['url'] ?? '',
+          'timestamp': data['timestamp'].toString(),
+          'caption': data['caption'] ?? '',
+          'username': data['user'] ?? '',
+          'profilePicUrl': data['profilepicture'] ?? '',
+          'postKey': entry.key,
+        };
+      }).toList();
+      
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PostViewerPage(
+            postDataList: postDataList,
+            initialIndex: index,
+          ),
+        ),
+      );
+    },
+    child: Image.network(url, fit: BoxFit.cover),
+  );
+});
+
                                           }
 
                                             return savedImages.isNotEmpty

@@ -15,6 +15,7 @@ import 'package:fitcheck/pages/commentinputfeild.dart';
 import 'package:fitcheck/pages/diffrentuserpage.dart';
 import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/message_page.dart';
+import 'package:fitcheck/pages/fullscreenimage.dart';
 
 
 
@@ -511,7 +512,16 @@ final pictureWidgets = sortedEntries.map((entry) {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    ClipRRect(
+                    GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullscreenImagePage(imageUrl: imageUrl),
+                        ),
+                      );
+                    },
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: Image.network(
                         imageUrl,
@@ -520,6 +530,8 @@ final pictureWidgets = sortedEntries.map((entry) {
                         fit: BoxFit.cover,
                       ),
                     ),
+                  ),
+
                     const SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),

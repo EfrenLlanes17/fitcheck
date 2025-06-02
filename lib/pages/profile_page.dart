@@ -598,63 +598,92 @@ FutureBuilder<DataSnapshot>(
 
                                         // --- LIKED PICTURES ---
                                         FutureBuilder<DataSnapshot>(
-                                          future: databaseRef.child('users/$_currentUsername/likedpictures').get(),
-                                          builder: (context, likedSnapshot) {
-                                            if (likedSnapshot.connectionState == ConnectionState.waiting) {
-                                              return const Center(child: CircularProgressIndicator());
-                                            }
-
-                                            List<Widget> likedImages = [];
-                                            if (likedSnapshot.hasData && likedSnapshot.data!.value != null) {
-                                              final likedMap = Map<String, dynamic>.from(likedSnapshot.data!.value as Map);
-                                              final sortedEntries = likedMap.entries.toList()
-  ..sort((a, b) {
-    final aData = Map<String, dynamic>.from(a.value);
-    final bData = Map<String, dynamic>.from(b.value);
-
-    DateTime parseTimestamp(dynamic value) {
-      if (value is int) {
-        // If stored as milliseconds since epoch
-        return DateTime.fromMillisecondsSinceEpoch(value);
-      }
-      if (value is String) {
-        try {
-          return DateTime.parse(value); // Works for ISO 8601
-        } catch (_) {
-          return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
-        }
-      }
-      return DateTime.fromMillisecondsSinceEpoch(0);
+  future: databaseRef.child('users/$_currentUsername/likedpictures').get(),
+  builder: (context, likedSnapshot) {
+    if (likedSnapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    final aTimestamp = parseTimestamp(aData['timestamp']);
-    final bTimestamp = parseTimestamp(bData['timestamp']);
+    List<Widget> likedImages = [];
+    if (likedSnapshot.hasData && likedSnapshot.data!.value != null) {
+      final likedMap = Map<String, dynamic>.from(likedSnapshot.data!.value as Map);
+      final sortedEntries = likedMap.entries.toList()
+        ..sort((a, b) {
+          final aData = Map<String, dynamic>.from(a.value);
+          final bData = Map<String, dynamic>.from(b.value);
 
-    return bTimestamp.compareTo(aTimestamp); // Most recent first
-  });
-                                              likedImages = sortedEntries.map((entry) {
-                                                final url = entry.value['url'] as String?;
-                                                if (url == null || url.isEmpty) return const SizedBox();
-                                                return Image.network(url, fit: BoxFit.cover);
-                                              }).toList();
-                                            }
+          DateTime parseTimestamp(dynamic value) {
+            if (value is int) {
+              return DateTime.fromMillisecondsSinceEpoch(value);
+            }
+            if (value is String) {
+              try {
+                return DateTime.parse(value);
+              } catch (_) {
+                return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
+              }
+            }
+            return DateTime.fromMillisecondsSinceEpoch(0);
+          }
 
-                                            return likedImages.isNotEmpty
-                                                ? GridView.count(
-                                                    crossAxisCount: 3,
-                                                    crossAxisSpacing: 8,
-                                                    mainAxisSpacing: 8,
-                                                    childAspectRatio: 0.75,
-                                                    children: likedImages,
-                                                  )
-                                                : const Center(
-                                                    child: Text(
-                                                      'No liked pictures.',
-                                                      style: TextStyle(color: Color(0xFFFFBA76)),
-                                                    ),
-                                                  );
-                                          },
-                                        ),
+          final aTimestamp = parseTimestamp(aData['timestamp']);
+          final bTimestamp = parseTimestamp(bData['timestamp']);
+
+          return bTimestamp.compareTo(aTimestamp); // Most recent first
+        });
+
+      likedImages = List.generate(sortedEntries.length, (index) {
+        final entry = sortedEntries[index];
+        final pictureData = Map<String, dynamic>.from(entry.value);
+        final url = pictureData['url'] as String?;
+        if (url == null || url.isEmpty) return const SizedBox();
+
+        return GestureDetector(
+          onTap: () {
+            final postDataList = sortedEntries.map((entry) {
+              final data = Map<String, dynamic>.from(entry.value);
+              return {
+                'imageUrl': data['url'] ?? '',
+                'timestamp': data['timestamp'].toString(),
+                'caption': data['caption'] ?? '',
+                'username': data['user'] ?? '',
+                'profilePicUrl': data['profilepicture'] ?? '',
+                'postKey': entry.key,
+              };
+            }).toList();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PostViewerPage(
+                  postDataList: postDataList,
+                  initialIndex: index,
+                ),
+              ),
+            );
+          },
+          child: Image.network(url, fit: BoxFit.cover),
+        );
+      });
+    }
+
+    return likedImages.isNotEmpty
+        ? GridView.count(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 0.75,
+            children: likedImages,
+          )
+        : const Center(
+            child: Text(
+              'No liked pictures.',
+              style: TextStyle(color: Color(0xFFFFBA76)),
+            ),
+          );
+  },
+),
+
 
                                         // --- SAVED PICTURES ---
                                         FutureBuilder<DataSnapshot>(

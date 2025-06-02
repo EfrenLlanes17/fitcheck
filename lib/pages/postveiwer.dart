@@ -16,6 +16,8 @@ import 'package:fitcheck/pages/diffrentuserpage.dart';
 import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/fullscreenimage.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 
 
 
@@ -38,6 +40,7 @@ class _PostViewerPageState extends State<PostViewerPage> {
   String _currentUsername = '';
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
   late PageController _pageController;
+final ItemScrollController _itemScrollController = ItemScrollController();
 
 
 
@@ -48,6 +51,7 @@ class _PostViewerPageState extends State<PostViewerPage> {
     _pageController = PageController(initialPage: widget.initialIndex);
     
     _loadUserData();
+    
   }
 
   String _getTimeAgo(DateTime postDate) {
@@ -215,8 +219,9 @@ void showReportBottomSheet(BuildContext context, String postKey) {
       ),
     ),
 
-    ListView.builder(
-      controller: _pageController,
+    ScrollablePositionedList.builder(
+      itemScrollController: _itemScrollController,
+      initialScrollIndex: widget.initialIndex, // ✅ Set here instead of manually scrolling later
 
       itemCount: widget.postDataList.length,
       itemBuilder: (context, index) {

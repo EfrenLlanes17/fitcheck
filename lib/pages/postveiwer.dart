@@ -195,6 +195,15 @@ void showReportBottomSheet(BuildContext context, String postKey) {
 
     return Scaffold(
 
+      appBar: AppBar(
+  title: const Text(
+    '',
+    style: TextStyle(color: Color(0xFFFFBA76)), // Change text color here
+  ),
+  backgroundColor: Colors.white,
+  iconTheme: const IconThemeData(color: Color(0xFFFFBA76)), // Also changes back button/icon color
+),
+
 
  body: Stack(
       children: [

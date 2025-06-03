@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fitcheck/pages/freinds_page.dart';
+import 'package:fitcheck/pages/groups_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/search_page.dart';
@@ -1124,7 +1124,7 @@ final pictureWidgets = sortedEntries.map((entry) {
   ],
 )
 ,
-            label: 'Packs',
+            label: 'Groups',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),

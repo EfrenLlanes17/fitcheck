@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fitcheck/pages/freinds_page.dart';
+import 'package:fitcheck/pages/groups_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/pages/displayPicture_page.dart';
@@ -301,7 +301,7 @@ void _flipCamera() async {
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.bone), label: 'Feed'),
           BottomNavigationBarItem(icon: Row(
   mainAxisSize: MainAxisSize.min,
   children: const [
@@ -309,7 +309,7 @@ void _flipCamera() async {
     SizedBox(width: 4),
    Icon(FontAwesomeIcons.dove),
   ],
-), label: 'Friends'),
+), label: 'Groups'),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
           BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),

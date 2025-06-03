@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fitcheck/pages/freinds_page.dart';
+import 'package:fitcheck/pages/groups_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
@@ -83,6 +83,8 @@ class _SearchPageState extends State<SearchPage> {
         appBar: PreferredSize(
   preferredSize: const Size.fromHeight(110),
   child: AppBar(
+      iconTheme: const IconThemeData(color: Color(0xFFFFBA76)), // Also changes back button/icon color
+
     backgroundColor: const Color.fromARGB(255, 255, 255, 255),
     automaticallyImplyLeading: false,
     elevation: 0,
@@ -279,7 +281,7 @@ class _SearchPageState extends State<SearchPage> {
     SizedBox(width: 4),
    Icon(FontAwesomeIcons.dove),
   ],
-), label: 'Friends'),
+), label: 'Groups'),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
           BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),

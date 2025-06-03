@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fitcheck/pages/freinds_page.dart';
+import 'package:fitcheck/pages/groups_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -118,8 +118,8 @@ class _MessagePageState extends State<MessagePage> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(FontAwesomeIcons.bone),
+            label: 'Feed',
           ),
           BottomNavigationBarItem(
             icon: Row(
@@ -131,7 +131,7 @@ class _MessagePageState extends State<MessagePage> {
   ],
 )
 ,
-            label: 'Friends',
+            label: 'Groups',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fitcheck/pages/freinds_page.dart';
+import 'package:fitcheck/pages/groups_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/main.dart'; // for cameras

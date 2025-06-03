@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fitcheck/pages/freinds_page.dart';
+import 'package:fitcheck/pages/groups_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/search_page.dart';
@@ -693,8 +693,8 @@ final pictureWidgets = sortedEntries.map((entry) {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(FontAwesomeIcons.bone),
+            label: 'Feed',
           ),
           BottomNavigationBarItem(
             icon: Row(
@@ -706,7 +706,7 @@ final pictureWidgets = sortedEntries.map((entry) {
   ],
 )
 ,
-            label: 'Friends',
+            label: 'Groups',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),

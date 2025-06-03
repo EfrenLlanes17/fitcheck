@@ -100,14 +100,14 @@ class _PETGettingStartedWidgetState extends State<PETGettingStartedWidget> {
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 30,
+                              fontSize: 25,
                             ),
                             cursorColor: Colors.white,
                             decoration: InputDecoration(
                               hintText: 'email...',
                               hintStyle: const TextStyle(
                                 color: Colors.white70,
-                                fontSize: 30,
+                                fontSize: 25,
                               ),
                               filled: true,
                               fillColor: Colors.transparent,

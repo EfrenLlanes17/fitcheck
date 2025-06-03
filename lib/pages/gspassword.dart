@@ -4,28 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/startpage.dart';
 import 'package:fitcheck/pages/gsemail.dart';
-import 'package:fitcheck/pages/gspassword.dart';
+import 'package:fitcheck/pages/gsusername.dart';
 
 
 
-class PETGettingStartedP2Widget extends StatefulWidget {
+class PETGettingStartedP3Widget extends StatefulWidget {
   final String email;
-  const PETGettingStartedP2Widget({super.key, required this.email});
+  final String username;
+  const PETGettingStartedP3Widget({super.key, required this.email, required this.username});
 
   
 
   @override
-  State<PETGettingStartedP2Widget> createState() => _PETGettingStartedP2WidgetState();
+  State<PETGettingStartedP3Widget> createState() => _PETGettingStartedP3WidgetState();
 }
 
-class _PETGettingStartedP2WidgetState extends State<PETGettingStartedP2Widget> {
+class _PETGettingStartedP3WidgetState extends State<PETGettingStartedP3Widget> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Color> dotColors = [
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
-  Color(0xFFFFFFFF),
+  Color(0xFFFFBA76),
   Color(0xFFFFFFFF),
   Color(0xFFFFFFFF),
 ];
@@ -39,7 +40,7 @@ class _PETGettingStartedP2WidgetState extends State<PETGettingStartedP2Widget> {
 
  @override
 Widget build(BuildContext context) {
-  print(widget.email);
+  print(widget.email + " " + widget.username);
   return GestureDetector(
     onTap: () => FocusScope.of(context).unfocus(),
     child: Container(
@@ -95,7 +96,7 @@ Widget build(BuildContext context) {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'What Should Your\nUsername Be?',
+                        'What Should Your \nPassword Be?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
@@ -115,7 +116,7 @@ Widget build(BuildContext context) {
                             fontSize: 30,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'username...',
+                            hintText: 'password...',
                             hintStyle: TextStyle(
                               color: Colors.white70,
                               fontSize: 30,
@@ -143,11 +144,13 @@ Widget build(BuildContext context) {
     ElevatedButton.icon(
       onPressed: () {
         Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const PETGettingStartedWidget(),
-                                      ),
-                                    );
+    context,
+    MaterialPageRoute(
+      builder: (context) => PETGettingStartedP2Widget(
+        email: widget.email
+      ),
+    ),
+  );
       },
       icon: FaIcon(
         FontAwesomeIcons.arrowLeft,
@@ -186,14 +189,7 @@ Row(
 
     ElevatedButton.icon(
       onPressed: () {
-       Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PETGettingStartedP3Widget(
-        email: widget.email, username: _textController.text,
-      ),
-    ),
-  );
+        print('Next button pressed');
       },
       icon: FaIcon(
         FontAwesomeIcons.arrowRight,

@@ -16,6 +16,8 @@ import 'package:fitcheck/pages/followingpage.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/postveiwer.dart';
+import 'package:fitcheck/pages/usermessage_page.dart';
+
 
 
 
@@ -141,8 +143,15 @@ void initState() {
       ? [
         IconButton(
   icon: const Icon(FontAwesomeIcons.solidMessage),
-  onPressed: () async {
-    
+  onPressed: () {
+     Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => UserMessagePage(username: _currentUsername,
+  
+      ),
+    ),
+  );
   },
 ),
           IconButton(

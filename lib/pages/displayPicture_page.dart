@@ -87,7 +87,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 }
 
 
-  void _loadUserData() async {
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('username');
     
@@ -142,83 +142,94 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 }
 
-  // Future<void> _uploadPictureToDatabase(String imagePath) async {
-  //   try {
-  //     final file = File(imagePath);
-  //     final bytes = await file.readAsBytes();
-  //     final base64Image = base64Encode(bytes);
-  //     final databaseRef = FirebaseDatabase.instance.ref();
 
-  //     await databaseRef.child('users/$_currentUsername/pictures')
-  //         .push()
-  //         .set({
-  //       'imageData': base64Image,
-  //       'timestamp': DateTime.now().toIso8601String(),
-  //     });
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
+      title: const Text(
+        'Retake',
+        style: TextStyle(color: Color(0xFFFFBA76)),
+      ),
+      backgroundColor: Colors.white,
+    ),
+    body: Stack(
+      children: [
+        // Background image inside the body (not behind AppBar)
+        
+        // Foreground content
+        SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Image.file(File(widget.imagePath)),
+                const SizedBox(height: 50),
+                TextField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Add a caption...',
+                    labelStyle: TextStyle(
+                      color: Color(0xFFFFBA76),
+                      fontSize: 18,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFFFBA76)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFFFBA76), width: 2.0),
+                    ),
+                  ),
+                  style: const TextStyle(
+                    color: Color(0xFFFFBA76),
+                    fontSize: 18,
+                  ),
+                  maxLines: null,
+                  cursorColor: Color(0xFFFFBA76),
+                ),
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
 
-  //     print('Image uploaded to database successfully.');
-  //   } catch (e) {
-  //     print('Failed to upload image: $e');
-  //   }
-  // }
+                    Expanded(
+  child: ElevatedButton.icon(
+    label: const Text(
+      'Post',
+      style: TextStyle(color: Colors.white),
+    ),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFFFBA76), // Button background
+      padding: const EdgeInsets.symmetric(vertical: 20), // Button height
+      textStyle: const TextStyle(fontSize: 22), // Text size
+    ),
+    onPressed: () async {
+      await _loadUserData();
+      await _updateLoginStreak();
+      await uploadImageAndSaveUrl(widget.imagePath);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+        ),
+      );
+    },
+  ),
+),
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(child: Image.file(File(widget.imagePath))),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Add a description...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: null,
+
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton.icon(
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('Retake'),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PicturePage(camera: cameras.first),
-                    ),
-                  );
-                },
-              ),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.check_circle),
-                label: const Text('Post'),
-                onPressed: () async {
-                  final description = _descriptionController.text;
-                  // You can pass this to ProfilePage or save it as needed
-                   _loadUserData();
-                  await _updateLoginStreak();
-                  await uploadImageAndSaveUrl(widget.imagePath);
-                   Navigator.pushReplacement(
-                     context,
-                     MaterialPageRoute(
-                      builder: (context) => const ProfilePage(),
-                     ),
-                   );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
+
 }

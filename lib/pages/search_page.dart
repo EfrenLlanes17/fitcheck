@@ -271,7 +271,7 @@ class _SearchPageState extends State<SearchPage> {
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.bone), label: 'Feed'),
           BottomNavigationBarItem(icon: Row(
   mainAxisSize: MainAxisSize.min,
   children: const [

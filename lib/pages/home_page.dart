@@ -1111,8 +1111,8 @@ final pictureWidgets = sortedEntries.map((entry) {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(FontAwesomeIcons.bone),
+            label: 'Feed',
           ),
           BottomNavigationBarItem(
             icon: Row(
@@ -1124,7 +1124,7 @@ final pictureWidgets = sortedEntries.map((entry) {
   ],
 )
 ,
-            label: 'Friends',
+            label: 'Packs',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),

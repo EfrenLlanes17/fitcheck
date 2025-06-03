@@ -8,6 +8,8 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import 'package:flutter/services.dart';
 
 import 'package:fitcheck/pages/createaccountpage.dart';
+import 'package:fitcheck/pages/gsusername.dart';
+
 import 'package:fitcheck/pages/signinpage.dart';
 
 class StarterPage extends StatefulWidget {
@@ -158,7 +160,7 @@ Text(
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const CreateAccountPage(),
+                                        builder: (context) => const PETGettingStartedP2Widget(),
                                       ),
                                     );
                                   },

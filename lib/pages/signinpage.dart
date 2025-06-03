@@ -4,6 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/createaccountpage.dart';
+import 'package:fitcheck/pages/gsusername.dart';
+
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -214,7 +216,7 @@ Widget build(BuildContext context) {
               onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const CreateAccountPage(),
+                                        builder: (context) => const PETGettingStartedP2Widget(),
                                       ),
                                     ),
               child: Text(

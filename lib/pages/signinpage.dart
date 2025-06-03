@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitcheck/pages/profile_page.dart';
+import 'package:fitcheck/pages/createaccountpage.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -14,14 +16,9 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _signInUsernameController = TextEditingController();
   final TextEditingController _signInPasswordController = TextEditingController();
     final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
-
-
-  @override
-  void dispose() {
-    _signInUsernameController.dispose();
-    _signInPasswordController.dispose();
-    super.dispose();
-  }
+  bool _passwordVisible = false;
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _signIn() async {
     final username = _signInUsernameController.text.trim();
@@ -72,57 +69,174 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Sign In'),
+ @override
+Widget build(BuildContext context) {
+  return   GestureDetector(
+    onTap: () => FocusScope.of(context).unfocus(),
+    child: Scaffold(
+      key: _scaffoldKey,
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage('assets/images/background.png'),
+                ),
+              ),
+            ),
+          ),
+
+          // Foreground UI
+          Center(
+  child: SafeArea(child: SingleChildScrollView(
+    child: Container(
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      child: Form(
+        key: _formKey,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _signInUsernameController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
-                ),
+            Text(
+              'PAWPRINT',
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFFBA76),
               ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _signInPasswordController,
-              obscureText: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
-                ),
+            const SizedBox(height: 16),
+            Text(
+              'Let\'s get started by filling out the form below.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Color(0xFFFFBA76),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 32),
+            TextFormField(
+  style: const TextStyle(
+    color: Color(0xFFFFBA76),
+    fontSize: 18,
+  ),
+  controller: _signInUsernameController,
+  decoration: InputDecoration(
+    labelText: 'Email',
+    labelStyle: TextStyle(
+      color: Color(0xFFFFBA76),
+      fontSize: 18,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Color(0xFFFFBA76)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Color(0xFFFFBA76), width: 2),
+    ),
+  ),
+  validator: (value) =>
+      value == null || value.isEmpty ? 'Enter email' : null,
+),
+
+            const SizedBox(height: 16),
+           TextFormField(
+  style: const TextStyle(
+    color: Color(0xFFFFBA76),
+    fontSize: 18,
+  ),
+  controller: _signInPasswordController,
+  obscureText: !_passwordVisible,
+  decoration: InputDecoration(
+    labelText: 'Password',
+    labelStyle: TextStyle(
+      color: Color(0xFFFFBA76),
+      fontSize: 18,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Color(0xFFFFBA76)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Color(0xFFFFBA76), width: 2),
+    ),
+    suffixIcon: IconButton(
+      icon: Icon(
+        _passwordVisible ? Icons.visibility : Icons.visibility_off,
+        color: Color(0xFFFFBA76),
+      ),
+      onPressed: () {
+        setState(() {
+          _passwordVisible = !_passwordVisible;
+        });
+      },
+    ),
+  ),
+  validator: (value) =>
+      value == null || value.isEmpty ? 'Enter password' : null,
+),
+
+            const SizedBox(height: 24),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-              ),
               onPressed: () {
-                _signIn();
+                if (_formKey.currentState!.validate()) {
+                  _signIn();
+                }
               },
-              child: const Text('Sign In'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFFFBA76),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                minimumSize: Size(double.infinity, 48),
+              ),
+              child: Text(
+                'Log In',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const CreateAccountPage(),
+                                      ),
+                                    ),
+              child: Text(
+                "Don't have an account? Sign up",
+                style: TextStyle(
+                  color: Color(0xFFFFBA76),
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
+    ),
+  ),
+  ),
+),
+
+        ],
+      ),
+    ),
+  );
+  
+}
 }

@@ -3,10 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/startpage.dart';
+import 'package:fitcheck/pages/gsemail.dart';
+
 
 
 class PETGettingStartedP2Widget extends StatefulWidget {
-  const PETGettingStartedP2Widget({super.key});
+  final String email;
+  const PETGettingStartedP2Widget({super.key, required this.email});
 
   
 
@@ -20,7 +23,7 @@ class _PETGettingStartedP2WidgetState extends State<PETGettingStartedP2Widget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Color> dotColors = [
   Color(0xFFFFBA76),
-  Color(0xFFFFFFFF),
+  Color(0xFFFFBA76),
   Color(0xFFFFFFFF),
   Color(0xFFFFFFFF),
   Color(0xFFFFFFFF),
@@ -35,6 +38,7 @@ class _PETGettingStartedP2WidgetState extends State<PETGettingStartedP2Widget> {
 
  @override
 Widget build(BuildContext context) {
+  print(widget.email);
   return GestureDetector(
     onTap: () => FocusScope.of(context).unfocus(),
     child: Container(
@@ -140,7 +144,7 @@ Widget build(BuildContext context) {
         Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const StarterPage(),
+                                        builder: (context) => const PETGettingStartedWidget(),
                                       ),
                                     );
       },

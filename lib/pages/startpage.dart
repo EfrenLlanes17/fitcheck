@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 
 import 'package:fitcheck/pages/createaccountpage.dart';
 import 'package:fitcheck/pages/gsusername.dart';
+import 'package:fitcheck/pages/gsemail.dart';
+
 
 import 'package:fitcheck/pages/signinpage.dart';
 
@@ -160,7 +162,7 @@ Text(
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const PETGettingStartedP2Widget(),
+                                        builder: (context) => const PETGettingStartedWidget(),
                                       ),
                                     );
                                   },

@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/createaccountpage.dart';
 import 'package:fitcheck/pages/gsusername.dart';
+import 'package:fitcheck/pages/gsemail.dart';
+
 
 
 class SignInPage extends StatefulWidget {
@@ -216,7 +218,7 @@ Widget build(BuildContext context) {
               onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const PETGettingStartedP2Widget(),
+                                        builder: (context) => const PETGettingStartedWidget(),
                                       ),
                                     ),
               child: Text(

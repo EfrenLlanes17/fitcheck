@@ -28,6 +28,7 @@ class _PETGettingStartedP2WidgetState extends State<PETGettingStartedP2Widget> {
   Color(0xFFFFFFFF),
   Color(0xFFFFFFFF),
   Color(0xFFFFFFFF),
+  Color(0xFFFFFFFF),
 ];
 
   @override

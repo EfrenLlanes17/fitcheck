@@ -31,6 +31,7 @@ class _PETGettingStartedP3WidgetState extends State<PETGettingStartedP4Widget> {
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
   Color(0xFFFFFFFF),
+  Color(0xFFFFFFFF),
 ];
 
   @override

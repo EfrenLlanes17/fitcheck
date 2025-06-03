@@ -236,6 +236,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
     return Scaffold(
       
     appBar: AppBar(
+      automaticallyImplyLeading: false, 
   backgroundColor: const Color.fromARGB(255, 255, 255, 255),
   elevation: 0,
   title: Padding(

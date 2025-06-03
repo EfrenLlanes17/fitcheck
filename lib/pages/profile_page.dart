@@ -174,6 +174,7 @@ final TextEditingController _bioController = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false, 
   backgroundColor: Colors.white,
   title:  Text(
           _currentUsername,

@@ -139,6 +139,12 @@ void initState() {
   
   actions: true
       ? [
+        IconButton(
+  icon: const Icon(FontAwesomeIcons.solidMessage),
+  onPressed: () async {
+    
+  },
+),
           IconButton(
   icon: const Icon(Icons.more_vert, color: Color(0xFFFFBA76)),
   onPressed: () async {
@@ -174,7 +180,8 @@ void initState() {
       },
     );
   },
-)
+),
+
 
         ]
       : [],

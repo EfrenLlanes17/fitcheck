@@ -51,6 +51,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1  # check for the latest version
   audioplayers: ^5.2.1 
   scrollable_positioned_list: ^0.3.8
+  flutter_animate: 4.5.0
 
 flutter_icons:
   android: true

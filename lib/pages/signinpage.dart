@@ -134,7 +134,7 @@ Widget build(BuildContext context) {
   ),
   controller: _signInUsernameController,
   decoration: InputDecoration(
-    labelText: 'Email',
+    labelText: 'Username',
     labelStyle: TextStyle(
       color: Color(0xFFFFBA76),
       fontSize: 18,
@@ -149,7 +149,7 @@ Widget build(BuildContext context) {
     ),
   ),
   validator: (value) =>
-      value == null || value.isEmpty ? 'Enter email' : null,
+      value == null || value.isEmpty ? 'Enter username' : null,
 ),
 
             const SizedBox(height: 16),

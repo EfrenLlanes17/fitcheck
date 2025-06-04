@@ -72,7 +72,7 @@ class _MessagePageState extends State<MessagePage> {
   }
 
    Future<String> getLastMessage(String pushKey) async {
-    final ref = FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/lastmessages');
+    final ref = FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/lastmessage');
     final snapshot = await ref.get();
     if (snapshot.exists && snapshot.value is String) {
       return snapshot.value as String;

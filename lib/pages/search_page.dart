@@ -47,54 +47,33 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void _onTabTapped(int index) {
-    Widget page;
-    switch (index) {
-      case 0:
-        page = const HomePage();
-        break;
-      case 1:
-        page = const FreindsPage();
-        break;
-      case 2:
-        page = PicturePage(camera: cameras.first);
-        break;
-      case 3:
-        page = const ProfilePage();
-        break;
-      case 4:
-        page = const MessagePage();
-        break;
-      default:
-        return;
-    }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        appBar: PreferredSize(
+Widget build(BuildContext context) {
+  return DefaultTabController(
+    length: 2,
+    child: Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      appBar: PreferredSize(
   preferredSize: const Size.fromHeight(110),
   child: AppBar(
-      iconTheme: const IconThemeData(color: Color(0xFFFFBA76)), // Also changes back button/icon color
-
-    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-    automaticallyImplyLeading: false,
+    backgroundColor: Colors.white,
     elevation: 0,
-    flexibleSpace: Padding(
-      padding: const EdgeInsets.fromLTRB(16, 60, 16, 8),
+    automaticallyImplyLeading: false,
+    titleSpacing: 0,
+    title: Padding(
+      padding: const EdgeInsets.only(top: 16.0),
       child: Row(
         children: [
-          
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFFFBA76)),
+            onPressed: () => Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    ),
+          ),
           Expanded(
             child: Container(
+              margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(56, 172, 171, 171),
                 borderRadius: BorderRadius.circular(32),
@@ -106,11 +85,11 @@ class _SearchPageState extends State<SearchPage> {
                   });
                 },
                 style: const TextStyle(color: Color(0xFFFFBA76)),
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: const InputDecoration(
                   hintText: 'Search...',
-                  hintStyle: const TextStyle(color: Color.fromARGB(255, 231, 167, 102)),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 231, 167, 102)),
                   border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
             ),
@@ -120,7 +99,7 @@ class _SearchPageState extends State<SearchPage> {
     ),
     bottom: const TabBar(
       labelColor: Color(0xFFFFBA76),
-      unselectedLabelColor:Color.fromARGB(255, 231, 167, 102),
+      unselectedLabelColor: Color.fromARGB(255, 231, 167, 102),
       indicatorColor: Color(0xFFFFBA76),
       indicatorWeight: 2,
       tabs: [
@@ -131,163 +110,143 @@ class _SearchPageState extends State<SearchPage> {
   ),
 ),
 
-        body: TabBarView(
-          children: [
-            // USERS TAB
-            FutureBuilder<DataSnapshot>(
-              future: FirebaseDatabase.instance.ref('users').get(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+      body: Column(
+        children: [
+          // Search bar just below AppBar
+          
+          Expanded(
+            child: TabBarView(
+              children: [
+                // ACCOUNTS TAB
+                FutureBuilder<DataSnapshot>(
+                  future: FirebaseDatabase.instance.ref('users').get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (!snapshot.hasData || snapshot.data!.value == null) {
+                      return const Center(child: Text('No users found', style: TextStyle(color: Color(0xFFFFBA76))));
+                    }
 
-                if (!snapshot.hasData || snapshot.data!.value == null) {
-                  return const Center(child: Text('No users found', style: TextStyle(color: Color(0xFFFFBA76))));
-                }
+                    final userMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+                    final filteredUsers = userMap.entries.where((entry) {
+                      final username = entry.key.toLowerCase();
+                      return username.contains(searchQuery);
+                    }).toList();
 
-                final userMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
-                final filteredUsers = userMap.entries.where((entry) {
-                  final username = entry.key.toLowerCase();
-                  return username.contains(searchQuery);
-                }).toList();
+                    if (filteredUsers.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No users found.',
+                          style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
+                        ),
+                      );
+                    }
 
-                if (filteredUsers.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No users found.',
-                    style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
-                  ),
-                );
-              }
+                    return ListView.builder(
+                      itemCount: filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        final username = filteredUsers[index].key;
+                        final userData = Map<String, dynamic>.from(filteredUsers[index].value);
+                        final profileUrl = userData['profilepicture'] ?? 'https://via.placeholder.com/150';
 
+                        return FutureBuilder<DataSnapshot>(
+                          future: FirebaseDatabase.instance.ref('users/$username/followers').get(),
+                          builder: (context, followerSnapshot) {
+                            int followerCount = 0;
+                            if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
+                              final followersMap = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
+                              followerCount = followersMap.length;
+                            }
 
-               return ListView.builder(
-                itemCount: filteredUsers.length,
-                itemBuilder: (context, index) {
-  final username = filteredUsers[index].key;
-  final userData = Map<String, dynamic>.from(filteredUsers[index].value);
-
-  final profileUrl = userData['profilepicture'] ?? 'https://via.placeholder.com/150';
-
-  return FutureBuilder<DataSnapshot>(
-    future: FirebaseDatabase.instance.ref('users/$username/followers').get(),
-    builder: (context, followerSnapshot) {
-      int followerCount = 0;
-      if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
-        final followersMap = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
-        followerCount = followersMap.length;
-      }
-
-      return GestureDetector(
-        onTap: () {
-          if (username != _currentloggedInUsername) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => diffrentProfilePage(
-                  username: username,
-                  usernameOfLoggedInUser: _currentloggedInUsername,
+                            return GestureDetector(
+                              onTap: () {
+                                if (username != _currentloggedInUsername) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => diffrentProfilePage(
+                                        username: username,
+                                        usernameOfLoggedInUser: _currentloggedInUsername,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ProfilePage(),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(profileUrl),
+                                ),
+                                title: Text(username, style: const TextStyle(color: Color(0xFFFFBA76))),
+                                subtitle: Text(
+                                  '$followerCount followers',
+                                  style: const TextStyle(color: Color(0xFFFFBA76)),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
                 ),
-              ),
-            );
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProfilePage(),
-              ),
-            );
-          }
-        },
-        child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(profileUrl),
-          ),
-          title: Text(username, style: const TextStyle(color: Color(0xFFFFBA76))),
-          subtitle: Text(
-            '$followerCount followers',
-            style: const TextStyle(color: Color(0xFFFFBA76)),
-          ),
-        ),
-      );
-    },
-  );
-},
 
-              );
+                // POSTS TAB
+                FutureBuilder<DataSnapshot>(
+                  future: FirebaseDatabase.instance.ref('pictures').get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-              },
+                    if (!snapshot.hasData || snapshot.data!.value == null) {
+                      return const Center(child: Text('No posts found', style: TextStyle(color: Color(0xFFFFBA76))));
+                    }
+
+                    final postMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+                    final filteredPosts = postMap.entries.where((entry) {
+                      final data = Map<String, dynamic>.from(entry.value);
+                      final caption = (data['caption'] ?? '').toString().toLowerCase();
+                      return caption.contains(searchQuery);
+                    }).toList();
+
+                    if (filteredPosts.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No Posts found.',
+                          style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
+                        ),
+                      );
+                    }
+
+                    return GridView.count(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                      childAspectRatio: 1,
+                      padding: const EdgeInsets.all(8),
+                      children: filteredPosts.map((entry) {
+                        final data = Map<String, dynamic>.from(entry.value);
+                        final url = data['url'] ?? '';
+                        return Image.network(url, fit: BoxFit.cover);
+                      }).toList(),
+                    );
+                  },
+                ),
+              ],
             ),
-
-            // POSTS TAB
-            FutureBuilder<DataSnapshot>(
-              future: FirebaseDatabase.instance.ref('pictures').get(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (!snapshot.hasData || snapshot.data!.value == null) {
-                  return const Center(child: Text('No posts found', style: TextStyle(color: Colors.white70)));
-                }
-
-                final postMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
-                final filteredPosts = postMap.entries.where((entry) {
-                  final data = Map<String, dynamic>.from(entry.value);
-                  final caption = (data['caption'] ?? '').toString().toLowerCase();
-                  return caption.contains(searchQuery);
-                }).toList();
-
-                if (filteredPosts.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No Posts found.',
-                    style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
-                  ),
-                );
-              }
-
-                return GridView.count(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 4,
-                  mainAxisSpacing: 4,
-                  childAspectRatio: 1,
-                  padding: const EdgeInsets.all(8),
-                  children: filteredPosts.map((entry) {
-                    final data = Map<String, dynamic>.from(entry.value);
-                    final url = data['url'] ?? '';
-                    return Image.network(url, fit: BoxFit.cover);
-                  }).toList(),
-
-                  
-                );
-              },
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        currentIndex: currentIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: Color.fromARGB(255, 250, 144, 39),
-        unselectedItemColor: Color(0xFFFFBA76),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.bone), label: 'Feed'),
-          BottomNavigationBarItem(icon: Row(
-  mainAxisSize: MainAxisSize.min,
-  children: const [
-    Icon(FontAwesomeIcons.cat),
-    SizedBox(width: 4),
-   Icon(FontAwesomeIcons.dove),
-  ],
-), label: 'Groups'),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
-          BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),
+          ),
         ],
       ),
-      ),
-    );
-  }
+    ),
+  );
+}
+
 }

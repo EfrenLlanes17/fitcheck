@@ -152,7 +152,7 @@ class _MessagePageState extends State<MessagePage> {
           ),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.dog), label: 'Profile'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),
+          BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.solidMessage), label: 'Message'),
         ],
       ),
     );

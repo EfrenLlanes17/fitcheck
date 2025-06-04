@@ -718,7 +718,7 @@ final pictureWidgets = sortedEntries.map((entry) {
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
+            icon: Icon(FontAwesomeIcons.solidMessage),
             label: 'Message',
           ),
         ],

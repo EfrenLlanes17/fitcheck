@@ -51,6 +51,28 @@ class _UserMessagePageState extends State<UserMessagePage> {
   FirebaseDatabase.instance.ref().child('users/$otheruser/chats/$pushKey/participants').set({
   _currentUsername: true,
   });
+
+  DatabaseReference ref = FirebaseDatabase.instance.ref().child('users/$otheruser/profilepicture');
+DataSnapshot snapshot = await ref.get();
+
+String? profileUrl = snapshot.value as String?;
+
+
+  FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey').update({
+  'profilepicture': profileUrl,
+  });
+
+   DatabaseReference ref2 = FirebaseDatabase.instance.ref().child('users/$_currentUsername/profilepicture');
+    DataSnapshot snapshot2 = await ref2.get();
+
+  String? profileUrl2 = snapshot2.value as String?;
+
+
+  FirebaseDatabase.instance.ref().child('users/$otheruser/chats/$pushKey').update({
+  'profilepicture': profileUrl2,
+  });
+
+
   }
 
   void _loadUserData() async {
@@ -79,7 +101,8 @@ class _UserMessagePageState extends State<UserMessagePage> {
   void _sendMessage() async {
   final text = _controller.text.trim();
   if (text.isEmpty) return;
-
+  String otheruser = widget.username;
+  String pushKey = _chatRef.key.toString();
   final timestamp = DateTime.now().millisecondsSinceEpoch;
 
   // Ensure participants are written once (optional: move to chat creation logic)
@@ -90,6 +113,24 @@ class _UserMessagePageState extends State<UserMessagePage> {
     'sender': _currentUsername,
     'text': text,
     'timestamp': timestamp,
+  });
+
+  
+
+
+  FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey').update({
+  'lastmessage': text,
+  'sender': _currentUsername,
+  'timestamp': timestamp,
+
+  });
+
+
+  FirebaseDatabase.instance.ref().child('users/$otheruser/chats/$pushKey').update({
+  'lastmessage': text,
+  'timestamp': timestamp,
+  'sender': _currentUsername
+
   });
 
   _controller.clear();

@@ -6,32 +6,37 @@ import 'package:fitcheck/pages/startpage.dart';
 import 'package:fitcheck/pages/gsemail.dart';
 import 'package:fitcheck/pages/gsusername.dart';
 import 'package:fitcheck/pages/gspassword.dart';
-import 'package:fitcheck/pages/gsamountofpets.dart';
+import 'package:fitcheck/pages/gslocation.dart';
+import 'package:fitcheck/pages/countcontol.dart';
 
 
 
-class PETGettingStartedP4Widget extends StatefulWidget {
+
+class PETGettingStartedP5Widget extends StatefulWidget {
   final String email;
   final String username; 
   final String password;
-  const PETGettingStartedP4Widget({super.key, required this.email, required this.username, required this.password});
+  final String location;
+  const PETGettingStartedP5Widget({super.key, required this.email, required this.username, required this.password, required this.location});
 
   
 
   @override
-  State<PETGettingStartedP4Widget> createState() => _PETGettingStartedP3WidgetState();
+  State<PETGettingStartedP5Widget> createState() => _PETGettingStartedP5WidgetState();
 }
 
-class _PETGettingStartedP3WidgetState extends State<PETGettingStartedP4Widget> {
+class _PETGettingStartedP5WidgetState extends State<PETGettingStartedP5Widget> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFieldFocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  int yourCountVariable = 1;
+
   List<Color> dotColors = [
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
-  Color(0xFFFFFFFF),
+  Color(0xFFFFBA76),
   Color(0xFFFFFFFF),
 ];
 
@@ -44,7 +49,7 @@ class _PETGettingStartedP3WidgetState extends State<PETGettingStartedP4Widget> {
 
  @override
 Widget build(BuildContext context) {
-  print(widget.email + " " + widget.username + " " + widget.password);
+  print(widget.email + " " + widget.username + " " + widget.password + " " + widget.location);
   return GestureDetector(
     onTap: () => FocusScope.of(context).unfocus(),
     child: Container(
@@ -87,6 +92,7 @@ Widget build(BuildContext context) {
             Expanded(
               child: Center(
                 child: Container(
+                  width: MediaQuery.of(context).size.width * 0.85,
                   decoration: BoxDecoration(
                     color: Color(0xFFFFBA76),
                     borderRadius: BorderRadius.circular(12),
@@ -100,40 +106,27 @@ Widget build(BuildContext context) {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '(Optional) Please Enter\nYour City/State',
+                        'How Many Pet Accounts\nDo You Want To Make?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(height: 10),
-                      SizedBox(
-                        width: 350,
-                        child: TextFormField(
-                          controller: _textController,
-                          focusNode: _textFieldFocusNode,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'City, State...',
-                            hintStyle: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 30,
-                            ),
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
-                      ),
+                      CountController(
+  initialCount: yourCountVariable,
+  onChanged: (newCount) {
+    setState(() {
+      yourCountVariable = newCount;
+    });
+  },
+),
+SizedBox(height: 10),
+
+
+
                     ],
                   ),
                 ),
@@ -150,8 +143,8 @@ Widget build(BuildContext context) {
         Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => PETGettingStartedP3Widget(
-        email: widget.email, username: widget.username
+      builder: (context) => PETGettingStartedP4Widget(
+        email: widget.email, username: widget.username, password: widget.password,
       ),
     ),
   );
@@ -193,14 +186,7 @@ Row(
 
     ElevatedButton.icon(
       onPressed: () {
-        Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PETGettingStartedP5Widget(
-        email: widget.email, username: widget.username, password: widget.password, location: _textController.text
-      ),
-    ),
-  );
+        print('Next button pressed');
       },
       icon: FaIcon(
         FontAwesomeIcons.arrowRight,

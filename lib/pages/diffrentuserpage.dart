@@ -147,7 +147,7 @@ void initState() {
      Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => UserMessagePage(username: _currentUsername,
+      builder: (context) => UserMessagePage(username: _currentUsername, chatId: "",
   
       ),
     ),

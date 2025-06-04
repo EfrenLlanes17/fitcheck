@@ -60,6 +60,86 @@ class _MessagePageState extends State<MessagePage> {
     });
   }
 
+  Future<String> getProfilePicture(String otherUser) async {
+    final ref = FirebaseDatabase.instance.ref().child('users/$otherUser/profilepicture');
+    final snapshot = await ref.get();
+    if (snapshot.exists && snapshot.value is String) {
+      return snapshot.value as String;
+    } else {
+      // Fallback default image
+      return 'https://via.placeholder.com/150/FFBA76/ffffff?text=User';
+    }
+  }
+
+   Future<String> getLastMessage(String pushKey) async {
+    final ref = FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/lastmessages');
+    final snapshot = await ref.get();
+    if (snapshot.exists && snapshot.value is String) {
+      return snapshot.value as String;
+    } else {
+      // Fallback default image
+      return 'No Messages';
+    }
+  }
+
+  Future<String> getLastMessageSender(String pushKey) async {
+    final ref = FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/sender');
+    final snapshot = await ref.get();
+    if (snapshot.exists && snapshot.value is String) {
+      if(snapshot.value as String == _currentUsername){
+          return 'You';
+      }
+      return snapshot.value as String;
+    } else {
+      // Fallback default image
+      return 'Unknown:';
+    }
+  }
+
+  String _getTimeAgo(DateTime postDate) {
+  final now = DateTime.now();
+  final difference = now.difference(postDate);
+
+  if (difference.inSeconds < 60) {
+    return '${difference.inSeconds} secs ago';
+  } else if (difference.inMinutes < 60) {
+    return '${difference.inMinutes} mins ago';
+  } else if (difference.inHours < 24) {
+    return '${difference.inHours} hours ago';
+  } else if (difference.inDays < 7) {
+    return '${difference.inDays} days ago';
+  } else if (difference.inDays < 30) {
+    return '${(difference.inDays / 7).floor()} weeks ago';
+  } else if (difference.inDays < 365) {
+    return '${(difference.inDays / 30).floor()} months ago';
+  } else {
+    return '${(difference.inDays / 365).floor()} years ago';
+  }
+}
+
+  Future<String> getLastMessageTime(String pushKey) async {
+  final ref = FirebaseDatabase.instance
+      .ref()
+      .child('users/$_currentUsername/chats/$pushKey/timestamp');
+  final snapshot = await ref.get();
+
+  if (snapshot.exists && snapshot.value is int) {
+    final milliseconds = snapshot.value as int;
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+    return _getTimeAgo(dateTime);
+  } else if (snapshot.exists && snapshot.value is String) {
+    // In case it's accidentally stored as a string
+    final milliseconds = int.tryParse(snapshot.value as String);
+    if (milliseconds != null) {
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+      return _getTimeAgo(dateTime);
+    }
+  }
+
+  return 'Unknown';
+}
+
+
   void _onTabTapped(int index) {
     Widget page;
     switch (index) {
@@ -97,36 +177,75 @@ class _MessagePageState extends State<MessagePage> {
         iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
       ),
       body: _userChats.isEmpty
-          ? const Center(child: Text("No chats yet."))
-          : ListView.builder(
-              itemCount: _userChats.length,
-              itemBuilder: (context, index) {
-                final chatId = _userChats.keys.elementAt(index);
-                final otherUser = _userChats[chatId]!;
-                return ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Color(0xFFFFBA76),
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  title: Text(
-                    otherUser,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserMessagePage(
-                          username: otherUser,
-                          chatId: chatId,
-                        ),
-                      ),
-                    );
-                  },
+    ? const Center(child: Text("No chats yet."))
+    : ListView.builder(
+        itemCount: _userChats.length,
+        itemBuilder: (context, index) {
+          final chatId = _userChats.keys.elementAt(index);
+          final otherUser = _userChats[chatId]!;
+
+          return FutureBuilder<List<String>>(
+            future: Future.wait([
+              getProfilePicture(otherUser),
+              getLastMessage(chatId),
+              getLastMessageSender(chatId),
+              getLastMessageTime(chatId),
+            ]),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const ListTile(
+                  title: Text("Loading..."),
                 );
-              },
-            ),
+              }
+
+              final profileUrl = snapshot.data![0];
+              final lastMessage = snapshot.data![1];
+              final sender = snapshot.data![2];
+              final timestamp = snapshot.data![3];
+
+              String timeAgo = 'Unknown';
+              try {
+                timeAgo = timestamp;
+              } catch (_) {}
+
+              return ListTile(
+                leading: CircleAvatar(
+                  radius: 24,
+                  backgroundImage: NetworkImage(profileUrl),
+                ),
+                title: Text(
+                  otherUser,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  "$sender: $lastMessage",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Text(
+                  timeAgo,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserMessagePage(
+                        username: otherUser,
+                        chatId: chatId,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         currentIndex: currentIndex,

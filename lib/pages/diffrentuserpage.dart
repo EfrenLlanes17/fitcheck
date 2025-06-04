@@ -143,17 +143,45 @@ void initState() {
       ? [
         IconButton(
   icon: const Icon(FontAwesomeIcons.solidMessage),
-  onPressed: () {
-     Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => UserMessagePage(username: _currentUsername, chatId: "",
-  
+  onPressed: () async {
+    String chatId = "";
+    final userChatsRef = FirebaseDatabase.instance.ref().child('users/$usernameOfLoggedInUser/chats');
+    final userChatsSnapshot = await userChatsRef.get();
+
+    if (userChatsSnapshot.exists) {
+      final Map userChats = userChatsSnapshot.value as Map;
+
+      for (var entry in userChats.entries) {
+        final chatKey = entry.key;
+        final participantsSnapshot = await FirebaseDatabase.instance
+            .ref()
+            .child('users/$usernameOfLoggedInUser/chats/$chatKey/participants')
+            .get();
+
+        if (participantsSnapshot.exists) {
+          final participants = participantsSnapshot.value as Map;
+
+          if (participants.length == 1 &&
+              participants.containsKey(_currentUsername)) {
+            chatId = chatKey;
+            break;
+          }
+        }
+      }
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserMessagePage(
+          username: _currentUsername,
+          chatId: chatId,
+        ),
       ),
-    ),
-  );
+    );
   },
 ),
+
           IconButton(
   icon: const Icon(Icons.more_vert, color: Color(0xFFFFBA76)),
   onPressed: () async {

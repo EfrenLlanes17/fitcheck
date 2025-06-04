@@ -40,6 +40,10 @@ class _UserMessagePageState extends State<UserMessagePage> {
     widget.username: true,
     _currentUsername: true,
   });
+  String pushKey = _chatRef.key.toString();
+  FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/participants').set({
+  widget.username: true,
+  });
   }
 
   void _loadUserData() async {

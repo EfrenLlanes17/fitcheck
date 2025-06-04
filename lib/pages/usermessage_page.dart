@@ -44,6 +44,11 @@ class _UserMessagePageState extends State<UserMessagePage> {
   FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/participants').set({
   widget.username: true,
   });
+
+  String otheruser = widget.username;
+  FirebaseDatabase.instance.ref().child('users/$otheruser/chats/$pushKey/participants').set({
+  _currentUsername: true,
+  });
   }
 
   void _loadUserData() async {
@@ -134,7 +139,12 @@ class _UserMessagePageState extends State<UserMessagePage> {
                               : Colors.grey[300],
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Text(msg['text'] ?? ''),
+                        child: Text(
+                        msg['text'] ?? '',
+                        style: TextStyle(
+                          color: isCurrentUser ? Colors.black : Colors.black87, // or any readable color
+                        ),
+                      ),
                       ),
                     );
                   },

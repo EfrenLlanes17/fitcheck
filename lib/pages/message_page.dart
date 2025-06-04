@@ -194,7 +194,11 @@ class _MessagePageState extends State<MessagePage> {
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const ListTile(
-                  title: Text("Loading..."),
+                  title: Text("Loading...", style: TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Color(0xFFFFBA76),
+      fontSize: 16,
+    ),),
                 );
               }
 
@@ -215,17 +219,22 @@ class _MessagePageState extends State<MessagePage> {
                 ),
                 title: Text(
                   otherUser,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFFBA76)),
                 ),
                 subtitle: Text(
                   "$sender: $lastMessage",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+      color: Color(0xFFFFBA76),
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+    ),
                 ),
                 trailing: Text(
                   timeAgo,
                   style: const TextStyle(
-                    color: Colors.grey,
+                    color: Color.fromARGB(255, 0, 0, 0),
                     fontSize: 12,
                   ),
                 ),

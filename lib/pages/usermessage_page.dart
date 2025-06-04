@@ -14,6 +14,8 @@ class UserMessagePage extends StatefulWidget {
 
 class _UserMessagePageState extends State<UserMessagePage> {
   final TextEditingController _controller = TextEditingController();
+    final ScrollController _scrollController = ScrollController();
+
   late final DatabaseReference _chatRef;
   late final DatabaseReference _messagesRef;
   String _currentUsername = '';
@@ -69,6 +71,8 @@ class _UserMessagePageState extends State<UserMessagePage> {
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -92,7 +96,7 @@ class _UserMessagePageState extends State<UserMessagePage> {
 }
 
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -120,8 +124,15 @@ class _UserMessagePageState extends State<UserMessagePage> {
                   ..sort((a, b) =>
                       (a.value['timestamp'] as int).compareTo(b.value['timestamp'] as int));
 
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (_scrollController.hasClients) {
+                    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                  }
+                });
+
                 return ListView.builder(
-                  padding: const EdgeInsets.all(12),
+                  controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final msg = messages[index].value;
@@ -132,19 +143,28 @@ class _UserMessagePageState extends State<UserMessagePage> {
                           isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 4),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.75,
+                        ),
                         decoration: BoxDecoration(
                           color: isCurrentUser
-                              ? Colors.deepPurple[100]
-                              : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(16),
+                              ? const Color(0xFFFFBA76)
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(16),
+                            topRight: const Radius.circular(16),
+                            bottomLeft: Radius.circular(isCurrentUser ? 16 : 0),
+                            bottomRight: Radius.circular(isCurrentUser ? 0 : 16),
+                          ),
                         ),
                         child: Text(
-                        msg['text'] ?? '',
-                        style: TextStyle(
-                          color: isCurrentUser ? Colors.black : Colors.black87, // or any readable color
+                          msg['text'] ?? '',
+                          style: TextStyle(
+                            color: isCurrentUser ? Colors.white : Colors.black87,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
                       ),
                     );
                   },
@@ -160,15 +180,25 @@ class _UserMessagePageState extends State<UserMessagePage> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration.collapsed(
-                      hintText: "Type a message...",
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
+  controller: _controller,
+  decoration: const InputDecoration.collapsed(
+    hintText: "Type a message...",
+    hintStyle: TextStyle(
+      color: Color(0xFFFFBA76),
+      fontWeight: FontWeight.w500,
+    ),
+  ),
+  style: const TextStyle(
+    color: Color(0xFFFFBA76),
+    fontWeight: FontWeight.w600,
+  ),
+  cursorColor: Color(0xFFFFBA76),
+  onSubmitted: (_) => _sendMessage(),
+),
+
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send, color: Colors.deepPurple),
+                  icon: const Icon(Icons.send, color: Color(0xFFFFBA76)),
                   onPressed: _sendMessage,
                 ),
               ],

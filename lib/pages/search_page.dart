@@ -56,14 +56,14 @@ Widget build(BuildContext context) {
     child: Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: PreferredSize(
-  preferredSize: const Size.fromHeight(110),
+  preferredSize: const Size.fromHeight(100),
   child: AppBar(
     backgroundColor: Colors.white,
     elevation: 0,
     automaticallyImplyLeading: false,
     titleSpacing: 0,
     title: Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.only(top: 0.0),
       child: Row(
         children: [
           IconButton(
@@ -91,7 +91,7 @@ Widget build(BuildContext context) {
                   hintText: 'Search...',
                   hintStyle: TextStyle(color: Color.fromARGB(255, 231, 167, 102)),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 ),
               ),
             ),

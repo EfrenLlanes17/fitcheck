@@ -20,38 +20,35 @@ class TimelapsPage extends StatefulWidget {
 
 class _TimelapsPageState extends State<TimelapsPage> {
   String _currentUsername = '';
-  late PageController _pageController;
   Timer? _slideshowTimer;
-  int _currentPage = 0;
+  int _currentIndex = 0;
+  Map<String, dynamic>? _currentData;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.initialIndex);
-    _currentPage = widget.initialIndex;
+    _currentIndex = widget.initialIndex;
     _loadUserData();
-    _startSlideshow();
+    _fetchData().then((_) => _startSlideshow());
   }
 
   @override
   void dispose() {
     _slideshowTimer?.cancel();
-    _pageController.dispose();
     super.dispose();
   }
 
-  void _startSlideshow() {
-    _slideshowTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+  Future<void> _startSlideshow() async {
+    _slideshowTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
       if (!mounted) return;
+      final nextIndex = (_currentIndex + 1) % widget.postDataList.length;
+      await _precacheNextImage(nextIndex);
 
       setState(() {
-        _currentPage = (_currentPage + 1) % widget.postDataList.length;
-        _pageController.animateToPage(
-          _currentPage,
-          duration: const Duration(milliseconds: 800),
-          curve: Curves.easeInOut,
-        );
+        _currentIndex = nextIndex;
       });
+
+      _fetchData();
     });
   }
 
@@ -62,6 +59,28 @@ class _TimelapsPageState extends State<TimelapsPage> {
       setState(() {
         _currentUsername = savedUsername;
       });
+    }
+  }
+
+  Future<void> _fetchData() async {
+    final postKey = widget.postDataList[_currentIndex]['postKey'];
+    final snapshot = await FirebaseDatabase.instance.ref('pictures/$postKey').get();
+    if (snapshot.exists) {
+      setState(() {
+        _currentData = Map<String, dynamic>.from(snapshot.value as Map);
+      });
+    }
+  }
+
+  Future<void> _precacheNextImage(int index) async {
+    final postKey = widget.postDataList[index]['postKey'];
+    final snapshot = await FirebaseDatabase.instance.ref('pictures/$postKey').get();
+    if (!snapshot.exists || !mounted) return;
+
+    final nextData = Map<String, dynamic>.from(snapshot.value as Map);
+    final nextUrl = nextData['url'];
+    if (nextUrl != null && nextUrl is String && nextUrl.isNotEmpty) {
+      await precacheImage(NetworkImage(nextUrl), context);
     }
   }
 
@@ -78,86 +97,104 @@ class _TimelapsPageState extends State<TimelapsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+Widget build(BuildContext context) {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black,
+    systemNavigationBarIconBrightness: Brightness.light,
+  ));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Timelapse',
-          style: TextStyle(color: Color(0xFFFFBA76)),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
-      ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/background.png',
-              fit: BoxFit.cover,
-            ),
+  return Scaffold(
+    backgroundColor: Colors.black,
+    body: Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/background.png',
+            fit: BoxFit.cover,
+            color: Colors.black.withOpacity(0.6),
+            colorBlendMode: BlendMode.darken,
           ),
-          PageView.builder(
-            controller: _pageController,
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.postDataList.length,
-            onPageChanged: (index) => _currentPage = index,
-            itemBuilder: (context, index) {
-              final postKey = widget.postDataList[index]['postKey'];
-              return FutureBuilder<DataSnapshot>(
-                future: FirebaseDatabase.instance.ref('pictures/$postKey').get(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.value == null) {
-                    return const Center(
-                      child: Text('Post not found', style: TextStyle(color: Colors.white70)),
-                    );
-                  }
+        ),
+        if (_currentData != null) ...[
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 12,
+            left: 16,
+            right: 16,
+            child: LinearProgressIndicator(
+  value: (_currentIndex + 1) / widget.postDataList.length,
+  minHeight: 4,
+  color: const Color(0xFFFFBA76),
+  backgroundColor: Colors.white12,
+),
 
-                  final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
-                  final imageUrl = data['url'] ?? '';
-                  final timestamp = data['timestamp'].toString();
-                  final caption = data['caption'] ?? '';
-
-                  return Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '• ${_getTimeAgo(DateTime.parse(timestamp))}',
-                          style: const TextStyle(
-                            color: Color(0xFFFFBA76),
-                            fontWeight: FontWeight.w300,
-                          ),
+          ),
+        ],
+        Center(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            child: _currentData == null
+                ? const CircularProgressIndicator(color: Color(0xFFFFBA76))
+                : Column(
+                    key: ValueKey(_currentIndex),
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${_getTimeAgo(DateTime.parse(_currentData!['timestamp'].toString()))}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 16,
                         ),
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
+                      ),
+                      const SizedBox(height: 16),
+                      AnimatedOpacity(
+                        opacity: 1.0,
+                        duration: const Duration(milliseconds: 400),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            imageUrl,
-                            width: double.infinity,
-                            height: 600,
+                            _currentData!['url'] ?? '',
+                            width: MediaQuery.of(context).size.width * 0.96,
+                            height: 550,
                             fit: BoxFit.cover,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          caption,
-                          style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 14),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
+                        child: Text(
+                          _currentData!['caption'] ?? '',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 12,
+          left: 8,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFFFBA76)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 }

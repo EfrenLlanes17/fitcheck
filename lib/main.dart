@@ -7,6 +7,7 @@ import 'package:fitcheck/pages/startpage.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 
 late final List<CameraDescription> cameras;
@@ -16,6 +17,20 @@ late final List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await AwesomeNotifications().initialize(
+    null, // icon for notification
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        channelDescription: 'Notification channel for basic tests',
+        defaultColor: Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        importance: NotificationImportance.High,
+      )
+    ],
+  );
 
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Color.fromARGB(255, 255, 255, 255), // your desired color

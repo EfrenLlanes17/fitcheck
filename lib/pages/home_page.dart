@@ -16,6 +16,8 @@ import 'package:fitcheck/pages/diffrentuserpage.dart';
 import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/fullscreenimage.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 
 
 
@@ -79,6 +81,11 @@ class _HomePageState extends State<HomePage> {
 
    void initState() {
     super.initState();
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    if (!isAllowed) {
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  });
     
     _loadUserData();
   }
@@ -157,6 +164,17 @@ Future<int> _getUserStreak() async {
 
 void showReportBottomSheet(BuildContext context, String postKey) {
   final TextEditingController reportController = TextEditingController();
+  debugPrint('Trying to show notification...');
+
+  AwesomeNotifications().createNotification(
+  content: NotificationContent(
+    id: 10,
+    channelKey: 'basic_channel',
+    title: 'Hello!',
+    body: 'This is a test notification.',
+  ),
+);
+
 
   showModalBottomSheet(
     context: context,

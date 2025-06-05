@@ -125,7 +125,8 @@ void goToTimelapse(int selectedIndex) async {
         final bData = Map<String, dynamic>.from(b.value);
         final aTimestamp = parseTimestamp(aData['timestamp']);
         final bTimestamp = parseTimestamp(bData['timestamp']);
-        return bTimestamp.compareTo(aTimestamp); // Newest first
+
+        return aTimestamp.compareTo(bTimestamp); // Oldest first
       });
 
     final postDataList = sortedEntries.map((entry) {
@@ -153,6 +154,7 @@ void goToTimelapse(int selectedIndex) async {
     debugPrint('No pictures found for user $_currentUsername.');
   }
 }
+
 
 
 

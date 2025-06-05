@@ -17,6 +17,8 @@ import 'package:fitcheck/pages/profile_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/postveiwer.dart';
 import 'package:fitcheck/pages/usermessage_page.dart';
+import 'package:fitcheck/pages/timelaps.dart';
+
 
 
 
@@ -48,6 +50,62 @@ void initState() {
   _currentUsername = widget.username;
   usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
   _tabController = TabController(length: 2, vsync: this);
+}
+
+void goToTimelapse(int selectedIndex) async {
+  final databaseRef = FirebaseDatabase.instance.ref();
+  final pictureSnapshot = await databaseRef.child('users/$_currentUsername/pictures').get();
+
+  if (pictureSnapshot.exists && pictureSnapshot.value != null) {
+    final picturesMap = Map<String, dynamic>.from(pictureSnapshot.value as Map);
+
+    final sortedEntries = picturesMap.entries.toList()
+      ..sort((a, b) {
+        DateTime parseTimestamp(dynamic value) {
+          if (value is int) {
+            return DateTime.fromMillisecondsSinceEpoch(value);
+          } else if (value is String) {
+            try {
+              return DateTime.parse(value);
+            } catch (_) {
+              return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
+            }
+          }
+          return DateTime.fromMillisecondsSinceEpoch(0);
+        }
+
+        final aData = Map<String, dynamic>.from(a.value);
+        final bData = Map<String, dynamic>.from(b.value);
+        final aTimestamp = parseTimestamp(aData['timestamp']);
+        final bTimestamp = parseTimestamp(bData['timestamp']);
+
+        return aTimestamp.compareTo(bTimestamp); // Oldest first
+      });
+
+    final postDataList = sortedEntries.map((entry) {
+      final data = Map<String, dynamic>.from(entry.value);
+      return {
+        'imageUrl': data['url'] ?? '',
+        'timestamp': data['timestamp'].toString(),
+        'caption': data['caption'] ?? '',
+        'username': data['user'] ?? '',
+        'profilePicUrl': data['profilepicture'] ?? '',
+        'postKey': entry.key,
+      };
+    }).toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TimelapsPage(
+          postDataList: postDataList,
+          initialIndex: selectedIndex,
+        ),
+      ),
+    );
+  } else {
+    debugPrint('No pictures found for user $_currentUsername.');
+  }
 }
 
 
@@ -179,6 +237,13 @@ void initState() {
         ),
       ),
     );
+  },
+),
+IconButton(
+  icon: const Icon(FontAwesomeIcons.solidClock, color: Color(0xFFFFBA76)),
+  onPressed: () {
+    
+    goToTimelapse(0);
   },
 ),
 

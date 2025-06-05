@@ -99,6 +99,62 @@ final TextEditingController _bioController = TextEditingController();
   }
 }
 
+void goToTimelapse(int selectedIndex) async {
+  final databaseRef = FirebaseDatabase.instance.ref();
+  final pictureSnapshot = await databaseRef.child('users/$_currentUsername/pictures').get();
+
+  if (pictureSnapshot.exists && pictureSnapshot.value != null) {
+    final picturesMap = Map<String, dynamic>.from(pictureSnapshot.value as Map);
+
+    final sortedEntries = picturesMap.entries.toList()
+      ..sort((a, b) {
+        DateTime parseTimestamp(dynamic value) {
+          if (value is int) {
+            return DateTime.fromMillisecondsSinceEpoch(value);
+          } else if (value is String) {
+            try {
+              return DateTime.parse(value);
+            } catch (_) {
+              return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
+            }
+          }
+          return DateTime.fromMillisecondsSinceEpoch(0);
+        }
+
+        final aData = Map<String, dynamic>.from(a.value);
+        final bData = Map<String, dynamic>.from(b.value);
+        final aTimestamp = parseTimestamp(aData['timestamp']);
+        final bTimestamp = parseTimestamp(bData['timestamp']);
+        return bTimestamp.compareTo(aTimestamp); // Newest first
+      });
+
+    final postDataList = sortedEntries.map((entry) {
+      final data = Map<String, dynamic>.from(entry.value);
+      return {
+        'imageUrl': data['url'] ?? '',
+        'timestamp': data['timestamp'].toString(),
+        'caption': data['caption'] ?? '',
+        'username': data['user'] ?? '',
+        'profilePicUrl': data['profilepicture'] ?? '',
+        'postKey': entry.key,
+      };
+    }).toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TimelapsPage(
+          postDataList: postDataList,
+          initialIndex: selectedIndex,
+        ),
+      ),
+    );
+  } else {
+    debugPrint('No pictures found for user $_currentUsername.');
+  }
+}
+
+
 
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -189,6 +245,13 @@ final TextEditingController _bioController = TextEditingController();
       ,
   centerTitle: true, // Important: center the title on both iOS and Android
   actions:  [
+    IconButton(
+  icon: const Icon(FontAwesomeIcons.solidClock, color: Color(0xFFFFBA76)),
+  onPressed: () {
+    
+    goToTimelapse(0);
+  },
+),
           IconButton(
   icon: const Icon(Icons.settings, color: Color(0xFFFFBA76)),
   onPressed: () async {
@@ -337,7 +400,7 @@ final TextEditingController _bioController = TextEditingController();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TimelapsPage(
+                builder: (context) => PostViewerPage(
                   postDataList: postDataList,
                   initialIndex: index,
                 ),

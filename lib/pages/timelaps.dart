@@ -39,7 +39,7 @@ class _TimelapsPageState extends State<TimelapsPage> {
   }
 
   Future<void> _startSlideshow() async {
-    _slideshowTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+    _slideshowTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (!mounted) return;
       final nextIndex = (_currentIndex + 1) % widget.postDataList.length;
       await _precacheNextImage(nextIndex);
@@ -128,6 +128,23 @@ Widget build(BuildContext context) {
 ),
 
           ),
+                  Positioned(
+          top: MediaQuery.of(context).padding.top + 40,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Text(
+              'PAWPRINT',
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                color: Color(0xFFFFBA76),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+
         ],
         Center(
           child: AnimatedSwitcher(

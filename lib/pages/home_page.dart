@@ -85,6 +85,22 @@ class _HomePageState extends State<HomePage> {
     if (!isAllowed) {
       AwesomeNotifications().requestPermissionToSendNotifications();
     }
+
+    AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 1,
+      channelKey: 'basic_channel',
+      title: 'Daily Pet Pic!',
+      body: 'Here is your daily dose of cuteness 🐶',
+    ),
+    schedule: NotificationCalendar(
+      hour: 17,
+      minute: 30,
+      second: 0,
+      repeats: true,
+    ),
+  );
+
   });
     
     _loadUserData();
@@ -165,15 +181,6 @@ Future<int> _getUserStreak() async {
 void showReportBottomSheet(BuildContext context, String postKey) {
   final TextEditingController reportController = TextEditingController();
   debugPrint('Trying to show notification...');
-
-  AwesomeNotifications().createNotification(
-  content: NotificationContent(
-    id: 10,
-    channelKey: 'basic_channel',
-    title: 'Hello!',
-    body: 'This is a test notification.',
-  ),
-);
 
 
   showModalBottomSheet(

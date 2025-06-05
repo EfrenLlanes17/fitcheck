@@ -230,7 +230,7 @@ Widget build(BuildContext context) {
                       crossAxisCount: 3,
                       crossAxisSpacing: 4,
                       mainAxisSpacing: 4,
-                      childAspectRatio: 1,
+                      childAspectRatio: 0.75,
                       padding: const EdgeInsets.all(8),
                       children: filteredPosts.map((entry) {
                         final data = Map<String, dynamic>.from(entry.value);

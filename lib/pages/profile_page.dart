@@ -18,6 +18,7 @@ import 'package:fitcheck/pages/startpage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/postveiwer.dart';
+import 'package:fitcheck/pages/timelaps.dart';
 
 
 
@@ -336,7 +337,7 @@ final TextEditingController _bioController = TextEditingController();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PostViewerPage(
+                builder: (context) => TimelapsPage(
                   postDataList: postDataList,
                   initialIndex: index,
                 ),

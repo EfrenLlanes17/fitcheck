@@ -11,6 +11,8 @@ import 'package:fitcheck/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
+import 'package:fitcheck/pages/postveiwer.dart';
+
 
 
 class SearchPage extends StatefulWidget {
@@ -227,17 +229,47 @@ Widget build(BuildContext context) {
                     }
 
                     return GridView.count(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 4,
-                      mainAxisSpacing: 4,
-                      childAspectRatio: 0.75,
-                      padding: const EdgeInsets.all(8),
-                      children: filteredPosts.map((entry) {
-                        final data = Map<String, dynamic>.from(entry.value);
-                        final url = data['url'] ?? '';
-                        return Image.network(url, fit: BoxFit.cover);
-                      }).toList(),
-                    );
+  crossAxisCount: 3,
+  crossAxisSpacing: 4,
+  mainAxisSpacing: 4,
+  childAspectRatio: 0.75,
+  padding: const EdgeInsets.all(8),
+  children: List.generate(filteredPosts.length, (index) {
+    final entry = filteredPosts[index];
+    final data = Map<String, dynamic>.from(entry.value);
+    final url = data['url'] ?? '';
+    if (url == null || url.isEmpty) return const SizedBox();
+
+    // Build the list of posts for full-screen viewer
+    final postDataList = filteredPosts.map((entry) {
+      final post = Map<String, dynamic>.from(entry.value);
+      return {
+        'imageUrl': post['url'] ?? '',
+        'timestamp': post['timestamp'].toString(),
+        'caption': post['caption'] ?? '',
+        'username': post['user'] ?? '',
+        'profilePicUrl': post['profilepicture'] ?? '',
+        'postKey': entry.key,
+      };
+    }).toList();
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostViewerPage(
+              postDataList: postDataList,
+              initialIndex: index,
+            ),
+          ),
+        );
+      },
+      child: Image.network(url, fit: BoxFit.cover),
+    );
+  }),
+);
+
                   },
                 ),
               ],

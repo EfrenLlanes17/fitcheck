@@ -8,6 +8,7 @@ import 'package:fitcheck/pages/gsusername.dart';
 import 'package:fitcheck/pages/gspassword.dart';
 import 'package:fitcheck/pages/gslocation.dart';
 import 'package:fitcheck/pages/countcontol.dart';
+import 'package:fitcheck/pages/petinfo.dart';
 
 
 
@@ -186,7 +187,14 @@ Row(
 
     ElevatedButton.icon(
       onPressed: () {
-        print('Next button pressed');
+        Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PETGettingStartedP6Widget(
+        email: widget.email, username: widget.username, password: widget.password, location: widget.location ,amountofpets :yourCountVariable
+      ),
+    ),
+  );
       },
       icon: FaIcon(
         FontAwesomeIcons.arrowRight,

@@ -8,6 +8,8 @@ import 'package:fitcheck/pages/gsusername.dart';
 import 'package:fitcheck/pages/gspassword.dart';
 import 'package:fitcheck/pages/gslocation.dart';
 import 'package:fitcheck/pages/countcontol.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+
 
 
 
@@ -132,8 +134,8 @@ FocusNode breedFocusNode = FocusNode();
 
 
 TextStyle _inputTextStyle() => TextStyle(
-      color: Colors.black,
-      fontSize: 18,
+      color: Color(0xFFFFBA76),
+      fontSize: 17,
     );
 
 
@@ -225,30 +227,49 @@ Widget build(BuildContext context) {
           )),
           const SizedBox(height: 30),
 
-          _buildLabeledField('Gender:', DropdownButtonFormField<String>(
-            value: selectedGender,
-            decoration: _inputDecoration('Select Gender'),
-            items: [
-              DropdownMenuItem(value: 'Male', child: Text('Male')),
-              DropdownMenuItem(value: 'Female', child: Text('Female')),
-            ],
-            onChanged: (value) => setState(() => selectedGender = value),
-            validator: (value) => value == null || value.isEmpty
-                ? 'Please select a gender'
-                : null,
-          )),
+          _buildLabeledField('Gender:', DropdownButtonFormField2<String>(
+  decoration: _inputDecoration('Select Gender'),
+  value: selectedGender,
+  isExpanded: true,
+  items: ['Male', 'Female']
+      .map((gender) => DropdownMenuItem<String>(
+            value: gender,
+            child: Text(gender, style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),),
+          ))
+      .toList(),
+  onChanged: (value) => setState(() => selectedGender = value),
+  validator: (value) =>
+      value == null || value.isEmpty ? 'Please select a gender' : null,
+      dropdownStyleData: DropdownStyleData(
+    decoration: BoxDecoration(
+      color: Colors.white, // 👈 popup background color
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+)
+),
           const SizedBox(height: 30),
 
-          _buildLabeledField('Pet:', DropdownButtonFormField<String>(
-            value: selectedPet,
-            decoration: _inputDecoration('Select Pet'),
-            items: petOptions.map((pet) =>
-              DropdownMenuItem(value: pet, child: Text(pet))).toList(),
-            onChanged: (value) => setState(() => selectedPet = value),
-            validator: (value) => value == null || value.isEmpty
-                ? 'Please select a Pet'
-                : null,
-          )),
+          _buildLabeledField('Pet:', DropdownButtonFormField2<String>(
+  decoration: _inputDecoration('Select Pet'),
+  value: selectedPet,
+  isExpanded: true,
+  items: petOptions
+      .map((gender) => DropdownMenuItem<String>(
+            value: gender,
+            child: Text(gender, style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),),
+          ))
+      .toList(),
+  onChanged: (value) => setState(() => selectedPet = value),
+  validator: (value) =>
+      value == null || value.isEmpty ? 'Please select a pet' : null,
+      dropdownStyleData: DropdownStyleData(
+    decoration: BoxDecoration(
+      color: Colors.white, // 👈 popup background color
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+)),
           const SizedBox(height: 30),
 
           _buildLabeledField('Breed:', TextFormField(

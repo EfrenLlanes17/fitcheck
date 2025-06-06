@@ -84,7 +84,7 @@ FocusNode breedFocusNode = FocusNode();
     filled: true,
     fillColor: Colors.white,
     hintText: hint,
-    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
+    hintStyle: TextStyle(color: Colors.grey[600], fontSize: 17),
     contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide.none,
@@ -105,12 +105,14 @@ FocusNode breedFocusNode = FocusNode();
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 90,
-          padding: const EdgeInsets.only(left: 16, top: 10),
+          width: 150,
+
+          padding: const EdgeInsets.only(left: 16, top: 0),
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 20,
+              
+              fontSize: 30,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -190,14 +192,13 @@ Widget build(BuildContext context) {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-        border: Border.all(color: Color(0xFFFFBA76), width: 2),
       ),
       child: Center(
         child: Text(
-          'Enter Pet Information',
+          'Pet #' + widget.amountofpets.toString(),
           style: TextStyle(
             color: Color(0xFFFFBA76),
-            fontSize: 20,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -222,7 +223,7 @@ Widget build(BuildContext context) {
             decoration: _inputDecoration('Bella...'),
             style: _inputTextStyle(),
           )),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
 
           _buildLabeledField('Gender:', DropdownButtonFormField<String>(
             value: selectedGender,
@@ -236,7 +237,7 @@ Widget build(BuildContext context) {
                 ? 'Please select a gender'
                 : null,
           )),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
 
           _buildLabeledField('Pet:', DropdownButtonFormField<String>(
             value: selectedPet,
@@ -248,7 +249,7 @@ Widget build(BuildContext context) {
                 ? 'Please select a Pet'
                 : null,
           )),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
 
           _buildLabeledField('Breed:', TextFormField(
             controller: breedController,

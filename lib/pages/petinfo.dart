@@ -9,6 +9,8 @@ import 'package:fitcheck/pages/gspassword.dart';
 import 'package:fitcheck/pages/gslocation.dart';
 import 'package:fitcheck/pages/countcontol.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:fitcheck/pages/gsamountofpets.dart';
+
 
 
 
@@ -299,8 +301,8 @@ Widget build(BuildContext context) {
         Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => PETGettingStartedP4Widget(
-        email: widget.email, username: widget.username, password: widget.password,
+      builder: (context) => PETGettingStartedP5Widget(
+        email: widget.email, username: widget.username, password: widget.password, location: widget.location,
       ),
     ),
   );

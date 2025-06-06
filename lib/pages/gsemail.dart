@@ -23,6 +23,8 @@ class _PETGettingStartedWidgetState extends State<PETGettingStartedWidget> {
     Color(0xFFFFFFFF),
     Color(0xFFFFFFFF),
     Color(0xFFFFFFFF),
+      Color(0xFFFFFFFF),
+
   ];
 
   @override
@@ -161,8 +163,8 @@ class _PETGettingStartedWidgetState extends State<PETGettingStartedWidget> {
                         (index) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Container(
-                            width: 16,
-                            height: 16,
+                            width: 14,
+                            height: 14,
                             decoration: BoxDecoration(
                               color: dotColors[index],
                               shape: BoxShape.circle,

@@ -10,39 +10,38 @@ import 'package:fitcheck/pages/gslocation.dart';
 import 'package:fitcheck/pages/countcontol.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:fitcheck/pages/gsamountofpets.dart';
-import 'package:fitcheck/pages/wanttosee.dart';
 
 
 
 
 
 
-
-class PETGettingStartedP6Widget extends StatefulWidget {
+class PETGettingStartedP7Widget extends StatefulWidget {
   final String email;
   final String username; 
   final String password;
   final String location;
   final int amountofpets;
-  const PETGettingStartedP6Widget({super.key, required this.email, required this.username, required this.password, required this.location, required this.amountofpets});
+  const PETGettingStartedP7Widget({super.key, required this.email, required this.username, required this.password, required this.location, required this.amountofpets});
 
   
 
   @override
-  State<PETGettingStartedP6Widget> createState() => _PETGettingStartedP6WidgetState();
+  State<PETGettingStartedP7Widget> createState() => _PETGettingStartedP7WidgetState();
 }
 
-class _PETGettingStartedP6WidgetState extends State<PETGettingStartedP6Widget> {
+class _PETGettingStartedP7WidgetState extends State<PETGettingStartedP7Widget> {
   final TextEditingController _textController = TextEditingController();
     final TextEditingController textController1 = TextEditingController();
   String? selectedGender;
     String? selectedPet;
+    Set<String> selectedPets = {};
     final List<String> petOptions = [
   'Bird', 'Cat', 'Chicken', 'Chinchilla', 'Cow', 'Crab', 'Dog', 'Donkey',
   'Duck', 'Eel', 'Ferret', 'Fish', 'Frog', 'Gecko', 'Gerbil', 'Goat',
   'Goose', 'Guinea pig', 'Hamster', 'Hedgehog', 'Horse', 'Iguana', 'Insect',
   'Lizard', 'Lobster', 'Lynx', 'Monkey', 'Mouse', 'Pig', 'Rabbit', 'Raccoon',
-  'Rat', 'Salamander', 'Sheep', 'Shrimp', 'Snake', 'Spider', 'Turtle', 'Other'
+  'Rat', 'Salamander', 'Sheep', 'Shrimp', 'Snake', 'Spider', 'Turtle',
 ];
 
     TextEditingController breedController = TextEditingController();
@@ -64,7 +63,7 @@ FocusNode breedFocusNode = FocusNode();
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
   Color(0xFFFFBA76),
-  Color(0xFFFFFFFF),
+  Color(0xFFFFBA76),
 
 ];
 
@@ -203,10 +202,10 @@ Widget build(BuildContext context) {
       ),
       child: Center(
         child: Text(
-          'Pet #' + widget.amountofpets.toString(),
+          'What do you want to see?',
           style: TextStyle(
             color: Color(0xFFFFBA76),
-            fontSize: 30,
+            fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -215,78 +214,82 @@ Widget build(BuildContext context) {
 
     // Orange form container attached directly below
     Container(
-      width: MediaQuery.of(context).size.width * 0.85,
-      decoration: BoxDecoration(
-        color: Color(0xFFFFBA76),
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
-        border: Border.all(color: Color(0xFFFFBA76), width: 2),
+  width: MediaQuery.of(context).size.width * 0.85,
+  decoration: BoxDecoration(
+    color: Color(0xFFFFBA76),
+    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+    border: Border.all(color: Color(0xFFFFBA76), width: 2),
+  ),
+  padding: const EdgeInsets.all(16),
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        runSpacing: 8,
+        children: petOptions.map((pet) {
+          final isSelected = selectedPets.contains(pet);
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                if (isSelected) {
+                  selectedPets.remove(pet);
+                } else {
+                  selectedPets.add(pet);
+                }
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : Colors.transparent,
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                pet,
+                style: TextStyle(
+                  color: isSelected ? Color(0xFFFFBA76) : Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildLabeledField('Name:', TextFormField(
-            controller: textController1,
-            focusNode: textFieldFocusNode1,
-            decoration: _inputDecoration('Bella...'),
-            style: _inputTextStyle(),
-          )),
-          const SizedBox(height: 30),
 
-          _buildLabeledField('Gender:', DropdownButtonFormField2<String>(
-  decoration: _inputDecoration('Select Gender'),
-  value: selectedGender,
-  isExpanded: true,
-  items: ['Male', 'Female']
-      .map((gender) => DropdownMenuItem<String>(
-            value: gender,
-            child: Text(gender, style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),),
-          ))
-      .toList(),
-  onChanged: (value) => setState(() => selectedGender = value),
-  validator: (value) =>
-      value == null || value.isEmpty ? 'Please select a gender' : null,
-      dropdownStyleData: DropdownStyleData(
-    decoration: BoxDecoration(
-      color: Colors.white, // 👈 popup background color
-      borderRadius: BorderRadius.circular(12),
-    ),
+      const SizedBox(height: 24), // space above the button
+
+      SizedBox(
+        width: double.infinity, // make it full width
+        height: 48,
+        child: ElevatedButton(
+          onPressed: () {
+            // Add your logic here
+            print('Selected pets: $selectedPets');
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: Text(
+            'Done',
+            style: TextStyle(
+              color: Color(0xFFFFBA76),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    ],
   ),
 )
-),
-          const SizedBox(height: 30),
 
-          _buildLabeledField('Pet:', DropdownButtonFormField2<String>(
-  decoration: _inputDecoration('Select Pet'),
-  value: selectedPet,
-  isExpanded: true,
-  items: petOptions
-      .map((gender) => DropdownMenuItem<String>(
-            value: gender,
-            child: Text(gender, style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),),
-          ))
-      .toList(),
-  onChanged: (value) => setState(() => selectedPet = value),
-  validator: (value) =>
-      value == null || value.isEmpty ? 'Please select a pet' : null,
-      dropdownStyleData: DropdownStyleData(
-    decoration: BoxDecoration(
-      color: Colors.white, // 👈 popup background color
-      borderRadius: BorderRadius.circular(12),
-    ),
-  ),
-)),
-          const SizedBox(height: 30),
 
-          _buildLabeledField('Breed:', TextFormField(
-            controller: breedController,
-            focusNode: breedFocusNode,
-            decoration: _inputDecoration('Breed...'),
-            style: _inputTextStyle(),
-          )),
-        ],
-      ),
-    ),
   ],
 )
 
@@ -348,14 +351,7 @@ Row(
 
     ElevatedButton.icon(
       onPressed: () {
-        Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PETGettingStartedP7Widget(
-        email: widget.email, username: widget.username, password: widget.password, location: widget.location, amountofpets: widget.amountofpets,
-      ),
-    ),
-  );
+        print('Next button pressed');
       },
       icon: FaIcon(
         FontAwesomeIcons.arrowRight,

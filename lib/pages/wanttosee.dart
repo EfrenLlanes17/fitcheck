@@ -23,7 +23,8 @@ class PETGettingStartedP7Widget extends StatefulWidget {
   final String password;
   final String location;
   final int amountofpets;
-  const PETGettingStartedP7Widget({super.key, required this.email, required this.username, required this.password, required this.location, required this.amountofpets});
+  final List<List<String>> petInfo;
+  const PETGettingStartedP7Widget({super.key, required this.email, required this.username, required this.password, required this.location, required this.amountofpets, required this.petInfo});
 
   
 

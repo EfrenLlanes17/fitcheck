@@ -371,11 +371,6 @@ Row(
   final petType = selectedPet;
   final breed = breedController.text.trim();
 
-  print('Name: $name');
-  print('Gender: $gender');
-  print('Pet: $petType');
-  print('Breed: $breed');
-
   petInfo.add([name, gender.toString() , petType.toString(), breed]);
 
   // Clear text fields
@@ -391,14 +386,18 @@ Row(
 
     }
     else{
-      int x = widget.amountofpets;
-      int y = amountofpets +1;
-      print('amountofpets + 1: $y amountofpets: $x');
+       final name = textController1.text.trim();
+  final gender = selectedGender;
+  final petType = selectedPet;
+  final breed = breedController.text.trim();
+
+  petInfo.add([name, gender.toString() , petType.toString(), breed]);
+
       Navigator.push(
     context,
     MaterialPageRoute(
       builder: (context) => PETGettingStartedP7Widget(
-        email: widget.email, username: widget.username, password: widget.password, location: widget.location, amountofpets: widget.amountofpets,
+        email: widget.email, username: widget.username, password: widget.password, location: widget.location, amountofpets: widget.amountofpets, petInfo: petInfo,
       ),
     ),
   );

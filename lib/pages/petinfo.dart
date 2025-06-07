@@ -206,7 +206,7 @@ Widget build(BuildContext context) {
           'Pet #' + widget.amountofpets.toString(),
           style: TextStyle(
             color: Color(0xFFFFBA76),
-            fontSize: 30,
+            fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -231,7 +231,7 @@ Widget build(BuildContext context) {
             decoration: _inputDecoration('Bella...'),
             style: _inputTextStyle(),
           )),
-          const SizedBox(height: 30),
+          const SizedBox(height: 29),
 
           _buildLabeledField('Gender:', DropdownButtonFormField2<String>(
   decoration: _inputDecoration('Select Gender'),
@@ -254,7 +254,7 @@ Widget build(BuildContext context) {
   ),
 )
 ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 29),
 
           _buildLabeledField('Pet:', DropdownButtonFormField2<String>(
   decoration: _inputDecoration('Select Pet'),
@@ -276,7 +276,7 @@ Widget build(BuildContext context) {
     ),
   ),
 )),
-          const SizedBox(height: 30),
+          const SizedBox(height: 29),
 
           _buildLabeledField('Breed:', TextFormField(
             controller: breedController,
@@ -284,11 +284,14 @@ Widget build(BuildContext context) {
             decoration: _inputDecoration('Breed...'),
             style: _inputTextStyle(),
           )),
+          
         ],
       ),
+      
     ),
   ],
-)
+),
+
 
 
 
@@ -347,16 +350,29 @@ Row(
 ),
 
     ElevatedButton.icon(
-      onPressed: () {
-        Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PETGettingStartedP7Widget(
-        email: widget.email, username: widget.username, password: widget.password, location: widget.location, amountofpets: widget.amountofpets,
-      ),
-    ),
-  );
-      },
+  //     onPressed: () {
+  //       Navigator.push(
+  //   context,
+  //   MaterialPageRoute(
+  //     builder: (context) => PETGettingStartedP7Widget(
+  //       email: widget.email, username: widget.username, password: widget.password, location: widget.location, amountofpets: widget.amountofpets,
+  //     ),
+  //   ),
+  // );
+  //     },
+  onPressed: () {
+  final name = textController1.text.trim();
+  final gender = selectedGender;
+  final petType = selectedPet;
+  final breed = breedController.text.trim();
+
+  print('Name: $name');
+  print('Gender: $gender');
+  print('Pet: $petType');
+  print('Breed: $breed');
+
+  // Optionally validate or submit the data here
+},
       icon: FaIcon(
         FontAwesomeIcons.arrowRight,
         size: 25,

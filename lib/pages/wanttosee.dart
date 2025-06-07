@@ -11,6 +11,9 @@ import 'package:fitcheck/pages/countcontol.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:fitcheck/pages/gsamountofpets.dart';
 import 'package:fitcheck/pages/petinfo.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fitcheck/pages/profile_page.dart';
 
 
 
@@ -48,7 +51,7 @@ class _PETGettingStartedP7WidgetState extends State<PETGettingStartedP7Widget> {
 
     TextEditingController breedController = TextEditingController();
 FocusNode breedFocusNode = FocusNode();
-
+final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
 
 
   final FocusNode textFieldFocusNode1 = FocusNode();
@@ -144,6 +147,44 @@ TextStyle _inputTextStyle() => TextStyle(
       color: Color(0xFFFFBA76),
       fontSize: 17,
     );
+
+// void _createAccount() async {
+    
+
+
+//     final snapshot = await databaseRef.child('users/$username').get();
+//     if (snapshot.exists) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('Username already exists')),
+//       );
+//       return;
+//     }
+
+//     await databaseRef.child('users/$username').set({
+//       'password': password,
+//       'createdAt': DateTime.now().toIso8601String(),
+//       'lastLogin': DateTime.now().toIso8601String(),
+//       'email': '',
+//       'phone': '',
+//       'profilepicture': '',
+//       'bio': '',
+//       'streak' : 0
+//     });
+
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setString('username', username);
+
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('Account created successfully')),
+//     );
+
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => const ProfilePage(),
+//       ),
+//     );
+//   }
 
 
 

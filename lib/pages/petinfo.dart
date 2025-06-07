@@ -37,6 +37,7 @@ class _PETGettingStartedP6WidgetState extends State<PETGettingStartedP6Widget> {
     final TextEditingController textController1 = TextEditingController();
   String? selectedGender;
     String? selectedPet;
+    List<List<String>> petInfo = [];
     final List<String> petOptions = [
   'Bird', 'Cat', 'Chicken', 'Chinchilla', 'Cow', 'Crab', 'Dog', 'Donkey',
   'Duck', 'Eel', 'Ferret', 'Fish', 'Frog', 'Gecko', 'Gerbil', 'Goat',
@@ -55,6 +56,7 @@ FocusNode breedFocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   int yourCountVariable = 1;
     String? Function(String?)? textController1Validator;
+    int amountofpets = 1;
 
 
   List<Color> dotColors = [
@@ -148,6 +150,8 @@ TextStyle _inputTextStyle() => TextStyle(
 
  @override
 Widget build(BuildContext context) {
+    
+
   print(widget.email + " " + widget.username + " " + widget.password + " " + widget.location + " " + widget.amountofpets.toString());
   return GestureDetector(
     onTap: () => FocusScope.of(context).unfocus(),
@@ -203,7 +207,7 @@ Widget build(BuildContext context) {
       ),
       child: Center(
         child: Text(
-          'Pet #' + widget.amountofpets.toString(),
+          'Pet #' + amountofpets.toString(),
           style: TextStyle(
             color: Color(0xFFFFBA76),
             fontSize: 25,
@@ -361,6 +365,7 @@ Row(
   // );
   //     },
   onPressed: () {
+    if(amountofpets + 1 <= widget.amountofpets){
   final name = textController1.text.trim();
   final gender = selectedGender;
   final petType = selectedPet;
@@ -370,6 +375,34 @@ Row(
   print('Gender: $gender');
   print('Pet: $petType');
   print('Breed: $breed');
+
+  petInfo.add([name, gender.toString() , petType.toString(), breed]);
+
+  // Clear text fields
+    textController1.clear();
+    breedController.clear();
+
+    // Clear dropdowns
+    setState(() {
+      amountofpets = amountofpets + 1;
+      selectedGender = null;
+      selectedPet = null;
+    });
+
+    }
+    else{
+      int x = widget.amountofpets;
+      int y = amountofpets +1;
+      print('amountofpets + 1: $y amountofpets: $x');
+      Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PETGettingStartedP7Widget(
+        email: widget.email, username: widget.username, password: widget.password, location: widget.location, amountofpets: widget.amountofpets,
+      ),
+    ),
+  );
+    }
 
   // Optionally validate or submit the data here
 },

@@ -640,7 +640,7 @@ IconButton(
                             
 
 FutureBuilder<DataSnapshot>(
-                              future: databaseRef.child('users/$_currentUsername/bio').get(),
+                              future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/bio').get(),
                               builder: (context, bioSnapshot) {
                                 if (bioSnapshot.connectionState == ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
@@ -679,7 +679,7 @@ FutureBuilder<DataSnapshot>(
                                       controller: _bioController,
                                       autofocus: true,
                                       maxLines: null,
-                                      style: const TextStyle(color: Colors.white),
+                                      style: const TextStyle(color: Color(0xFFFFBA76)),
                                       decoration: InputDecoration(
                                         hintText: 'Enter your bio',
                                         hintStyle: const TextStyle(color: Color(0xFFFFBA76)),
@@ -693,7 +693,7 @@ FutureBuilder<DataSnapshot>(
                                           icon: const Icon(Icons.check, color: Color(0xFFFFBA76)),
                                           onPressed: () async {
                                             final newBio = _bioController.text.trim();
-                                            await databaseRef.child('users/$_currentUsername/bio').set(newBio);
+                                            await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/bio').set(newBio);
                                             setState(() {
                                               _isEditingBio = false;
                                             });
@@ -702,7 +702,7 @@ FutureBuilder<DataSnapshot>(
                                       ),
                                       onSubmitted: (value) async {
                                         final newBio = value.trim();
-                                        await databaseRef.child('users/$_currentUsername/bio').set(newBio);
+                                        await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/bio').set(newBio);
                                         setState(() {
                                           _isEditingBio = false;
                                         });

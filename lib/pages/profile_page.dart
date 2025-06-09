@@ -361,7 +361,7 @@ IconButton(
           children: petsMap.entries.map((entry) {
             final petName = entry.key;
             final petData = Map<String, dynamic>.from(entry.value);
-            final profilePic = petData['profilePicture'] ?? '';
+            final profilePic = petData['profilepicture'] ?? '';
 
             return ListTile(
               leading: CircleAvatar(

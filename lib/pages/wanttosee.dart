@@ -148,43 +148,80 @@ TextStyle _inputTextStyle() => TextStyle(
       fontSize: 17,
     );
 
-// void _createAccount() async {
-    
 
 
-//     final snapshot = await databaseRef.child('users/$username').get();
-//     if (snapshot.exists) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Username already exists')),
-//       );
-//       return;
-//     }
 
-//     await databaseRef.child('users/$username').set({
-//       'password': password,
-//       'createdAt': DateTime.now().toIso8601String(),
-//       'lastLogin': DateTime.now().toIso8601String(),
-//       'email': '',
-//       'phone': '',
-//       'profilepicture': '',
-//       'bio': '',
-//       'streak' : 0
-//     });
 
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.setString('username', username);
+void _createAccount() async {
+ String email = widget.email;
+  String username = widget.username; 
+  String password = widget.password;
+  String location = widget.location;
+  int amountofpets = widget.amountofpets;
+ List<List<String>> petInfo = widget.petInfo;
 
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Account created successfully')),
-//     );
 
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//         builder: (context) => const ProfilePage(),
-//       ),
-//     );
-//   }
+    // final snapshot = await databaseRef.child('users/$username').get();
+    // if (snapshot.exists) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Username already exists')),
+    //   );
+    //   return;
+    // }
+
+    final Map<String, dynamic> userData = {
+  'password': password,
+  'createdAt': DateTime.now().toIso8601String(),
+  'lastLogin': DateTime.now().toIso8601String(),
+  'email': email,
+  'location': location,
+  'profilepicture': '',
+  'bio': '',
+  'streak': 0,
+  'pets': {},// Add this key
+  'wanttosee' : selectedPets.toList()
+};
+
+// Add pets under pets/petName
+for (var pet in petInfo) {
+  final petName = pet[0];
+  final gender = pet[1];
+  final type = pet[2];
+  final breed = pet[3];
+
+  userData['pets'][petName] = {
+    'gender': gender,
+    'type': type,
+    'breed': breed,
+  };
+}
+
+try {
+  await databaseRef.child('users/$username').set(userData);
+} catch (e) {
+  print("🔥 Firebase error: $e");
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("Error creating account: $e")),
+  );
+  return;
+}
+
+
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Account created successfully')),
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(),
+      ),
+    );
+  }
 
 
 
@@ -309,8 +346,7 @@ Widget build(BuildContext context) {
         height: 48,
         child: ElevatedButton(
           onPressed: () {
-            // Add your logic here
-            print('Selected pets: $selectedPets');
+           _createAccount();
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
@@ -394,7 +430,7 @@ Row(
 
     ElevatedButton.icon(
       onPressed: () {
-        print('Next button pressed');
+        _createAccount();
       },
       icon: FaIcon(
         FontAwesomeIcons.arrowRight,

@@ -25,6 +25,8 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   final TextEditingController _descriptionController = TextEditingController();
  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
  String _currentUsername = '';
+   String _currentanimal = '';
+
   @override
   void dispose() {
     _descriptionController.dispose();
@@ -98,6 +100,17 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
       });
       
     }
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
+    }
   }
 
 
@@ -131,7 +144,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
 
 
-    await databaseRef.child('users/$_currentUsername/pictures/$pushedKey').set({
+    await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures/$pushedKey').set({
       'url': downloadUrl,
       'timestamp': DateTime.now().toIso8601String(),
     });

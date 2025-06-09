@@ -394,6 +394,7 @@ final pictureWidgets = sortedEntries.map((entry) {
   final caption = data['caption'] ?? '';
   final username = data['user'] ?? '';
   final profilePicUrl = data['profilepicture'] ?? '';
+  final animal = data['animal'] ?? '';
   final postKey = entry.key;
   int likes = int.tryParse(data['likes'].toString()) ?? 0;
 
@@ -460,7 +461,7 @@ final pictureWidgets = sortedEntries.map((entry) {
       ),
       const SizedBox(width: 8),
       Text(
-        username,
+        animal + " ~ " + username,
         style: const TextStyle(
           color: Color(0xFFFFBA76),
           fontWeight: FontWeight.bold,

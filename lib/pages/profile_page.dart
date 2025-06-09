@@ -79,7 +79,8 @@ final TextEditingController _bioController = TextEditingController();
   final storageRef = FirebaseStorage.instance
       .ref()
       .child('profile_pictures')
-      .child('$_currentUsername.jpg');
+      .child('${_currentUsername}_$_currentanimal.jpg'
+);
 
   try {
     final metadata = SettableMetadata(contentType: 'image/jpeg');

@@ -135,6 +135,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
       'url': downloadUrl,
       'timestamp': DateTime.now().toIso8601String(),
       'user': _currentUsername,
+      'animal': _currentanimal,
       'likes': 0,
       'caption': _descriptionController.text,
       'saves' : 0,

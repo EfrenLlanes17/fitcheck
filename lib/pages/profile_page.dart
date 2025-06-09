@@ -87,7 +87,7 @@ final TextEditingController _bioController = TextEditingController();
 
     final downloadUrl = await storageRef.getDownloadURL();
 
-    await databaseRef.child('users/$_currentUsername/profilepicture').set(downloadUrl);
+    await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/profilepicture').set(downloadUrl);
 
     setState(() {}); // Reload profile picture
     ScaffoldMessenger.of(context).showSnackBar(
@@ -396,7 +396,7 @@ IconButton(
 ),
 
       body: FutureBuilder<DataSnapshot>(
-        future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
+        future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/profilepicture').get(),
         builder: (context, profileSnapshot) {
           String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7';
           if (profileSnapshot.hasData &&

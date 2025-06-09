@@ -33,6 +33,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
   int currentIndex = 3;
   String _currentUsername = '';
+  String _currentanimal = '';
   late TabController _tabController;
 
   bool _isEditingBio = false;
@@ -171,6 +172,18 @@ void goToTimelapse(int selectedIndex) async {
         });
       }
     }
+
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
+    }
   }
 
   void _onTabTapped(int index) {
@@ -208,6 +221,7 @@ void goToTimelapse(int selectedIndex) async {
   void _signOut() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('username');
+    await prefs.remove('animal');
 
     setState(() {
       _currentUsername = '';
@@ -236,7 +250,7 @@ void goToTimelapse(int selectedIndex) async {
         automaticallyImplyLeading: false, 
   backgroundColor: Colors.white,
   title:  Text(
-          _currentUsername,
+          _currentanimal,
           style: const TextStyle(
             fontFamily: 'Roboto',
             color: Color(0xFFFFBA76),

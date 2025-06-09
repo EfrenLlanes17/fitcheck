@@ -210,6 +210,7 @@ try {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', username);
+    await prefs.setString('animal', petInfo[0][0]);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Account created successfully')),

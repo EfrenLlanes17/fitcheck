@@ -504,7 +504,7 @@ IconButton(
                       }
 
                     return FutureBuilder<DataSnapshot>(
-                    future: databaseRef.child('users/$_currentUsername/pictures').get(),
+                    future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures').get(),
                     builder: (context, pictureSnapshot) {
                       int pictureCount = 0;
                       if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {

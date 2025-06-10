@@ -47,6 +47,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
   String _currentUsername = '';
+    String _currentanimal = '';
+
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
 
 
@@ -131,13 +133,27 @@ class _HomePageState extends State<HomePage> {
   void _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('username');
-    
+
     if (savedUsername != null) {
-      setState(() {
-        _currentUsername = savedUsername;
-  
-      });
-      
+      final snapshot = await databaseRef.child('users/$savedUsername').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentUsername = savedUsername;
+        });
+      }
+    }
+
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
     }
   }
 
@@ -488,7 +504,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                         
                         if (username != _currentUsername)
                           FutureBuilder<DataSnapshot>(
-                            future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/$username').get(),
+                            future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/${username}_$animal').get(),
                             builder: (context, followSnapshot) {
                               bool isFollowing = followSnapshot.data?.hasChild('profilepicture') == true;
 
@@ -501,16 +517,16 @@ final pictureWidgets = sortedEntries.map((entry) {
                                 ),
                                 onPressed: () async {
                                   final followingRef = FirebaseDatabase.instance
-                                      .ref('users/$_currentUsername/following/$username');
+                                      .ref('users/$_currentUsername/following/${username}_$animal');
                                   final followersRef = FirebaseDatabase.instance
-                                      .ref('users/$username/followers/$_currentUsername');
+                                      .ref('users/$username/pets/$animal/followers/$_currentUsername');
 
                                   if (isFollowing) {
                                     await followingRef.remove();
                                     await followersRef.remove();
                                   } else {
-                                    await followingRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$username.jpg?alt=media'});
-                                    await followersRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'});
+                                    await followingRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${username}_$animal.jpg?alt=media'});
+                                    await followersRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${username}_$_currentanimal.jpg?alt=media'});
                                   }
 
                                   setState(() {});

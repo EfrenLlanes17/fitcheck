@@ -352,6 +352,7 @@ final pictureWidgets = sortedEntries.map((entry) {
   final imageUrl = data['url'] ?? '';
   final timestamp = data['timestamp'].toString();
   final caption = data['caption'] ?? '';
+  final animal = data['animal'] ?? '';
   final username = data['user'] ?? '';
   final profilePicUrl = data['profilepicture'] ?? '';
   final postKey = entry.key;
@@ -396,7 +397,7 @@ final pictureWidgets = sortedEntries.map((entry) {
         builder: (context) => diffrentProfilePage(
           username: username,
           usernameOfLoggedInUser: _currentUsername,
-          animal: null,
+          animal: animal,
         ),
       ),
     );

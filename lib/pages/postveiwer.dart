@@ -268,6 +268,8 @@ final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
   final timestamp = data['timestamp'].toString();
   final caption = data['caption'] ?? '';
   final username = data['user'] ?? '';
+  final animal = data['animal'] ?? '';
+
   final profilePicUrl = data['profilepicture'] ?? '';
 
   int likes = int.tryParse(data['likes'].toString()) ?? 0;
@@ -313,7 +315,7 @@ final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
         builder: (context) => diffrentProfilePage(
           username: username,
           usernameOfLoggedInUser: _currentUsername,
-          animal: null,
+          animal: animal,
         ),
       ),
     );

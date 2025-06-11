@@ -25,6 +25,7 @@ class _FollowingPage extends State<FollowingPage> {
   void initState() {
     super.initState();
     username = widget.username; // ✅ Proper use
+    
     _loadUserData();
   }
 
@@ -77,6 +78,7 @@ class _FollowingPage extends State<FollowingPage> {
               final followingUsername = followingMap.keys.elementAt(index);
               final followingData = Map<String, dynamic>.from(followingMap[followingUsername]);
               final profileUrl = followingData['profilepicture'] ?? '';
+              int indexOfUnderscore =followingUsername.indexOf('_');
 
               return ListTile(
                 leading: CircleAvatar(
@@ -93,9 +95,9 @@ class _FollowingPage extends State<FollowingPage> {
     context,
     MaterialPageRoute(
       builder: (context) => diffrentProfilePage(
-        username: followingUsername,
+        username: followingUsername.substring(0,indexOfUnderscore),
         usernameOfLoggedInUser: _currentloggedInUsername,
-        animal: null,
+        animal: followingUsername.substring(indexOfUnderscore+1),
       ),
     ),
   );

@@ -207,7 +207,7 @@ void goToTimelapse(int selectedIndex) async {
   iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
   title: true
       ? Text(
-          _currentUsername,
+          _currentanimal,
           style: const TextStyle(
             fontFamily: 'Roboto',
             color: Color(0xFFFFBA76),

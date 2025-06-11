@@ -632,7 +632,7 @@ IconButton(
 
                           
                               FutureBuilder<DataSnapshot>(
-                              future: databaseRef.child('users/$_currentUsername/bio').get(),
+                              future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/bio').get(),
                               builder: (context, bioSnapshot) {
                                 if (bioSnapshot.connectionState == ConnectionState.waiting) {
                                   return const CircularProgressIndicator();

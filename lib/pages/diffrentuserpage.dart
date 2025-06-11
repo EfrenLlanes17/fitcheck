@@ -26,7 +26,8 @@ import 'package:fitcheck/pages/timelaps.dart';
 class diffrentProfilePage extends StatefulWidget {
   final String username;
   final String usernameOfLoggedInUser;
-  const diffrentProfilePage({super.key, required this.username, required this.usernameOfLoggedInUser});
+  final String? animal;
+  const diffrentProfilePage({super.key, required this.username, required this.usernameOfLoggedInUser, required this.animal});
 
   @override
   State<diffrentProfilePage> createState() => _DiffrentProfilePageState();
@@ -36,6 +37,7 @@ class _DiffrentProfilePageState extends State<diffrentProfilePage> with SingleTi
   String _currentUsername = '';
   String usernameOfLoggedInUser = "";
   late TabController _tabController;
+  String _currentanimal= '';
 
   bool _isEditingBio = false;
 final TextEditingController _bioController = TextEditingController();
@@ -50,6 +52,25 @@ void initState() {
   _currentUsername = widget.username;
   usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
   _tabController = TabController(length: 2, vsync: this);
+  _setCurrentAnimal();
+}
+
+void _setCurrentAnimal() async {
+  if (widget.animal == null) {
+    final snapshot = await FirebaseDatabase.instance
+        .ref('users/${widget.username}/pets')
+        .get();
+
+    if (snapshot.exists) {
+      final petsMap = Map<String, dynamic>.from(snapshot.value as Map);
+      final firstPetName = petsMap.keys.first;
+      setState(() {
+        _currentanimal = firstPetName;
+      });
+    }
+  } else {
+    _currentanimal = widget.animal.toString();
+  }
 }
 
 void goToTimelapse(int selectedIndex) async {
@@ -488,7 +509,7 @@ IconButton(
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FollowersPage(username: _currentUsername),
+                  builder: (context) => FollowersPage(username: _currentUsername, animal: _currentanimal),
                 ),
               );
             },

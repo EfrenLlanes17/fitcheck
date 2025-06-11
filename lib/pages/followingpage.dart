@@ -95,6 +95,7 @@ class _FollowingPage extends State<FollowingPage> {
       builder: (context) => diffrentProfilePage(
         username: followingUsername,
         usernameOfLoggedInUser: _currentloggedInUsername,
+        animal: null,
       ),
     ),
   );

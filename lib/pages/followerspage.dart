@@ -9,8 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class FollowersPage extends StatefulWidget {
   final String username;
-
-  const FollowersPage({super.key, required this.username});
+  final String animal;
+  const FollowersPage({super.key, required this.username, required this.animal});
 
   @override
   State<FollowersPage> createState() => _FollowersPageState();
@@ -18,6 +18,7 @@ class FollowersPage extends StatefulWidget {
 
 class _FollowersPageState extends State<FollowersPage> {
     late String username;
+    late String animal;
     String _currentloggedInUsername = '';
 
 
@@ -25,6 +26,7 @@ class _FollowersPageState extends State<FollowersPage> {
   void initState() {
     super.initState();
     username = widget.username; // ✅ Proper use
+    animal = widget.animal;
     _loadUserData();
   }
 
@@ -57,7 +59,7 @@ class _FollowersPageState extends State<FollowersPage> {
       ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: FutureBuilder<DataSnapshot>(
-        future: databaseRef.child('users/$username/followers').get(),
+        future: databaseRef.child('users/$username/pets/$animal/followers').get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -95,6 +97,7 @@ class _FollowersPageState extends State<FollowersPage> {
       builder: (context) => diffrentProfilePage(
         username: followerUsername,
         usernameOfLoggedInUser: _currentloggedInUsername,
+        animal: null,
       ),
     ),
   );

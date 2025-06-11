@@ -313,6 +313,7 @@ final data = Map<String, dynamic>.from(snapshot.data!.value as Map);
         builder: (context) => diffrentProfilePage(
           username: username,
           usernameOfLoggedInUser: _currentUsername,
+          animal: null,
         ),
       ),
     );

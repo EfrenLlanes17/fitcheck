@@ -547,7 +547,7 @@ IconButton(
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FollowersPage(username: _currentUsername),
+                  builder: (context) => FollowersPage(username: _currentUsername, animal: _currentanimal,),
                 ),
               );
             },

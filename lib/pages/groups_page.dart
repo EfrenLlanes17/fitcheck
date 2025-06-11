@@ -396,6 +396,7 @@ final pictureWidgets = sortedEntries.map((entry) {
         builder: (context) => diffrentProfilePage(
           username: username,
           usernameOfLoggedInUser: _currentUsername,
+          animal: null,
         ),
       ),
     );

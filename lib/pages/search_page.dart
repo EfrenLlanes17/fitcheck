@@ -170,6 +170,7 @@ Widget build(BuildContext context) {
                                       builder: (context) => diffrentProfilePage(
                                         username: username,
                                         usernameOfLoggedInUser: _currentloggedInUsername,
+                                        animal: null,
                                       ),
                                     ),
                                   );

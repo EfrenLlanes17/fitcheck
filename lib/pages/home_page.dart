@@ -453,7 +453,7 @@ final pictureWidgets = sortedEntries.map((entry) {
         builder: (context) => diffrentProfilePage(
           username: username,
           usernameOfLoggedInUser: _currentUsername,
-          animal: null,
+          animal: animal,
         ),
       ),
     );
@@ -808,6 +808,7 @@ final pictureWidgets = sortedEntries.map((entry) {
   final timestamp = data['timestamp'].toString();
   final caption = data['caption'] ?? '';
   final username = data['user'] ?? '';
+  final animal = data['animal'] ?? '';
   final profilePicUrl = data['profilepicture'] ?? '';
   final postKey = entry.key;
   int likes = int.tryParse(data['likes'].toString()) ?? 0;
@@ -851,7 +852,7 @@ final pictureWidgets = sortedEntries.map((entry) {
         builder: (context) => diffrentProfilePage(
           username: username,
           usernameOfLoggedInUser: _currentUsername,
-          animal: null,
+          animal: animal,
         ),
       ),
     );

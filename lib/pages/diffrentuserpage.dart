@@ -426,7 +426,7 @@ IconButton(
 
               // New: FutureBuilder for followers count
               return FutureBuilder<DataSnapshot>(
-                future: databaseRef.child('users/$_currentUsername/followers').get(),
+                future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/followers').get(),
                 builder: (context, followersSnapshot) {
                   int followersCount = 0;
                   if (followersSnapshot.hasData && followersSnapshot.data!.value != null) {
@@ -445,7 +445,7 @@ IconButton(
                       }
 
                     return FutureBuilder<DataSnapshot>(
-                    future: databaseRef.child('users/$_currentUsername/pictures').get(),
+                    future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures').get(),
                     builder: (context, pictureSnapshot) {
                       int pictureCount = 0;
                       if (pictureSnapshot.hasData && pictureSnapshot.data!.value != null) {

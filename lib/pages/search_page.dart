@@ -121,85 +121,102 @@ Widget build(BuildContext context) {
               children: [
                 // ACCOUNTS TAB
                 FutureBuilder<DataSnapshot>(
-                  future: FirebaseDatabase.instance.ref('users').get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.value == null) {
-                      return const Center(child: Text('No users found', style: TextStyle(color: Color(0xFFFFBA76))));
-                    }
+  future: FirebaseDatabase.instance.ref('users').get(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-                    final userMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
-                    final filteredUsers = userMap.entries.where((entry) {
-                      final username = entry.key.toLowerCase();
-                      return username.contains(searchQuery);
-                    }).toList();
+    if (!snapshot.hasData || snapshot.data!.value == null) {
+      return const Center(child: Text('No users found', style: TextStyle(color: Color(0xFFFFBA76))));
+    }
 
-                    if (filteredUsers.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'No users found.',
-                          style: TextStyle(color: Color(0xFFFFBA76), fontSize: 16),
-                        ),
-                      );
-                    }
+    final userMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+    final List<Map<String, String>> petList = [];
 
-                    return ListView.builder(
-                      itemCount: filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final username = filteredUsers[index].key;
-                        final userData = Map<String, dynamic>.from(filteredUsers[index].value);
-                        final profileUrl = userData['profilepicture'] ?? 'https://via.placeholder.com/150';
+    userMap.forEach((username, userDataRaw) {
+      final userData = Map<String, dynamic>.from(userDataRaw);
+      final pets = userData['pets'];
 
-                        return FutureBuilder<DataSnapshot>(
-                          future: FirebaseDatabase.instance.ref('users/$username/followers').get(),
-                          builder: (context, followerSnapshot) {
-                            int followerCount = 0;
-                            if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
-                              final followersMap = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
-                              followerCount = followersMap.length;
-                            }
+      if (pets != null && pets is Map) {
+        pets.forEach((petName, petDataRaw) {
+          final petData = Map<String, dynamic>.from(petDataRaw);
+          final profilePic = petData['profilepicture'] ?? '';
+          petList.add({
+            'username': username,
+            'petName': petName,
+            'profilepicture': profilePic,
+          });
+        });
+      }
+    });
 
-                            return GestureDetector(
-                              onTap: () {
-                                if (username != _currentloggedInUsername) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => diffrentProfilePage(
-                                        username: username,
-                                        usernameOfLoggedInUser: _currentloggedInUsername,
-                                        animal: null,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const ProfilePage(),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(profileUrl),
-                                ),
-                                title: Text(username, style: const TextStyle(color: Color(0xFFFFBA76))),
-                                subtitle: Text(
-                                  '$followerCount followers',
-                                  style: const TextStyle(color: Color(0xFFFFBA76)),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
+    final filteredPets = petList.where((entry) {
+      final petName = entry['petName']!.toLowerCase();
+      final user = entry['username']!.toLowerCase();
+      return petName.contains(searchQuery) || user.contains(searchQuery);
+    }).toList();
+
+    if (filteredPets.isEmpty) {
+      return const Center(
+        child: Text('No pets found.', style: TextStyle(color: Color(0xFFFFBA76))),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: filteredPets.length,
+      itemBuilder: (context, index) {
+        final entry = filteredPets[index];
+        final username = entry['username']!;
+        final petName = entry['petName']!;
+        final profilePicUrl = entry['profilepicture']!.isNotEmpty
+            ? entry['profilepicture']!
+            : 'https://via.placeholder.com/150'; // Default pic
+
+        return FutureBuilder<DataSnapshot>(
+          future: FirebaseDatabase.instance
+              .ref('users/$username/pets/$petName/followers')
+              .get(),
+          builder: (context, followerSnapshot) {
+            int followerCount = 0;
+            if (followerSnapshot.hasData && followerSnapshot.data!.value != null) {
+              final followers = Map<String, dynamic>.from(followerSnapshot.data!.value as Map);
+              followerCount = followers.length;
+            }
+
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(profilePicUrl),
+                backgroundColor: const Color(0xFFFFBA76),
+              ),
+              title: Text(
+                '$username ~ $petName',
+                style: const TextStyle(color: Color(0xFFFFBA76)),
+              ),
+              subtitle: Text(
+                '$followerCount followers',
+                style: const TextStyle(color: Color(0xFFFFBA76)),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => diffrentProfilePage(
+                      username: username,
+                      usernameOfLoggedInUser: _currentloggedInUsername,
+                      animal: petName,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  },
+),
+
 
                 // POSTS TAB
                 FutureBuilder<DataSnapshot>(

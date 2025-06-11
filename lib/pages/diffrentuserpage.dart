@@ -36,6 +36,7 @@ class diffrentProfilePage extends StatefulWidget {
 class _DiffrentProfilePageState extends State<diffrentProfilePage> with SingleTickerProviderStateMixin {
   String _currentUsername = '';
   String usernameOfLoggedInUser = "";
+  String animalOfLoggedInUser = "";
   late TabController _tabController;
   String _currentanimal= '';
 
@@ -52,8 +53,39 @@ void initState() {
   _currentUsername = widget.username;
   usernameOfLoggedInUser = widget.usernameOfLoggedInUser;
   _tabController = TabController(length: 2, vsync: this);
+  // _loadUserData();
+  // _setCurrentAnimal();
+  //         print("ANimal after" + animalOfLoggedInUser);
+    _initializeData();
+
+}
+
+void _initializeData() async {
+  await _loadUserData();  // make sure this completes first
   _setCurrentAnimal();
 }
+
+ Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+
+    if (savedUsername != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername').get();
+    }
+
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          animalOfLoggedInUser = savedAnimal;
+          print("ANimal in" + animalOfLoggedInUser);
+        });
+      }
+    }
+  }
 
 void _setCurrentAnimal() async {
   if (widget.animal == null) {
@@ -633,7 +665,7 @@ IconButton(
                           if (usernameOfLoggedInUser != _currentUsername)
                         FutureBuilder<DataSnapshot>(
                           future: FirebaseDatabase.instance
-                              .ref('users/$usernameOfLoggedInUser/following/$_currentUsername')
+                              .ref('users/$usernameOfLoggedInUser/following/${_currentUsername}_$_currentanimal')
                               .get(),
                           builder: (context, followSnapshot) {
                             bool isFollowing =
@@ -653,9 +685,9 @@ IconButton(
             child: OutlinedButton(
               onPressed: () async {
                 final followingRef = FirebaseDatabase.instance
-                    .ref('users/$usernameOfLoggedInUser/following/$_currentUsername');
+                    .ref('users/$usernameOfLoggedInUser/following/${_currentUsername}_$_currentanimal');
                 final followersRef = FirebaseDatabase.instance
-                    .ref('users/$_currentUsername/followers/$usernameOfLoggedInUser');
+                    .ref('users/$_currentUsername/pets/$_currentanimal/followers/$usernameOfLoggedInUser');
 
                 if (isFollowing) {
                   await followingRef.remove();
@@ -663,11 +695,11 @@ IconButton(
                 } else {
                   await followingRef.set({
                     'profilepicture':
-                        'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'
+                        'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${_currentUsername}_$_currentanimal.jpg?alt=media'
                   });
                   await followersRef.set({
                     'profilepicture':
-                        'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$usernameOfLoggedInUser.jpg?alt=media'
+                        'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${usernameOfLoggedInUser}_$animalOfLoggedInUser.jpg?alt=media'
                   });
                 }
 

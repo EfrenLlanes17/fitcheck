@@ -107,7 +107,7 @@ void _setCurrentAnimal() async {
 
 void goToTimelapse(int selectedIndex) async {
   final databaseRef = FirebaseDatabase.instance.ref();
-  final pictureSnapshot = await databaseRef.child('users/$_currentUsername/pictures').get();
+  final pictureSnapshot = await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures').get();
 
   if (pictureSnapshot.exists && pictureSnapshot.value != null) {
     final picturesMap = Map<String, dynamic>.from(pictureSnapshot.value as Map);
@@ -344,7 +344,7 @@ IconButton(
 
       body: true
     ? FutureBuilder<DataSnapshot>(
-        future: databaseRef.child('users/$_currentUsername/profilepicture').get(),
+        future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/profilepicture').get(),
         builder: (context, profileSnapshot) {
           String profileUrl = 'https://th.bing.com/th/id/OIP.VvvX4Ug_y6j3qz2l5aJIMAAAAA?w=169&h=169&c=7&r=0&o=5&cb=iwc2&dpr=1.3&pid=1.7';
           if (profileSnapshot.hasData &&
@@ -354,7 +354,7 @@ IconButton(
           }
 
           return FutureBuilder<DataSnapshot>(
-            future: databaseRef.child('users/$_currentUsername/pictures').get(),
+            future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures').get(),
             builder: (context, pictureSnapshot) {
               if (pictureSnapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

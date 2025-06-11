@@ -336,7 +336,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
         indicatorColor: Color(0xFFFFBA76),
         tabs: [
           Tab(text: 'Discover'),
-          Tab(text: 'Friends'),
+          Tab(text: 'Following'),
         ],
       ),
       Expanded(

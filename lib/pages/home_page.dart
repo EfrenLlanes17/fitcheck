@@ -877,7 +877,7 @@ final pictureWidgets = sortedEntries.map((entry) {
       ),
       const SizedBox(width: 8),
       Text(
-        username,
+        animal + " ~ " + username,
         style: const TextStyle(
           color: Color(0xFFFFBA76),
           fontWeight: FontWeight.bold,
@@ -904,7 +904,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                         
                         if (username != _currentUsername)
                           FutureBuilder<DataSnapshot>(
-                            future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/$username').get(),
+                            future: FirebaseDatabase.instance.ref('users/$_currentUsername/following/${username}_$animal').get(),
                             builder: (context, followSnapshot) {
                               bool isFollowing = followSnapshot.data?.hasChild('profilepicture') == true;
 
@@ -917,7 +917,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                                 ),
                                 onPressed: () async {
                                   final followingRef = FirebaseDatabase.instance
-                                      .ref('users/$_currentUsername/following/$username');
+                                      .ref('users/$_currentUsername/following/${username}_$animal');
                                   final followersRef = FirebaseDatabase.instance
                                       .ref('users/$username/followers/$_currentUsername');
 
@@ -925,8 +925,8 @@ final pictureWidgets = sortedEntries.map((entry) {
                                     await followingRef.remove();
                                     await followersRef.remove();
                                   } else {
-                                    await followingRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$username.jpg?alt=media'});
-                                    await followersRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F$_currentUsername.jpg?alt=media'});
+                                    await followingRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${username}_$animal.jpg?alt=media'});
+                                    await followersRef.set({'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${username}_$_currentanimal.jpg?alt=media'});
                                   }
 
                                   setState(() {});

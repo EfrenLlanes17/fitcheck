@@ -9,6 +9,7 @@ import 'package:fitcheck/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fitcheck/pages/VideoDemo.dart';
 
 class DisplayPictureScreen extends StatefulWidget {
   final String imagePath;
@@ -219,13 +220,20 @@ Widget build(BuildContext context) {
       textStyle: const TextStyle(fontSize: 22), // Text size
     ),
     onPressed: () async {
-      await _loadUserData();
-      await _updateLoginStreak();
-      await uploadImageAndSaveUrl(widget.imagePath);
+      // await _loadUserData();
+      // await _updateLoginStreak();
+      // await uploadImageAndSaveUrl(widget.imagePath);
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => const ProfilePage(),
+      //   ),
+      // );
+      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const ProfilePage(),
+          builder: (context) => const VideoDemo(),
         ),
       );
     },

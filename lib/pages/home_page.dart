@@ -751,25 +751,69 @@ final pictureWidgets = sortedEntries.map((entry) {
     ),
         
         
-    FutureBuilder<DataSnapshot>(
-        future: FirebaseDatabase.instance.ref().child('pictures').get(),
+    FutureBuilder<Map<String, dynamic>>(
+  future: () async {
+    // Step 1: Get following list
+    final followingSnapshot = await FirebaseDatabase.instance
+        .ref('users/$_currentUsername/following')
+        .get();
+
+    final followingMap = followingSnapshot.value as Map<dynamic, dynamic>? ?? {};
+    final followingKeys = followingMap.keys.cast<String>().toSet(); // ex: {'user1_dog', 'user2_cat'}
+
+    // Step 2: Get all pictures
+    final picturesSnapshot =
+        await FirebaseDatabase.instance.ref('pictures').get();
+    final picturesMap =
+        Map<String, dynamic>.from(picturesSnapshot.value as Map);
+
+    // Step 3: Filter and sort
+    final sortedEntries = picturesMap.entries.where((entry) {
+      final data = Map<String, dynamic>.from(entry.value);
+      final username = data['user'] ?? '';
+      final animal = data['animal'] ?? '';
+      return followingKeys.contains('${username}_$animal');
+    }).toList()
+      ..sort((a, b) {
+        final aData = Map<String, dynamic>.from(a.value);
+        final bData = Map<String, dynamic>.from(b.value);
+
+        DateTime parseTimestamp(dynamic value) {
+          if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+          if (value is String) {
+            try {
+              return DateTime.parse(value);
+            } catch (_) {
+              return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
+            }
+          }
+          return DateTime.fromMillisecondsSinceEpoch(0);
+        }
+
+        return parseTimestamp(bData['timestamp']).compareTo(parseTimestamp(aData['timestamp']));
+      });
+
+    return {
+      'entries': sortedEntries,
+    };
+  }(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (!snapshot.hasData || snapshot.data!.value == null) {
-            return const Center(
-              child: Text(
-                'No pictures yet.',
-                style: TextStyle(color: Colors.white70),
-              ),
-            );
-          }
+          if (!snapshot.hasData || snapshot.data!['entries'].isEmpty) {
+      return const Center(
+        child: Text(
+          'No posts from followed users.',
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
+    }
 
-          final picturesMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+          final picturesMap = snapshot.data!['entries'] as List<MapEntry<String, dynamic>>;
 
-final sortedEntries = picturesMap.entries.toList()
+final sortedEntries = picturesMap.toList()
   ..sort((a, b) {
     final aData = Map<String, dynamic>.from(a.value);
     final bData = Map<String, dynamic>.from(b.value);
@@ -797,10 +841,12 @@ final sortedEntries = picturesMap.entries.toList()
 
 
 
+
   // The following code updates the visual style of each post to match the UI file
 // while keeping the full functionality of likes, saves, shares, comments, and follows.
 
 // Updated version of pictureWidgets to reflect UI style with full backend functionality
+
 
 final pictureWidgets = sortedEntries.map((entry) {
   final data = Map<String, dynamic>.from(entry.value);

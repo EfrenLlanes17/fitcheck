@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:io';
+
 
 class VideoDemo extends StatefulWidget {
-  const VideoDemo({super.key});
+  final String videoPath;
+
+  const VideoDemo({super.key, required this.videoPath});
 
   @override
   VideoDemoState createState() => VideoDemoState();
@@ -16,9 +20,7 @@ class VideoDemoState extends State<VideoDemo> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse("https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
-    );
+    _controller = VideoPlayerController.file(File(widget.videoPath));
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     _controller.setVolume(1.0);
@@ -33,9 +35,7 @@ class VideoDemoState extends State<VideoDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Video Demo"),
-      ),
+      appBar: AppBar(title: const Text("Video Preview")),
       body: FutureBuilder(
         future: _initializeVideoPlayerFuture,
         builder: (context, snapshot) {

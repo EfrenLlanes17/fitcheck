@@ -14,6 +14,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
+import 'package:fitcheck/pages/VideoDemo.dart';
+
 
 
 
@@ -42,6 +44,44 @@ class _PicturePageState extends State<PicturePage> {
   late List<CameraDescription> _cameras;
   int _currentCameraIndex = 0;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _isRecording = false;
+
+Future<void> _startVideoRecording() async {
+  if (!_controller.value.isRecordingVideo) {
+    try {
+      await _controller.startVideoRecording();
+      setState(() {
+        _isRecording = true;
+      });
+    } catch (e) {
+      print('Error starting video recording: $e');
+    }
+  }
+}
+
+Future<void> _stopVideoRecording() async {
+  if (_controller.value.isRecordingVideo) {
+    try {
+      final file = await _controller.stopVideoRecording();
+      setState(() {
+        _isRecording = false;
+      });
+
+      if (!mounted) return;
+
+      // Push to the Display screen (you might want a different one for videos)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoDemo(videoPath: file.path), // Or make a DisplayVideoScreen
+        ),
+      );
+    } catch (e) {
+      print('Error stopping video recording: $e');
+    }
+  }
+}
+
 
 
   void _playBarkSound() {
@@ -333,40 +373,51 @@ void _flipCamera() async {
 
       // Take Picture Button
       GestureDetector(
-        onTap: () async {
-          try {
-            await _initializeControllerFuture;
-            final image = await _controller.takePicture();
+  onTap: () async {
+    // Still allow single tap for picture
+    try {
+      await _initializeControllerFuture;
+      final image = await _controller.takePicture();
 
-            if (!mounted) return;
+      if (!mounted) return;
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(imagePath: image.path),
-              ),
-            );
-          } catch (e) {
-            print('Error taking picture: $e');
-          }
-        },
-        child: Container(
-          width: 85,
-          height: 85,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Color(0xFFFFBA76), width: 7),
-            color: Colors.transparent,
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.pets_rounded,
-              size: 40,
-              color: Color(0xFFFFBA76),
-            ),
-          ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DisplayPictureScreen(imagePath: image.path),
         ),
+      );
+    } catch (e) {
+      print('Error taking picture: $e');
+    }
+  },
+  onLongPressStart: (_) async {
+    await _startVideoRecording();
+  },
+  onLongPressEnd: (_) async {
+    await _stopVideoRecording();
+  },
+  child: Container(
+    width: 85,
+    height: 85,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(
+        color: _isRecording ? Colors.red : Color(0xFFFFBA76),
+        width: 7,
       ),
+      color: Colors.transparent,
+    ),
+    child: Center(
+      child: Icon(
+        Icons.pets_rounded,
+        size: 40,
+        color: _isRecording ? Colors.red : Color(0xFFFFBA76),
+      ),
+    ),
+  ),
+),
+
 
       // Flip Camera Button
       FloatingActionButton(

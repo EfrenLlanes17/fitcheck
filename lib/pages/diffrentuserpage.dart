@@ -299,56 +299,56 @@ IconButton(
     goToTimelapse(0);
   },
 ),
-IconButton(
-  icon: const Icon(Icons.arrow_drop_down_sharp, color: Color(0xFFFFBA76)),
-  onPressed: () async {
-  final petsSnapshot = await databaseRef.child('users/$_currentUsername/pets').get();
+// IconButton(
+//   icon: const Icon(Icons.arrow_drop_down_sharp, color: Color(0xFFFFBA76)),
+//   onPressed: () async {
+//   final petsSnapshot = await databaseRef.child('users/$_currentUsername/pets').get();
 
-  if (!petsSnapshot.exists) return;
+//   if (!petsSnapshot.exists) return;
 
-  final petsMap = Map<String, dynamic>.from(petsSnapshot.value as Map);
+//   final petsMap = Map<String, dynamic>.from(petsSnapshot.value as Map);
 
-  await showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.white,
-    builder: (_) {
-      return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: petsMap.entries.map((entry) {
-            final petName = entry.key;
-            final petData = Map<String, dynamic>.from(entry.value);
-            final profilePic = petData['profilepicture'] ?? '';
+//   await showModalBottomSheet(
+//     context: context,
+//     backgroundColor: Colors.white,
+//     builder: (_) {
+//       return SafeArea(
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: petsMap.entries.map((entry) {
+//             final petName = entry.key;
+//             final petData = Map<String, dynamic>.from(entry.value);
+//             final profilePic = petData['profilepicture'] ?? '';
 
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: profilePic.isNotEmpty
-                    ? NetworkImage(profilePic)
-                    : NetworkImage('https://th.bing.com/th/id/OIP.IbwXEC0APWHvDUDFcnNHxQHaHa?rs=1&pid=ImgDetMain'),
-                backgroundColor: Colors.grey[200],
-              ),
-              title: Text(
-                petName,
-                style: const TextStyle(color: Color(0xFFFFBA76)),
-              ),
-              onTap: () async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setString('animal', petName);
-                setState(() {
-                _currentanimal = petName;
+//             return ListTile(
+//               leading: CircleAvatar(
+//                 backgroundImage: profilePic.isNotEmpty
+//                     ? NetworkImage(profilePic)
+//                     : NetworkImage('https://th.bing.com/th/id/OIP.IbwXEC0APWHvDUDFcnNHxQHaHa?rs=1&pid=ImgDetMain'),
+//                 backgroundColor: Colors.grey[200],
+//               ),
+//               title: Text(
+//                 petName,
+//                 style: const TextStyle(color: Color(0xFFFFBA76)),
+//               ),
+//               onTap: () async {
+//                 final prefs = await SharedPreferences.getInstance();
+//                 await prefs.setString('animal', petName);
+//                 setState(() {
+//                 _currentanimal = petName;
 
-              });
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        ),
-      );
-    },
-  );
-},
+//               });
+//                 Navigator.pop(context);
+//               },
+//             );
+//           }).toList(),
+//         ),
+//       );
+//     },
+//   );
+// },
 
-),
+// ),
 
           IconButton(
   icon: const Icon(Icons.more_vert, color: Color(0xFFFFBA76)),

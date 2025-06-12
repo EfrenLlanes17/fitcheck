@@ -45,6 +45,17 @@ class _SignInPageState extends State<SignInPage> {
 
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('username', username);
+          
+           final snapshot = await FirebaseDatabase.instance
+        .ref('users/$username/pets')
+        .get();
+
+    if (snapshot.exists) {
+      final petsMap = Map<String, dynamic>.from(snapshot.value as Map);
+      final firstPetName = petsMap.keys.first;
+      await prefs.setString('animal', firstPetName);
+      
+    }
 
 
           ScaffoldMessenger.of(context).showSnackBar(

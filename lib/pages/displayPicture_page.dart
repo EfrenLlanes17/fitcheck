@@ -220,8 +220,7 @@ Widget build(BuildContext context) {
       textStyle: const TextStyle(fontSize: 22), // Text size
     ),
     onPressed: () async {
-      await _loadUserData();
-      await _updateLoginStreak();
+      _updateLoginStreak();
       await uploadImageAndSaveUrl(widget.imagePath);
       Navigator.pushReplacement(
         context,

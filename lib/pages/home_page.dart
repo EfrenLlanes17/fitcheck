@@ -276,53 +276,92 @@ void showReportBottomSheet(BuildContext context, String postKey) {
     return Scaffold(
       
     appBar: AppBar(
-      automaticallyImplyLeading: false, 
+  automaticallyImplyLeading: false,
   backgroundColor: const Color.fromARGB(255, 255, 255, 255),
   elevation: 0,
-  title: Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-    child: Row(
+  title: SizedBox(
+    width: double.infinity,
+    child: Stack(
+      alignment: Alignment.center,
       children: [
-        const FaIcon(FontAwesomeIcons.paw, color: Color(0xFFFFBA76)
-, size: 24),
-        const SizedBox(width: 8),
-        FutureBuilder<int>(
-          future: _getUserStreak(),
-          builder: (context, snapshot) {
-            final streak = snapshot.data ?? 0;
-            return Text(
-              '$streak',
-              style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
-            );
-          },
-        ),
-        Expanded(
-          child: Center(
-            child: Text(
-              'PAWPRINT',
-              style: TextStyle(
-              fontFamily: 'Roboto', // Or any built-in font
-              color: Color(0xFFFFBA76),
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-
-            ),
+        // Centered Title
+        const Text(
+          'PAWPRINT',
+          style: TextStyle(
+            fontFamily: 'Roboto',
+            color: Color(0xFFFFBA76),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        IconButton(
-          icon: const FaIcon(FontAwesomeIcons.magnifyingGlass, color: Color(0xFFFFBA76), size: 24),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const SearchPage()),
-            );
-          },
+        // Left Section (Paw + Streak + Trophy)
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const FaIcon(FontAwesomeIcons.paw, color: Color(0xFFFFBA76), size: 24),
+              const SizedBox(width: 5),
+              FutureBuilder<int>(
+                future: _getUserStreak(),
+                builder: (context, snapshot) {
+                  final streak = snapshot.data ?? 0;
+                  return Row(
+                    children: [
+                      Text(
+                        '$streak',
+                        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
+                      ),
+                      const SizedBox(width: 10),
+                      const FaIcon(FontAwesomeIcons.trophy, size: 20, color: Color(0xFFFFBA76)),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        // Right Section (Cat + Dove + Search)
+        Align(
+          alignment: Alignment.centerRight,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(FontAwesomeIcons.cat, size: 20, color: Color(0xFFFFBA76)),
+                    SizedBox(width: 2),
+                    Icon(FontAwesomeIcons.dove, size: 20, color: Color(0xFFFFBA76)),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchPage()),
+                  );
+                },
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const FaIcon(FontAwesomeIcons.magnifyingGlass, size: 20, color: Color(0xFFFFBA76)),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchPage()),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ],
     ),
   ),
 ),
+
 
 
  body:

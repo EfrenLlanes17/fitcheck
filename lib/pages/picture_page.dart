@@ -43,6 +43,7 @@ class _PicturePageState extends State<PicturePage> {
   late Future<void> _initializeControllerFuture;
   late List<CameraDescription> _cameras;
   int _currentCameraIndex = 0;
+  double zoomScale = 1;
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isRecording = false;
 
@@ -52,6 +53,7 @@ Future<void> _startVideoRecording() async {
       await _controller.startVideoRecording();
       setState(() {
         _isRecording = true;
+        zoomScale = 1.35;
       });
     } catch (e) {
       print('Error starting video recording: $e');
@@ -198,36 +200,42 @@ void _flipCamera() async {
   child: Stack(
     children: [
       // Camera preview
-      SizedBox(
-        width: double.infinity,
-        child: FutureBuilder<void>(
-          future: _initializeControllerFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return ClipRect(
-                child: OverflowBox(
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.width + kBottomNavigationBarHeight,
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: _cameras[_currentCameraIndex].lensDirection == CameraLensDirection.front
-                            ? Matrix4.rotationY(3.1415926535)
-                            : Matrix4.identity(),
-                        child: CameraPreview(_controller),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
-      ),
+      Padding(
+  padding: const EdgeInsets.only(top: 120), // 👈 Adjust this to move it down
+  child: SizedBox(
+  width: double.infinity,
+  height: MediaQuery.of(context).size.height * 0.6, // Or whatever height you want
+  child: FutureBuilder<void>(
+    future: _initializeControllerFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        return ClipRect(
+          child: OverflowBox(
+            maxWidth: MediaQuery.of(context).size.width * 1.5, // 👈 Wider than screen
+            minWidth: 0,
+            maxHeight: double.infinity,
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * zoomScale, // 👈 Real width for camera 1.35 or 1 normal
+              
+              child: Transform(
+                alignment: Alignment.center,
+                transform: _cameras[_currentCameraIndex].lensDirection == CameraLensDirection.front
+                    ? Matrix4.rotationY(3.1415926535)
+                    : Matrix4.identity(),
+                child: CameraPreview(_controller),
+              ),
+            ),
+          ),
+        );
+      } else {
+        return const Center(child: CircularProgressIndicator());
+      }
+    },
+  ),
+),
+),
+
 
       // Bark button overlayed in top-right corner
      Positioned(

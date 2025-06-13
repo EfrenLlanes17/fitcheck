@@ -40,12 +40,17 @@ class VideoDemoState extends State<VideoDemo> {
         future: _initializeVideoPlayerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Center(
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
-            );
+           return Center(
+  child: SizedBox(
+
+    
+      width: 450,
+      height: 675,
+      child: VideoPlayer(_controller),
+    
+  ),
+);
+
           } else {
             return const Center(child: CircularProgressIndicator());
           }

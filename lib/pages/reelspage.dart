@@ -9,199 +9,113 @@ import 'package:fitcheck/pages/profile_page.dart';
 
 
 class VideoPostWidget extends StatefulWidget {
-  final String videoPath;
+  final String url;
+  final String username;
+  final String caption;
+  final String postKey;
+  final DateTime postDate;
+  final Function(String imageUrl) onShare;
+  final Function(BuildContext context, String postKey) onReport;
 
-  const VideoPostWidget({super.key, required this.videoPath});
+  const VideoPostWidget({
+    super.key,
+    required this.url,
+    required this.username,
+    required this.caption,
+    required this.postDate,
+    required this.postKey,
+    required this.onShare,
+    required this.onReport,
+  });
 
   @override
-  _VideoPostWidgetState createState() => _VideoPostWidgetState();
+  State<VideoPostWidget> createState() => _VideoPostWidgetState();
 }
 
 class _VideoPostWidgetState extends State<VideoPostWidget> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
-  final TextEditingController _descriptionController = TextEditingController();
-  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
- String _currentUsername = '';
-   String _currentanimal = '';
 
   @override
   void initState() {
     super.initState();
-
-    _controller = VideoPlayerController.contentUri(Uri.parse(widget.videoPath));
+    _controller = VideoPlayerController.network(widget.url); // use .file if using local
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
-    _controller.setVolume(1.0);
-    _loadUserData();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 
-  Future<void> _updateLoginStreak() async {
-  final ref = FirebaseDatabase.instance.ref();
-  final userRef = ref.child('users/$_currentUsername');
+  String _getTimeAgo(DateTime postDate) {
+    final now = DateTime.now();
+    final difference = now.difference(postDate);
 
-  final snapshot = await userRef.get();
-
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-
-  if (snapshot.exists) {
-    final data = Map<String, dynamic>.from(snapshot.value as Map);
-    final lastLoginRaw = data['lastLogin'];
-    final streak = data['streak'] ?? 0;
-
-    DateTime? lastLogin;
-    if (lastLoginRaw != null) {
-      if (lastLoginRaw is int) {
-        lastLogin = DateTime.fromMillisecondsSinceEpoch(lastLoginRaw);
-      } else if (lastLoginRaw is String) {
-        lastLogin = DateTime.tryParse(lastLoginRaw);
-      }
-    }
-
-    final lastLoginDate = lastLogin != null
-        ? DateTime(lastLogin.year, lastLogin.month, lastLogin.day)
-        : null;
-
-    int newStreak = streak;
-
-    if (lastLoginDate == null || today.difference(lastLoginDate).inDays > 1) {
-      newStreak = 1;
-    } else if (today.difference(lastLoginDate).inDays == 1) {
-      newStreak += 1;
-    }
-
-    await userRef.update({
-      'lastLogin': now.toIso8601String(),
-      'streak': newStreak,
-    });
-  } else {
-    // New user or no data
-    await userRef.set({
-      'lastLogin': now.toIso8601String(),
-      'streak': 1,
-    });
+    if (difference.inSeconds < 60) return '${difference.inSeconds}s ago';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return '${difference.inHours}h ago';
+    if (difference.inDays < 7) return '${difference.inDays}d ago';
+    if (difference.inDays < 30) return '${(difference.inDays / 7).floor()}w ago';
+    if (difference.inDays < 365) return '${(difference.inDays / 30).floor()}mo ago';
+    return '${(difference.inDays / 365).floor()}y ago';
   }
-}
-
-
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedUsername = prefs.getString('username');
-    
-    if (savedUsername != null) {
-      setState(() {
-        _currentUsername = savedUsername;
-  
-      });
-      
-    }
-    final savedAnimal = prefs.getString('animal');
-
-    if (savedAnimal != null) {
-      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
-      if (snapshot.exists) {
-        final userData = snapshot.value as Map;
-        setState(() {
-          _currentanimal = savedAnimal;
-        });
-      }
-    }
-  }
-
-
- Future<void> uploadVideoAndSaveUrl(String videoPath) async {
-  try {
-    final file = File(videoPath);
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child('user_videos/$_currentUsername/$timestamp.mp4');
-
-    final uploadTask = storageRef.putFile(
-      file,
-      SettableMetadata(contentType: 'video/mp4'),
-    );
-    await uploadTask.whenComplete(() => null);
-    final downloadUrl = await storageRef.getDownloadURL();
-
-    final databaseRef = FirebaseDatabase.instance.ref();
-    DatabaseReference newVideoRef = databaseRef.child('videos').push();
-    String pushedKey = newVideoRef.key!;
-
-    await newVideoRef.set({
-      'url': downloadUrl,
-      'timestamp': DateTime.now().toIso8601String(),
-      'user': _currentUsername,
-      'animal': _currentanimal,
-      'likes': 0,
-      'caption': _descriptionController.text,
-      'saves': 0,
-      'profilepicture':
-          'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${_currentUsername}_$_currentanimal.jpg?alt=media',
-    });
-
-    // await databaseRef
-    //     .child('users/$_currentUsername/pets/$_currentanimal/pictures/$pushedKey')
-    //     .set({
-    //   'url': downloadUrl,
-    //   'timestamp': DateTime.now().toIso8601String(),
-    // });
-
-  } catch (e) {
-    print('Error uploading video: $e');
-  }
-}
-
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-      body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return  Column(
-  crossAxisAlignment: CrossAxisAlignment.stretch,
-  children: [
-    // VIDEO PREVIEW
-    SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75, // shorter video
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          VideoPlayer(_controller),
-          if (!_controller.value.isPlaying)
-            IconButton(
-              iconSize: 64,
-              icon: const Icon(Icons.play_circle_fill, color: Colors.white),
-              onPressed: () => setState(() => _controller.play()),
-            ),
-        ],
-      ),
-    ),
-
-    
-
-
-  ],
-);
-
-              
-           
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: FutureBuilder(
+            future: _initializeVideoPlayerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    VideoPlayer(_controller),
+                    if (!_controller.value.isPlaying)
+                      IconButton(
+                        iconSize: 64,
+                        icon: const Icon(Icons.play_circle_fill, color: Colors.white),
+                        onPressed: () => setState(() => _controller.play()),
+                      ),
+                  ],
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ),
+        Positioned(
+          bottom: 16,
+          left: 16,
+          right: 16,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('@${widget.username}', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(widget.caption, style: const TextStyle(color: Colors.white, fontSize: 14)),
+              Text(_getTimeAgo(widget.postDate), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.share, color: Colors.white),
+                    onPressed: () => widget.onShare(widget.url),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.flag, color: Colors.white),
+                    onPressed: () => widget.onReport(context, widget.postKey),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

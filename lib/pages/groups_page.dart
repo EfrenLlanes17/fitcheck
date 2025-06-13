@@ -355,7 +355,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
             return bTimestamp.compareTo(aTimestamp);
           });
 
-        final videoWidgets = sortedEntries.map((entry) {
+       final videoWidgets = sortedEntries.map((entry) {
   final postKey = entry.key;
   final data = Map<String, dynamic>.from(entry.value);
   final url = data['url'] ?? '';
@@ -367,10 +367,16 @@ void showReportBottomSheet(BuildContext context, String postKey) {
       : DateTime.tryParse(timestamp.toString()) ?? DateTime.now();
 
   return VideoPostWidget(
-    videoPath: url,
-    
+    url: url,
+    username: username,
+    caption: caption,
+    postKey: postKey,
+    postDate: postDate,
+    onShare: shareImageFromUrl,
+    onReport: showReportBottomSheet,
   );
 }).toList();
+
 
 
 

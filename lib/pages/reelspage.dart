@@ -37,12 +37,19 @@ class _VideoPostWidgetState extends State<VideoPostWidget> {
   late Future<void> _initializeVideoPlayerFuture;
 
   @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.network(widget.url); // use .file if using local
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.setLooping(true);
-  }
+void initState() {
+  super.initState();
+  _controller = VideoPlayerController.contentUri(Uri.parse(widget.url));
+  
+  _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+    // Play video automatically after initialization
+    _controller.play();
+    setState(() {}); // Refresh UI so the play button disappears
+  });
+
+  _controller.setLooping(true);
+}
+
 
   @override
   void dispose() {
@@ -75,7 +82,18 @@ class _VideoPostWidgetState extends State<VideoPostWidget> {
                 return Stack(
                   alignment: Alignment.center,
                   children: [
-                    VideoPlayer(_controller),
+                    GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (_controller.value.isPlaying) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
+                      });
+                    },
+                    child: VideoPlayer(_controller),
+                  ),
                     if (!_controller.value.isPlaying)
                       IconButton(
                         iconSize: 64,

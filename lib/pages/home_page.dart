@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fitcheck/pages/groups_page.dart';
+import 'package:fitcheck/pages/reels_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/search_page.dart';
@@ -17,7 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/fullscreenimage.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-
+import 'package:fitcheck/pages/group_page.dart';
 
 
 
@@ -305,18 +305,31 @@ void showReportBottomSheet(BuildContext context, String postKey) {
               FutureBuilder<int>(
                 future: _getUserStreak(),
                 builder: (context, snapshot) {
-                  final streak = snapshot.data ?? 0;
-                  return Row(
-                    children: [
-                      Text(
-                        '$streak',
-                        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
-                      ),
-                      const SizedBox(width: 10),
-                      const FaIcon(FontAwesomeIcons.trophy, size: 20, color: Color(0xFFFFBA76)),
-                    ],
-                  );
-                },
+  final streak = snapshot.data ?? 0;
+  return Row(
+    children: [
+      Text(
+        '$streak',
+        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
+      ),
+      const SizedBox(width: 10),
+      GestureDetector(
+        onTap: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const GroupPage()),
+          );
+        },
+        child: const FaIcon(
+          FontAwesomeIcons.trophy,
+          size: 24,
+          color: Color(0xFFFFBA76),
+        ),
+      ),
+    ],
+  );
+}
+
               ),
             ],
           ),
@@ -346,7 +359,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
               ),
               IconButton(
                 visualDensity: VisualDensity.compact,
-                icon: const FaIcon(FontAwesomeIcons.magnifyingGlass, size: 20, color: Color(0xFFFFBA76)),
+                icon: const FaIcon(FontAwesomeIcons.magnifyingGlass, size: 24, color: Color(0xFFFFBA76)),
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,

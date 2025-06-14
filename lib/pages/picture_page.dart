@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fitcheck/pages/groups_page.dart';
+import 'package:fitcheck/pages/reels_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/pages/displayPicture_page.dart';

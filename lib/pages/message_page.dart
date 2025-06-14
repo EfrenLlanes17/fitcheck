@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitcheck/pages/usermessage_page.dart';
-import 'package:fitcheck/pages/groups_page.dart';
+import 'package:fitcheck/pages/reels_page.dart';
 import 'package:fitcheck/pages/picture_page.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/main.dart';

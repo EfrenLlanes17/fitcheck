@@ -18,6 +18,7 @@ import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/fullscreenimage.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fitcheck/pages/group_page.dart';
+import 'package:fitcheck/pages/competition.dart';
 
 
 
@@ -317,7 +318,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
         onTap: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const GroupPage()),
+            MaterialPageRoute(builder: (context) => const CompetitionPage()),
           );
         },
         child: const FaIcon(

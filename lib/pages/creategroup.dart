@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fitcheck/pages/group_page.dart';
 
 class PETEditGroupWidget extends StatefulWidget {
   const PETEditGroupWidget({super.key});
 
-  static String routeName = 'PET-editGroup';
-  static String routePath = '/pETEditGroup';
-
+ 
   @override
   State<PETEditGroupWidget> createState() => _PETEditGroupWidgetState();
 }
@@ -48,7 +47,10 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
         IconButton(
           icon: const Icon(Icons.arrow_back, color: orange),
           onPressed: () {
-            Navigator.pop(context); // Goes back to the previous page
+            Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GroupPage()),
+                );
           },
         ),
         const Expanded(

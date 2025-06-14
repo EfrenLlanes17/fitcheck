@@ -17,7 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/pages/fullscreenimage.dart';
-import 'package:fitcheck/pages/reelspage.dart';
+import 'package:fitcheck/pages/reelsdisplay.dart';
 import 'package:video_player/video_player.dart';
 
 
@@ -264,19 +264,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
     padding: const EdgeInsets.symmetric(horizontal: 24.0),
     child: Row(
       children: [
-        const FaIcon(FontAwesomeIcons.paw, color: Color(0xFFFFBA76)
-, size: 24),
-        const SizedBox(width: 8),
-        FutureBuilder<int>(
-          future: _getUserStreak(),
-          builder: (context, snapshot) {
-            final streak = snapshot.data ?? 0;
-            return Text(
-              '$streak',
-              style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
-            );
-          },
-        ),
+        
         Expanded(
           child: Center(
             child: Text(
@@ -291,15 +279,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
             ),
           ),
         ),
-        IconButton(
-          icon: const FaIcon(FontAwesomeIcons.magnifyingGlass, color: Color(0xFFFFBA76), size: 24),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const SearchPage()),
-            );
-          },
-        ),
+        
       ],
     ),
   ),

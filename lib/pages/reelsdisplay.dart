@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/profile_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 
 class VideoPostWidget extends StatefulWidget {
@@ -108,6 +110,26 @@ void initState() {
             },
           ),
         ),
+        Positioned(
+  right: 16,
+  bottom: 20,
+  child: Column(
+    children: const [
+      FaIcon(FontAwesomeIcons.heart, color: Colors.white, size: 36),
+      SizedBox(height: 75),
+      FaIcon(FontAwesomeIcons.comment, color: Colors.white, size: 36),
+      SizedBox(height: 75),
+      Icon(Icons.share, color: Colors.white, size: 36),
+      SizedBox(height: 75),
+      FaIcon(
+        FontAwesomeIcons.ellipsisV,
+        color: Colors.white,
+        size: 32,
+      ),
+    ],
+  ),
+),
+
         Positioned(
           bottom: 16,
           left: 16,

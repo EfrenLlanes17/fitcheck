@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/home_page.dart';
+import 'package:fitcheck/pages/search_page.dart';
+import 'package:fitcheck/pages/creategroup.dart';
+
+
 import 'package:flutter/services.dart';
 
 class GroupPage extends StatefulWidget {
@@ -57,7 +61,10 @@ return AnnotatedRegion<SystemUiOverlayStyle>(
   color: white,
   child: Padding(
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-    child: Row(
+    child: Stack(
+  alignment: Alignment.center,
+  children: [
+    Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
@@ -67,21 +74,41 @@ return AnnotatedRegion<SystemUiOverlayStyle>(
             MaterialPageRoute(builder: (context) => const HomePage()),
           ),
         ),
-        const Text(
-          'Packs',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: appOrange,
-          ),
-        ),
-        const Icon(
-          Icons.search,
-          color: appOrange,
-          size: 28,
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.add, color: appOrange, size: 28),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PETEditGroupWidget()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.search, color: appOrange, size: 28),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchPage()),
+                );
+              },
+            ),
+          ],
         ),
       ],
     ),
+    const Text(
+      'Packs',
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: appOrange,
+      ),
+    ),
+  ],
+),
+
   ),
 ),
 

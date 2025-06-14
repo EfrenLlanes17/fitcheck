@@ -352,9 +352,9 @@ void showReportBottomSheet(BuildContext context, String postKey) {
                 ),
                 onPressed: () {
                   Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SearchPage()),
-                  );
+            context,
+            MaterialPageRoute(builder: (context) => const GroupPage()),
+          );
                 },
               ),
               IconButton(

@@ -153,6 +153,7 @@ class CompetitionPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 0, 0, 0)
                           ),
                         ),
                       ),
@@ -161,6 +162,12 @@ class CompetitionPage extends StatelessWidget {
                         'Get ready for the ultimate dose of adorableness at our Cute Pet Competition! Whether they bark, purr, chirp, or hop, pets of all kinds are welcome to strut their stuff and charm the crowd. From fluffiest fur to funniest tricks, each furry (or feathery!) friend will compete for the title of Cutest Pet. Join us for a day full of smiles, tail wags, and heart-melting moments — it\'s the perfect event for animal lovers of all ages!',
                         maxLines: 10,
                         overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color.fromARGB(255, 0, 0, 0)
+                          ),
+                        
                       ),
                       const SizedBox(height: 15),
                       Row(

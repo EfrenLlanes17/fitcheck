@@ -1246,16 +1246,8 @@ final pictureWidgets = sortedEntries.map((entry) {
             label: 'Feed',
           ),
           BottomNavigationBarItem(
-            icon: Row(
-  mainAxisSize: MainAxisSize.min,
-  children: const [
-    Icon(FontAwesomeIcons.cat),
-    SizedBox(width: 4),
-   Icon(FontAwesomeIcons.dove),
-  ],
-)
-,
-            label: 'Groups',
+            icon: Icon(FontAwesomeIcons.film),
+            label: 'Reels',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),

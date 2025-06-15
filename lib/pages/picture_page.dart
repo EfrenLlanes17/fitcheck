@@ -15,6 +15,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/VideoDemo.dart';
+import 'package:lottie/lottie.dart';
 
 
 
@@ -229,7 +230,19 @@ void _flipCamera() async {
           ),
         );
       } else {
-        return const Center(child: CircularProgressIndicator());
+        return SizedBox(
+  width: 30,
+  height: 30,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+);
+
       }
     },
   ),

@@ -68,6 +68,48 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
     }
   }
 
+//   Future<void> uploadImageAndSaveUrl(String imagePath) async {
+//   try {
+//     final file = File(imagePath);
+//     final storageRef = FirebaseStorage.instance.ref().child('user_images/$_currentUsername/${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+//    final uploadTask = storageRef.putFile(file,SettableMetadata());
+//    await uploadTask.whenComplete(() => null);
+//    final downloadUrl = await storageRef.getDownloadURL();
+
+
+//     final databaseRef = FirebaseDatabase.instance.ref();
+
+
+//     DatabaseReference newPicRef = databaseRef.child('pictures').push();
+//     String pushedKey = newPicRef.key!;
+
+//     // Step 2: Set full picture data under /pictures/{pushedKey}
+//     await newPicRef.set({
+//       'url': downloadUrl,
+//       'timestamp': DateTime.now().toIso8601String(),
+//       'user': _currentUsername,
+//       'animal': _currentanimal,
+//       'likes': 0,
+//       'caption': _descriptionController.text,
+//       'saves' : 0,
+//       'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${_currentUsername}_$_currentanimal.jpg?alt=media'
+      
+//     });
+
+
+
+//     await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures/$pushedKey').set({
+//       'url': downloadUrl,
+//       'timestamp': DateTime.now().toIso8601String(),
+//     });
+
+//     print('Image uploaded and URL saved!');
+//   } catch (e) {
+//     print('Error uploading image: $e');
+//   }
+// }
+
   Future<void> _pickAndUploadProfilePicture() async {
   final picker = ImagePicker();
   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -186,39 +228,39 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Public or Private',
-                labelStyle: const TextStyle(color: orange),
-                filled: true,
-                fillColor: white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: orange, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: orange, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              ),
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: orange),
-              value: _privacySelection,
-              items: ['Public', 'Private'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value, style: const TextStyle(color: orange)),
-                );
-              }).toList(),
-              onChanged: (val) {
-                setState(() {
-                  _privacySelection = val;
-                });
-              },
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          //   child: DropdownButtonFormField<String>(
+          //     decoration: InputDecoration(
+          //       labelText: 'Public or Private',
+          //       labelStyle: const TextStyle(color: orange),
+          //       filled: true,
+          //       fillColor: white,
+          //       enabledBorder: OutlineInputBorder(
+          //         borderSide: const BorderSide(color: orange, width: 2),
+          //         borderRadius: BorderRadius.circular(8),
+          //       ),
+          //       focusedBorder: OutlineInputBorder(
+          //         borderSide: const BorderSide(color: orange, width: 2),
+          //         borderRadius: BorderRadius.circular(8),
+          //       ),
+          //       contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          //     ),
+          //     icon: const Icon(Icons.keyboard_arrow_down_rounded, color: orange),
+          //     value: _privacySelection,
+          //     items: ['Public', 'Private'].map((String value) {
+          //       return DropdownMenuItem<String>(
+          //         value: value,
+          //         child: Text(value, style: const TextStyle(color: orange)),
+          //       );
+          //     }).toList(),
+          //     onChanged: (val) {
+          //       setState(() {
+          //         _privacySelection = val;
+          //       });
+          //     },
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: TextFormField(
@@ -255,9 +297,9 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
     textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
   ),
   onPressed: () {
-    print('Create Group');
+    print('Create Pack');
   },
-  child: const Text('Create Group'),
+  child: const Text('Create Pack'),
 ),
 
           ),

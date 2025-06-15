@@ -114,19 +114,19 @@ class _HomePageState extends State<HomePage> {
   final difference = now.difference(postDate);
 
   if (difference.inSeconds < 60) {
-    return '${difference.inSeconds} secs ago';
+    return '${difference.inSeconds}sec';
   } else if (difference.inMinutes < 60) {
-    return '${difference.inMinutes} mins ago';
+    return '${difference.inMinutes}min';
   } else if (difference.inHours < 24) {
-    return '${difference.inHours} hours ago';
+    return '${difference.inHours}hr';
   } else if (difference.inDays < 7) {
-    return '${difference.inDays} days ago';
+    return '${difference.inDays}d';
   } else if (difference.inDays < 30) {
-    return '${(difference.inDays / 7).floor()} weeks ago';
+    return '${(difference.inDays / 7).floor()}w';
   } else if (difference.inDays < 365) {
-    return '${(difference.inDays / 30).floor()} months ago';
+    return '${(difference.inDays / 30).floor()}m';
   } else {
-    return '${(difference.inDays / 365).floor()} years ago';
+    return '${(difference.inDays / 365).floor()}y';
   }
 }
 
@@ -531,7 +531,7 @@ final pictureWidgets = sortedEntries.map((entry) {
       ),
       const SizedBox(width: 8),
       Text(
-        animal + " ~ " + username,
+        animal ,
         style: const TextStyle(
           color: Color(0xFFFFBA76),
           fontWeight: FontWeight.bold,
@@ -543,7 +543,7 @@ final pictureWidgets = sortedEntries.map((entry) {
 
       const SizedBox(height: 2), // Optional spacing
       Text(
-  '• ${_getTimeAgo(DateTime.parse(timestamp))}',
+  '@$username  ${_getTimeAgo(DateTime.parse(timestamp))}',
   style: const TextStyle(
     color: Color(0xFFFFBA76),
     fontWeight: FontWeight.w300,

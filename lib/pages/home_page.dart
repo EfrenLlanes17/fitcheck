@@ -710,13 +710,13 @@ final pictureWidgets = sortedEntries.map((entry) {
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.comment, color: Color(0xFFFFBA76)),
+                          icon: const Icon(Icons.chat_bubble_outline_outlined, color: Color(0xFFFFBA76)),
                           onPressed: () => setState(() => showComments = !showComments),
                         ),
                           ],
                         ),
                         IconButton(
-                          icon: const Icon(Icons.share, color: Color(0xFFFFBA76)),
+                          icon: const Icon(Icons.share_outlined, color: Color(0xFFFFBA76)),
                           onPressed: () => shareImageFromUrl(imageUrl),
                         ),
                         

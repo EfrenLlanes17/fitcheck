@@ -5,6 +5,7 @@ import 'package:fitcheck/pages/creategroup.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:lottie/lottie.dart';
 
 
 import 'package:flutter/services.dart';
@@ -74,7 +75,18 @@ class _GroupPageState extends State<GroupPage> {
     future: databaseRef.child('groups').get(),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
+        return  Center(child: SizedBox(
+  width: 400,
+  height: 400,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
       }
 
       if (!snapshot.hasData || snapshot.data!.value == null) {
@@ -166,7 +178,18 @@ class _GroupPageState extends State<GroupPage> {
     future: databaseRef.child('users/$_currentUsername/groups').get(),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
+        return Center(child: SizedBox(
+  width: 450,
+  height: 450,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
       }
 
       if (!snapshot.hasData || snapshot.data!.value == null) {

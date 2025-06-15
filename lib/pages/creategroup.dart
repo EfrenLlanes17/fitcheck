@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/group_page.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+
 
 class PETEditGroupWidget extends StatefulWidget {
   const PETEditGroupWidget({super.key});
@@ -14,7 +21,12 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
   final _groupNameController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? _privacySelection;
+  String _currentUsername = '';
+  String _currentanimal = '';
+  File? file;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+
 
   @override
   void dispose() {
@@ -22,6 +34,51 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
     _descriptionController.dispose();
     super.dispose();
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+
+    if (savedUsername != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentUsername = savedUsername;
+        });
+      }
+    }
+
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
+    }
+  }
+
+  Future<void> _pickAndUploadProfilePicture() async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile == null) return;
+
+  setState(() {
+    file = File(pickedFile.path);
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +135,21 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    'https://images.unsplash.com/photo-1559311648-d46f5d8593d6?auto=format&fit=crop&w=1080&q=80',
-                    width: 400,
-                    height: 275,
-                    fit: BoxFit.cover,
-                  ),
+                  child: file != null
+  ? Image.file(
+      file!,
+      width: 400,
+      height: 275,
+      fit: BoxFit.cover,
+    )
+  : Image.network(
+      'https://images.unsplash.com/photo-1559311648-d46f5d8593d6?auto=format&fit=crop&w=1080&q=80',
+      width: 400,
+      height: 275,
+      fit: BoxFit.cover,
+    )
+
+
                 ),
               ),
               ElevatedButton(
@@ -92,7 +158,7 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
                   foregroundColor: white,
                 ),
                 onPressed: () {
-                  print('Upload Banner');
+                  _pickAndUploadProfilePicture();
                 },
                 child: const Text('Upload Banner'),
               ),

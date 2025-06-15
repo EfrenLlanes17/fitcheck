@@ -68,47 +68,48 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
     }
   }
 
-//   Future<void> uploadImageAndSaveUrl(String imagePath) async {
-//   try {
-//     final file = File(imagePath);
-//     final storageRef = FirebaseStorage.instance.ref().child('user_images/$_currentUsername/${DateTime.now().millisecondsSinceEpoch}.jpg');
+ Future<void> uploadImageAndSaveUrl() async {
+  if (file == null) {
+    print('No file selected for upload.');
+    return; // Or set a default image URL instead of returning
+  }
 
-//    final uploadTask = storageRef.putFile(file,SettableMetadata());
-//    await uploadTask.whenComplete(() => null);
-//    final downloadUrl = await storageRef.getDownloadURL();
+  try {
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('group_banners/$_currentUsername/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
+    final uploadTask = storageRef.putFile(file!, SettableMetadata());
+    await uploadTask.whenComplete(() => null);
+    final downloadUrl = await storageRef.getDownloadURL();
 
-//     final databaseRef = FirebaseDatabase.instance.ref();
+    final databaseRef = FirebaseDatabase.instance.ref();
 
+    DatabaseReference newPicRef = databaseRef.child('groups').push();
+    String pushedKey = newPicRef.key!;
 
-//     DatabaseReference newPicRef = databaseRef.child('pictures').push();
-//     String pushedKey = newPicRef.key!;
+    await newPicRef.set({
+      'bannerurl': downloadUrl,
+      'groupname': _groupNameController.text,
+      'owner': _currentUsername,
+      'membercount': 1,
+      'description': _descriptionController.text,
+      'members': {
+    '$_currentUsername' : {
+            'profilepicture':'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${_currentUsername}_$_currentanimal.jpg?alt=media',
+    } 
+  }
+    });
 
-//     // Step 2: Set full picture data under /pictures/{pushedKey}
-//     await newPicRef.set({
-//       'url': downloadUrl,
-//       'timestamp': DateTime.now().toIso8601String(),
-//       'user': _currentUsername,
-//       'animal': _currentanimal,
-//       'likes': 0,
-//       'caption': _descriptionController.text,
-//       'saves' : 0,
-//       'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${_currentUsername}_$_currentanimal.jpg?alt=media'
-      
-//     });
+    await databaseRef.child('users/$_currentUsername/groups/$pushedKey').set({
+      'url': downloadUrl,
+      'groupname': _groupNameController.text,
+    });
+  } catch (e) {
+    print('Error uploading image: $e');
+  }
+}
 
-
-
-//     await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures/$pushedKey').set({
-//       'url': downloadUrl,
-//       'timestamp': DateTime.now().toIso8601String(),
-//     });
-
-//     print('Image uploaded and URL saved!');
-//   } catch (e) {
-//     print('Error uploading image: $e');
-//   }
-// }
 
   Future<void> _pickAndUploadProfilePicture() async {
   final picker = ImagePicker();
@@ -297,7 +298,11 @@ class _PETEditGroupWidgetState extends State<PETEditGroupWidget> {
     textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
   ),
   onPressed: () {
-    print('Create Pack');
+    uploadImageAndSaveUrl();
+    Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GroupPage()),
+                );
   },
   child: const Text('Create Pack'),
 ),

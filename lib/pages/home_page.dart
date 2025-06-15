@@ -645,18 +645,12 @@ final pictureWidgets = sortedEntries.map((entry) {
                     ),
                   ),
 
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        caption,
-                        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 14),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Row(
+                          children: [
                         IconButton(
                           icon: Icon(
                             isLiked ? Icons.favorite : Icons.favorite_border,
@@ -716,13 +710,16 @@ final pictureWidgets = sortedEntries.map((entry) {
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.share, color: Color(0xFFFFBA76)),
-                          onPressed: () => shareImageFromUrl(imageUrl),
-                        ),
-                        IconButton(
                           icon: const Icon(Icons.comment, color: Color(0xFFFFBA76)),
                           onPressed: () => setState(() => showComments = !showComments),
                         ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share, color: Color(0xFFFFBA76)),
+                          onPressed: () => shareImageFromUrl(imageUrl),
+                        ),
+                        
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -740,6 +737,12 @@ final pictureWidgets = sortedEntries.map((entry) {
                         ],
                       ),
                     ),
+                    Text(
+                        caption,
+                        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 14),
+                      ),
+                    
+                    const SizedBox(height: 12),
                     if (showComments) ...[
                       const Divider(color: Color(0xFFFFBA76)),
                       StreamBuilder<DatabaseEvent>(

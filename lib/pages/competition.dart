@@ -3,6 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class CompetitionPage extends StatefulWidget {
   const CompetitionPage({super.key});
@@ -12,16 +15,29 @@ class CompetitionPage extends StatefulWidget {
 }
 
 class _CompetitionPageState extends State<CompetitionPage> {
+DateTime? endDateTime;
+Duration remainingTime = Duration.zero;
+Timer? countdownTimer;
+String countdownText = '';
+ String _currentUsername = '';
+   String _currentanimal = '';
   String description = "";
   String enddate = "";
   double prize = 0.0;
   String theme = "";
+  String banner = "";
   int entrycount = 0;
+      final databaseRef = FirebaseDatabase.instance.ref();
+
 
   @override
   void initState() {
     super.initState();
+    countdownText = "Loading...";
+    _loadUserData();
     getCompDetails();
+    
+
   }
 
   Future<void> getCompDetails() async {
@@ -35,9 +51,20 @@ class _CompetitionPageState extends State<CompetitionPage> {
         setState(() {
           description = data['description'] ?? "";
           enddate = data['enddate'] ?? "";
+          if (enddate.isNotEmpty) {
+           try {
+  endDateTime = DateTime.parse(enddate);
+  startCountdown();
+} catch (e) {
+  print('Invalid end date format: $e');
+}
+
+          }
+
           entrycount = data['entrycount'] ?? 0;
           prize = (data['prize'] ?? 0).toDouble();
           theme = data['theme'] ?? "";
+          banner = data['banner'] ?? "";
         });
       } else {
         print('No data found at comp/');
@@ -46,6 +73,96 @@ class _CompetitionPageState extends State<CompetitionPage> {
       print('Error fetching comp details: $e');
     }
   }
+
+void startCountdown() {
+  countdownTimer?.cancel();
+  countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    final now = DateTime.now();
+
+    if (endDateTime == null) {
+      countdownTimer?.cancel(); // Optional: stop the timer if null
+      return;
+    }
+
+    final remaining = endDateTime!.difference(now);
+
+    setState(() {
+      if (remaining.isNegative) {
+        countdownText = "00:00:00:00";
+        countdownTimer?.cancel();
+      } else {
+        final days = remaining.inDays;
+        final hours = remaining.inHours % 24;
+        final minutes = remaining.inMinutes % 60;
+        final seconds = remaining.inSeconds % 60;
+        countdownText =
+  "${days}d ${hours}h ${minutes}m ${seconds}s";
+
+      }
+    });
+  });
+}
+
+
+@override
+void dispose() {
+  countdownTimer?.cancel();
+  super.dispose();
+}
+
+Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+    
+    if (savedUsername != null) {
+      setState(() {
+        _currentUsername = savedUsername;
+  
+      });
+      
+    }
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
+    }
+  }
+
+Future<void> addUsertoComp() async {
+  try {
+
+
+    DatabaseReference newPicRef = databaseRef.child('comp/entries').push();
+    String pushedKey = newPicRef.key!;
+
+    // Step 2: Set full picture data under /pictures/{pushedKey}
+    await newPicRef.set({
+      'user': _currentUsername,
+      'animal': _currentanimal,
+      'profilepicture' : 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${_currentUsername}_$_currentanimal.jpg?alt=media'
+      
+    });
+
+
+
+    await databaseRef.child('comp/entrycount').runTransaction((currentData) {
+  final current = currentData as int? ?? 0;
+  return Transaction.success(current + 1);
+});
+
+
+    print('Image uploaded and URL saved!');
+  } catch (e) {
+    print('Error uploading image: $e');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +213,18 @@ class _CompetitionPageState extends State<CompetitionPage> {
                       child: Opacity(
                         opacity: 0.5,
                         child: Image.network(
-                          'https://images.unsplash.com/photo-1615751072497-5f5169febe17?auto=format&fit=crop&w=1080&q=80',
+                          banner,
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     Column(
                       children: [
-                        const Text('01:12:34:32', style: TextStyle(color: Colors.white)),
+Text(
+  countdownText.isEmpty ? 'Loading...' : countdownText,
+  style: const TextStyle(color: Colors.white),
+),
+
                         Text(
                           theme,
                           style: const TextStyle(
@@ -158,7 +279,7 @@ class _CompetitionPageState extends State<CompetitionPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {addUsertoComp();},
                           child: const Text('Enter'),
                         ),
                       ],

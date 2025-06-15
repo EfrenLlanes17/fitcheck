@@ -411,9 +411,9 @@ void showReportBottomSheet(BuildContext context, String postKey) {
         future: FirebaseDatabase.instance.ref().child('pictures').get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox(
-  width: 30,
-  height: 30,
+            return Center(child: SizedBox(
+  width: 450,
+  height: 450,
   child: Transform.scale(
     scale: 0.5, // adjust scale factor as needed
     child: Lottie.asset(
@@ -422,7 +422,7 @@ void showReportBottomSheet(BuildContext context, String postKey) {
       fit: BoxFit.contain,
     ),
   ),
-);
+));
           }
 
           if (!snapshot.hasData || snapshot.data!.value == null) {

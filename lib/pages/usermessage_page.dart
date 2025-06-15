@@ -19,7 +19,24 @@ class _UserMessagePageState extends State<UserMessagePage> {
   late final DatabaseReference _chatRef;
   late final DatabaseReference _messagesRef;
   String _currentUsername = '';
+  String _otheranimal= '';
 
+
+void _setCurrentAnimal() async {
+  
+    final snapshot = await FirebaseDatabase.instance
+        .ref('users/${widget.username}/pets')
+        .get();
+
+    if (snapshot.exists) {
+      final petsMap = Map<String, dynamic>.from(snapshot.value as Map);
+      final firstPetName = petsMap.keys.first;
+      setState(() {
+        _otheranimal = firstPetName;
+      });
+    }
+  
+}
 
  @override
   void initState() {
@@ -33,7 +50,7 @@ class _UserMessagePageState extends State<UserMessagePage> {
     
     _messagesRef = _chatRef.child('messages');
     _loadUserData();
-    
+    _setCurrentAnimal();
     
   }
 
@@ -52,7 +69,7 @@ class _UserMessagePageState extends State<UserMessagePage> {
   _currentUsername: true,
   });
 
-  DatabaseReference ref = FirebaseDatabase.instance.ref().child('users/$otheruser/profilepicture');
+  DatabaseReference ref = FirebaseDatabase.instance.ref().child('users/$otheruser/pets/$_otheranimal/profilepicture');
 DataSnapshot snapshot = await ref.get();
 
 String? profileUrl = snapshot.value as String?;

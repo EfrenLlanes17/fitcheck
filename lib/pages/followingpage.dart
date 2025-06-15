@@ -62,9 +62,9 @@ class _FollowingPage extends State<FollowingPage> {
         future: databaseRef.child('users/$username/following').get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox(
-  width: 30,
-  height: 30,
+            return Center(child: SizedBox(
+  width: 450,
+  height: 450,
   child: Transform.scale(
     scale: 0.5, // adjust scale factor as needed
     child: Lottie.asset(
@@ -73,7 +73,7 @@ class _FollowingPage extends State<FollowingPage> {
       fit: BoxFit.contain,
     ),
   ),
-);
+));
           }
 
           if (!snapshot.hasData || snapshot.data!.value == null) {

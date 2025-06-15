@@ -104,7 +104,7 @@ final TextEditingController _bioController = TextEditingController();
 
 void goToTimelapse(int selectedIndex) async {
   final databaseRef = FirebaseDatabase.instance.ref();
-  final pictureSnapshot = await databaseRef.child('users/$_currentUsername/pictures').get();
+  final pictureSnapshot = await databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures').get();
 
   if (pictureSnapshot.exists && pictureSnapshot.value != null) {
     final picturesMap = Map<String, dynamic>.from(pictureSnapshot.value as Map);

@@ -19,6 +19,7 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   int currentIndex = 4;
   String _currentUsername = '';
+
   Map<String, String> _userChats = {}; // chatId -> otherUsername
 
   @override
@@ -35,6 +36,21 @@ class _MessagePageState extends State<MessagePage> {
       _fetchChats();
     }
   }
+
+  Future<String> _setCurrentAnimal(String otherUser) async {
+  
+    final snapshot = await FirebaseDatabase.instance
+        .ref('users/${otherUser}/pets')
+        .get();
+
+    if (snapshot.exists) {
+      final petsMap = Map<String, dynamic>.from(snapshot.value as Map);
+      final firstPetName = petsMap.keys.first;
+      return firstPetName;
+    }
+    return '';
+  
+}
 
   void _fetchChats() {
     final userChatsRef = FirebaseDatabase.instance
@@ -60,16 +76,27 @@ class _MessagePageState extends State<MessagePage> {
     });
   }
 
-  Future<String> getProfilePicture(String otherUser) async {
-    final ref = FirebaseDatabase.instance.ref().child('users/$otherUser/profilepicture');
-    final snapshot = await ref.get();
-    if (snapshot.exists && snapshot.value is String) {
-      return snapshot.value as String;
-    } else {
-      // Fallback default image
-      return 'https://via.placeholder.com/150/FFBA76/ffffff?text=User';
-    }
+Future<String> getProfilePicture(String otherUser) async {
+  final currentAnimal = await _setCurrentAnimal(otherUser);
+
+  if (currentAnimal.isEmpty) {
+    return 'https://via.placeholder.com/150/FFBA76/ffffff?text=User';
   }
+
+  final ref = FirebaseDatabase.instance
+      .ref()
+      .child('users/$otherUser/pets/$currentAnimal/profilepicture');
+  
+  final snapshot = await ref.get();
+
+  if (snapshot.exists && snapshot.value is String) {
+    return snapshot.value as String;
+  } else {
+    // Fallback default image
+    return 'https://via.placeholder.com/150/FFBA76/ffffff?text=User';
+  }
+}
+
 
    Future<String> getLastMessage(String pushKey) async {
     final ref = FirebaseDatabase.instance.ref().child('users/$_currentUsername/chats/$pushKey/lastmessage');
@@ -170,11 +197,11 @@ class _MessagePageState extends State<MessagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading: false,
         title: const Center(
           child: Text("Messages", style: TextStyle(color: Color(0xFFFFBA76))),
         ),
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Color(0xFFFFBA76)),
       ),
       body: _userChats.isEmpty
     ? const Center(child: Text("No chats yet."))

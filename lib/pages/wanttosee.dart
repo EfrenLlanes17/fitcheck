@@ -82,6 +82,7 @@ final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
       return null;
     };
   }
+  
 
   @override
   void dispose() {
@@ -175,7 +176,7 @@ void _createAccount() async {
   'lastLogin': DateTime.now().toIso8601String(),
   'email': email,
   'location': location,
-  'profilepicture': '',
+  'profilepicture': 'https://firebasestorage.googleapis.com/v0/b/fitcheck-e648e.firebasestorage.app/o/profile_pictures%2F${username}_${petInfo[0][0]}.jpg?alt=media',
   'bio': '',
   'streak': 0,
   'pets': {},// Add this key

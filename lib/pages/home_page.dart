@@ -494,65 +494,63 @@ final pictureWidgets = sortedEntries.map((entry) {
                     Row(
                       children: [
                         Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-  onTap: () {
-  if (username != _currentUsername) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => diffrentProfilePage(
-          username: username,
-          usernameOfLoggedInUser: _currentUsername,
-          animal: animal,
+  child: GestureDetector(
+    onTap: () {
+      if (username != _currentUsername) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => diffrentProfilePage(
+              username: username,
+              usernameOfLoggedInUser: _currentUsername,
+              animal: animal,
+            ),
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ProfilePage(),
+          ),
+        );
+      }
+    },
+    child: Row(
+      children: [
+        CircleAvatar(
+          radius: 20,
+          backgroundImage:
+              profilePicUrl.isNotEmpty ? NetworkImage(profilePicUrl) : null,
+          backgroundColor: const Color(0xFFFFBA76),
         ),
-      ),
-    );
-  } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ProfilePage(),
-      ),
-    );
-  }
-},
-
-  child: Row(
-    children: [
-      CircleAvatar(
-        radius: 20,
-        backgroundImage: profilePicUrl.isNotEmpty
-            ? NetworkImage(profilePicUrl)
-            : null,
-        backgroundColor: Color(0xFFFFBA76),
-      ),
-      const SizedBox(width: 8),
-      Text(
-        animal ,
-        style: const TextStyle(
-          color: Color(0xFFFFBA76),
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ],
-  ),
-),
-
-      const SizedBox(height: 2), // Optional spacing
-      Text(
-  '@$username  ${_getTimeAgo(DateTime.parse(timestamp))}',
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+           Text(
+  '${animal[0].toUpperCase()}${animal.substring(1).toLowerCase()}',
   style: const TextStyle(
     color: Color(0xFFFFBA76),
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.bold,
   ),
 ),
 
-    ],
+            const SizedBox(height: 2),
+            Text(
+              '@$username  ${_getTimeAgo(DateTime.parse(timestamp))}',
+              style: const TextStyle(
+                color: Color(0xFFFFBA76),
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
   ),
 ),
+
 
                           
                         
@@ -723,25 +721,39 @@ final pictureWidgets = sortedEntries.map((entry) {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '$likes',
-                            style: const TextStyle(color: Color(0xFFFFBA76), fontWeight: FontWeight.bold),
-                          ),
-                          const TextSpan(
-                            text: ' likes',
-                            style: TextStyle(color: Color(0xFFFFBA76)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                        caption,
-                        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 14),
-                      ),
-                    
+                    Padding(
+  padding: const EdgeInsets.only(left: 15),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$likes',
+              style: const TextStyle(
+                color: Color(0xFFFFBA76),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const TextSpan(
+              text: ' likes',
+              style: TextStyle(color: Color(0xFFFFBA76)),
+            ),
+          ],
+        ),
+      ),
+      Text(
+        caption,
+        style: const TextStyle(
+          color: Color(0xFFFFBA76),
+          fontSize: 14,
+        ),
+      ),
+    ],
+  ),
+),
+
                     const SizedBox(height: 12),
                     if (showComments) ...[
                       const Divider(color: Color(0xFFFFBA76)),

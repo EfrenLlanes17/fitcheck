@@ -19,6 +19,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/postveiwer.dart';
 import 'package:fitcheck/pages/timelaps.dart';
+import 'package:lottie/lottie.dart';
 
 
 
@@ -412,7 +413,18 @@ IconButton(
             future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/pictures').get(),
             builder: (context, pictureSnapshot) {
               if (pictureSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return  Center(child: SizedBox(
+  width: 450,
+  height: 450,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
               }
 
               List<Widget> imageWidgets = [];
@@ -644,7 +656,18 @@ FutureBuilder<DataSnapshot>(
                               future: databaseRef.child('users/$_currentUsername/pets/$_currentanimal/bio').get(),
                               builder: (context, bioSnapshot) {
                                 if (bioSnapshot.connectionState == ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
+                                  return SizedBox(
+  width: 100,
+  height: 100,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+);
                                 }
 
                                 String currentBio = '';
@@ -758,7 +781,18 @@ FutureBuilder<DataSnapshot>(
   future: databaseRef.child('users/$_currentUsername/likedpictures').get(),
   builder: (context, likedSnapshot) {
     if (likedSnapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child:SizedBox(
+  width: 100,
+  height: 100,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
     }
 
     List<Widget> likedImages = [];
@@ -847,7 +881,18 @@ FutureBuilder<DataSnapshot>(
                                           future: databaseRef.child('users/$_currentUsername/savedpictures').get(),
                                           builder: (context, savedSnapshot) {
                                             if (savedSnapshot.connectionState == ConnectionState.waiting) {
-                                              return const Center(child: CircularProgressIndicator());
+                                              return Center(child: SizedBox(
+  width: 100,
+  height: 100,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
                                             }
 
                                             List<Widget> savedImages = [];

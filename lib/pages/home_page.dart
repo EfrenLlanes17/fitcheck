@@ -19,6 +19,8 @@ import 'package:fitcheck/pages/fullscreenimage.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fitcheck/pages/group_page.dart';
 import 'package:fitcheck/pages/competition.dart';
+import 'package:lottie/lottie.dart';
+
 
 
 
@@ -409,7 +411,18 @@ void showReportBottomSheet(BuildContext context, String postKey) {
         future: FirebaseDatabase.instance.ref().child('pictures').get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return SizedBox(
+  width: 30,
+  height: 30,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+);
           }
 
           if (!snapshot.hasData || snapshot.data!.value == null) {
@@ -867,7 +880,18 @@ final pictureWidgets = sortedEntries.map((entry) {
   }(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return SizedBox(
+  width: 30,
+  height: 30,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+);
           }
 
           if (!snapshot.hasData || snapshot.data!['entries'].isEmpty) {

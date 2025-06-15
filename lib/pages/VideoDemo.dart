@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/profile_page.dart';
+import 'package:lottie/lottie.dart';
 
 
 class VideoDemo extends StatefulWidget {
@@ -258,7 +259,18 @@ class VideoDemoState extends State<VideoDemo> {
               ),
             );
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return  Center(child: SizedBox(
+  width: 200,
+  height: 200,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
           }
         },
       ),

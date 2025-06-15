@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fitcheck/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lottie/lottie.dart';
 
 
 class FollowersPage extends StatefulWidget {
@@ -62,7 +63,18 @@ class _FollowersPageState extends State<FollowersPage> {
         future: databaseRef.child('users/$username/pets/$animal/followers').get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return SizedBox(
+  width: 30,
+  height: 30,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+);
           }
 
           if (!snapshot.hasData || snapshot.data!.value == null) {

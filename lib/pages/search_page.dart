@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/postveiwer.dart';
+import 'package:lottie/lottie.dart';
 
 
 
@@ -124,7 +125,18 @@ Widget build(BuildContext context) {
   future: FirebaseDatabase.instance.ref('users').get(),
   builder: (context, snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: SizedBox(
+  width: 450,
+  height: 450,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
     }
 
     if (!snapshot.hasData || snapshot.data!.value == null) {
@@ -223,7 +235,18 @@ Widget build(BuildContext context) {
                   future: FirebaseDatabase.instance.ref('pictures').get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return Center(child: SizedBox(
+  width: 450,
+  height: 450,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
                     }
 
                     if (!snapshot.hasData || snapshot.data!.value == null) {

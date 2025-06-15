@@ -6,6 +6,7 @@ import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:lottie/lottie.dart';
 
 
 
@@ -66,7 +67,18 @@ class _CommentInputFieldState extends State<CommentInputField> {
         ),
         IconButton(
           icon: _isSending
-              ? const CircularProgressIndicator()
+              ?  SizedBox(
+  width: 100,
+  height: 100,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+)
               : const Icon(Icons.send, color: Color(0xFFFFBA76)),
           onPressed: _isSending ? null : _submitComment,
         ),

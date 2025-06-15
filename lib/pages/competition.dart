@@ -43,7 +43,7 @@ class CompetitionPage extends StatelessWidget {
           ),
         ),
                       Text(
-                        'COMPETITIONS',
+                        'COMPETITION',
                         style: TextStyle(
                           color: Color(0xFFFFBA76),
                           fontSize: 24,

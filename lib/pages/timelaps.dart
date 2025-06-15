@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
+
 
 class TimelapsPage extends StatefulWidget {
   final List<Map<String, dynamic>> postDataList;
@@ -152,7 +154,18 @@ Widget build(BuildContext context) {
             switchInCurve: Curves.easeIn,
             switchOutCurve: Curves.easeOut,
             child: _currentData == null
-                ? const CircularProgressIndicator(color: Color(0xFFFFBA76))
+                ? SizedBox(
+  width: 450,
+  height: 450,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+)
                 : Column(
                     key: ValueKey(_currentIndex),
                     mainAxisSize: MainAxisSize.min,

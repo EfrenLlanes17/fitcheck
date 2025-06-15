@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/fullscreenimage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:lottie/lottie.dart';
 
 
 
@@ -243,7 +244,18 @@ void showReportBottomSheet(BuildContext context, String postKey) {
             
 
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: SizedBox(
+  width: 30,
+  height: 30,
+  child: Transform.scale(
+    scale: 0.5, // adjust scale factor as needed
+    child: Lottie.asset(
+      'assets/animations/dogloader.json',
+      repeat: true,
+      fit: BoxFit.contain,
+    ),
+  ),
+));
             }
 
             if (!snapshot.hasData || snapshot.data!.value == null) {

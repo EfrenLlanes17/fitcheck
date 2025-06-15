@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:fitcheck/pages/search_page.dart';
 import 'package:fitcheck/pages/creategroup.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 import 'package:flutter/services.dart';
@@ -17,6 +20,9 @@ class _GroupPageState extends State<GroupPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController textController;
   late FocusNode textFieldFocusNode;
+  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+  String _currentUsername = '';
+  String _currentanimal = '';
 
   @override
   void initState() {
@@ -24,6 +30,7 @@ class _GroupPageState extends State<GroupPage> {
    
     textController = TextEditingController();
     textFieldFocusNode = FocusNode();
+    _loadUserData();
   }
 
   @override
@@ -32,6 +39,197 @@ class _GroupPageState extends State<GroupPage> {
     textFieldFocusNode.dispose();
     super.dispose();
   }
+
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+
+    if (savedUsername != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentUsername = savedUsername;
+        });
+      }
+    }
+
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
+    }
+  }
+
+  Widget buildAllGroupsListView() {
+  final databaseRef = FirebaseDatabase.instance.ref();
+
+  return FutureBuilder<DataSnapshot>(
+    future: databaseRef.child('groups').get(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (!snapshot.hasData || snapshot.data!.value == null) {
+        return const Center(child: Text('No groups available.'));
+      }
+
+      final Map<String, dynamic> groupsMap =
+          Map<String, dynamic>.from(snapshot.data!.value as Map);
+
+      final groupEntries = groupsMap.entries.toList();
+
+      return ListView.builder(
+        itemCount: groupEntries.length,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemBuilder: (context, index) {
+          final entry = groupEntries[index];
+          final groupData = Map<String, dynamic>.from(entry.value);
+
+          final groupName = groupData['groupname'] ?? 'Unknown Pack';
+          final imageUrl = groupData['bannerurl'] ?? '';
+          final memberCount = groupData['membercount']?.toString() ?? '0';
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        imageUrl,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          groupName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFFFBA76),
+                          ),
+                        ),
+                        Text('$memberCount Members',
+                            style: const TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  ],
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFBA76),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  onPressed: () {
+                    // TODO: Add join group logic
+                  },
+                  child: const Text('Join', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+
+  Widget buildUserGroupsScrollView() {
+  final databaseRef = FirebaseDatabase.instance.ref();
+
+  return FutureBuilder<DataSnapshot>(
+    future: databaseRef.child('users/$_currentUsername/groups').get(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (!snapshot.hasData || snapshot.data!.value == null) {
+        return const Center(child: Text('No packs found.'));
+      }
+
+      final Map<String, dynamic> groupsMap =
+          Map<String, dynamic>.from(snapshot.data!.value as Map);
+
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: groupsMap.entries.map((entry) {
+            final groupData = Map<String, dynamic>.from(entry.value);
+
+            return Container(
+              width: 160,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                    child: Image.network(
+                      groupData['url'] ?? '',
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          groupData['groupname'] ?? '',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFFFBA76),
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +242,17 @@ return AnnotatedRegion<SystemUiOverlayStyle>(
       statusBarBrightness: Brightness.light, // iOS brightness setting
     ),
     child: SafeArea(
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: white,
-        body: Container(
+      child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,
               image: AssetImage('assets/images/background.png'),
             ),
           ),
-          child: SingleChildScrollView(
+           child: Scaffold(
+        backgroundColor: Colors.transparent, // Important: Make scaffold transparent
+        key: scaffoldKey,
+        body: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
@@ -133,49 +331,7 @@ Container(
 ),
       ),
       const SizedBox(height: 8),
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: List.generate(5, (index) {
-            return Container(
-              width: 160,
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                    child: Image.network(
-                      'https://images.unsplash.com/photo-1622861431942-b45f2b5b6564?...',
-                      height: 150,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Dogs with\ndown syndrome', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFFFBA76))),
-                        SizedBox(height: 4),
-                        Text('2,6058 Members', style: TextStyle(color: Colors.grey)),
-                        
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ),
-      ),
+      buildUserGroupsScrollView(),
     ],
   ),
 ),
@@ -203,73 +359,15 @@ Container(
 
       ),
       const SizedBox(height: 8),
-      ListView.builder(
-        itemCount: 10,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemBuilder: (context, index) {
-          return Container(
-  margin: const EdgeInsets.only(bottom: 15),
-  padding: const EdgeInsets.all(16), // Adds padding inside the container
-  decoration: BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(16), // Rounded corners
-    
-  ),
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              'https://picsum.photos/seed/$index/600',
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Dog Pack #$index',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFFFFBA76),
-                ),
-              ),
-              const Text('113 Members', style: TextStyle(color: Colors.grey)),
-            ],
-          ),
-        ],
-      ),
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFFFFBA76),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        onPressed: () {},
-        child: const Text('Join', style: TextStyle(color: Colors.white)),
-      ),
-    ],
-  ),
-);
-
-        },
-      ),
+      buildAllGroupsListView(),
     ],
   ),
 ),
               ],
             ),
           ),
-        ),
+        
+      ),
       ),
     ),
     );

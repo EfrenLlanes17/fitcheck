@@ -54,25 +54,30 @@ final TextEditingController _bioController = TextEditingController();
   Future<void> _pickAndUploadProfilePicture() async {
   final picker = ImagePicker();
   final pickedFile = await showModalBottomSheet<XFile?>(
-    context: context,
-    builder: (_) {
-      return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Upload from gallery'),
-              onTap: () async {
-                final file = await picker.pickImage(source: ImageSource.gallery);
-                Navigator.pop(context, file);
-              },
+  context: context,
+  backgroundColor: Colors.white, // Set bottom sheet background to white
+  builder: (_) {
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_library, color: Color(0xFFFFBA76)),
+            title: const Text(
+              'Upload from gallery',
+              style: TextStyle(color: Color(0xFFFFBA76)),
             ),
-          ],
-        ),
-      );
-    },
-  );
+            onTap: () async {
+              final file = await picker.pickImage(source: ImageSource.gallery);
+              Navigator.pop(context, file);
+            },
+          ),
+        ],
+      ),
+    );
+  },
+);
+
 
   if (pickedFile == null) return;
 

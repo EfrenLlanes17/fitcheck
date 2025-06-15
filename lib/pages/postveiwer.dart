@@ -245,8 +245,8 @@ void showReportBottomSheet(BuildContext context, String postKey) {
 
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: SizedBox(
-  width: 30,
-  height: 30,
+  width: 450,
+  height: 450,
   child: Transform.scale(
     scale: 0.5, // adjust scale factor as needed
     child: Lottie.asset(

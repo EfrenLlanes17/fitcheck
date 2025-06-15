@@ -554,7 +554,7 @@ final pictureWidgets = sortedEntries.map((entry) {
               '@$username  ${_getTimeAgo(DateTime.parse(timestamp))}',
               style: const TextStyle(
                 color: Color(0xFFFFBA76),
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -733,7 +733,7 @@ final pictureWidgets = sortedEntries.map((entry) {
                         
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 0),
                     Padding(
   padding: const EdgeInsets.only(left: 15),
   child: Column(
@@ -756,6 +756,8 @@ final pictureWidgets = sortedEntries.map((entry) {
           ],
         ),
       ),
+      const SizedBox(height: 4),
+
       Text(
         caption,
         style: const TextStyle(

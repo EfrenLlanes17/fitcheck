@@ -154,18 +154,7 @@ void initState() {
               Text('@${widget.username}', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               Text(widget.caption, style: const TextStyle(color: Colors.white, fontSize: 14)),
               Text(_getTimeAgo(widget.postDate), style: const TextStyle(color: Colors.white70, fontSize: 12)),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.share, color: Colors.white),
-                    onPressed: () => widget.onShare(widget.url),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.flag, color: Colors.white),
-                    onPressed: () => widget.onReport(context, widget.postKey),
-                  ),
-                ],
-              ),
+              
             ],
           ),
         ),

@@ -56,6 +56,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   video_player: ^2.10.0
   lottie: ^2.7.0
+  flutter_svg: ^2.0.7
 
 flutter_icons:
   android: true
@@ -92,6 +93,7 @@ flutter:
     - assets/sounds/meow.mp3
     - assets/sounds/squeak.mp3
     - assets/animations/dogloader.json
+    - assets/icons.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

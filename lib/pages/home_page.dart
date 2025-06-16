@@ -20,6 +20,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:fitcheck/pages/group_page.dart';
 import 'package:fitcheck/pages/competition.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 
 
@@ -1295,15 +1296,20 @@ final pictureWidgets = sortedEntries.map((entry) {
         selectedItemColor: Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items:  [
           BottomNavigationBarItem(
             icon: Icon(FontAwesomeIcons.bone),
             label: 'Feed',
           ),
           BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.film),
-            label: 'Reels',
-          ),
+  icon: SvgPicture.asset(
+    'assets/icons.svg', // use the actual path to your SVG
+    width: 25,
+  height: 25,
+  ),
+  label: 'Reels',
+),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),
             label: 'Camera',

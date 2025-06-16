@@ -20,6 +20,7 @@ import 'package:fitcheck/pages/fullscreenimage.dart';
 import 'package:fitcheck/pages/reelsdisplay.dart';
 import 'package:video_player/video_player.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 
 
@@ -393,23 +394,26 @@ void showReportBottomSheet(BuildContext context, String postKey) {
         selectedItemColor: Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(FontAwesomeIcons.bone),
             label: 'Feed',
           ),
           BottomNavigationBarItem(
-            icon: Row(
-  mainAxisSize: MainAxisSize.min,
-  children: const [
-    Icon(FontAwesomeIcons.cat),
-    SizedBox(width: 4),
-   Icon(FontAwesomeIcons.dove),
-  ],
-)
-,
-            label: 'Groups',
-          ),
+  icon: SvgPicture.asset(
+  'assets/icons.svg',
+  width: 25,
+  height: 25,
+  colorFilter: ColorFilter.mode(
+    currentIndex == 1
+        ? const Color.fromARGB(255, 250, 144, 39)
+        : const Color(0xFFFFBA76),
+    BlendMode.srcIn,
+  ),
+),
+
+  label: 'Reels',
+),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),
             label: 'Camera',

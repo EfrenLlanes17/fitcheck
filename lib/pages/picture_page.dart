@@ -16,6 +16,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/VideoDemo.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 
 
@@ -361,16 +362,16 @@ void _flipCamera() async {
         selectedItemColor: Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.bone), label: 'Feed'),
-          BottomNavigationBarItem(icon: Row(
-  mainAxisSize: MainAxisSize.min,
-  children: const [
-    Icon(FontAwesomeIcons.cat),
-    SizedBox(width: 4),
-   Icon(FontAwesomeIcons.dove),
-  ],
-), label: 'Groups'),
+          BottomNavigationBarItem(
+  icon: SvgPicture.asset(
+    'assets/icons.svg', // use the actual path to your SVG
+    width: 25,
+  height: 25,
+  ),
+  label: 'Reels',
+),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
           BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.solidMessage), label: 'Message'),

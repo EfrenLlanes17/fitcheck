@@ -20,6 +20,7 @@ import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/postveiwer.dart';
 import 'package:fitcheck/pages/timelaps.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 
 
@@ -1009,16 +1010,16 @@ FutureBuilder<DataSnapshot>(
         selectedItemColor: Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.bone), label: 'Feed'),
-          BottomNavigationBarItem(icon: Row(
-  mainAxisSize: MainAxisSize.min,
-  children: const [
-    Icon(FontAwesomeIcons.cat),
-    SizedBox(width: 4),
-   Icon(FontAwesomeIcons.dove),
-  ],
-), label: 'Groups'),
+          BottomNavigationBarItem(
+  icon: SvgPicture.asset(
+    'assets/icons.svg', // use the actual path to your SVG
+    width: 25,
+  height: 25,
+  ),
+  label: 'Reels',
+),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
           BottomNavigationBarItem(icon:Icon(FontAwesomeIcons.dog), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.solidMessage), label: 'Message'),

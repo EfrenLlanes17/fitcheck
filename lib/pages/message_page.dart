@@ -8,6 +8,8 @@ import 'package:fitcheck/pages/profile_page.dart';
 import 'package:fitcheck/main.dart';
 import 'package:fitcheck/pages/home_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 class MessagePage extends StatefulWidget {
   const MessagePage({super.key});
@@ -292,19 +294,16 @@ Future<String> getProfilePicture(String otherUser) async {
         selectedItemColor: const Color.fromARGB(255, 250, 144, 39),
         unselectedItemColor: const Color(0xFFFFBA76),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.bone), label: 'Feed'),
           BottomNavigationBarItem(
-            icon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(FontAwesomeIcons.cat),
-                SizedBox(width: 4),
-                Icon(FontAwesomeIcons.dove),
-              ],
-            ),
-            label: 'Groups',
-          ),
+  icon: SvgPicture.asset(
+    'assets/icons.svg', // use the actual path to your SVG
+    width: 25,
+  height: 25,
+  ),
+  label: 'Reels',
+),
           BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Camera'),
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.dog), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(FontAwesomeIcons.solidMessage), label: 'Message'),

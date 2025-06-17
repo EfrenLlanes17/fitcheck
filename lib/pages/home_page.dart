@@ -304,37 +304,54 @@ void showReportBottomSheet(BuildContext context, String postKey) {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const FaIcon(FontAwesomeIcons.paw, color: Color(0xFFFFBA76), size: 24),
-              const SizedBox(width: 5),
-              FutureBuilder<int>(
-                future: _getUserStreak(),
-                builder: (context, snapshot) {
-  final streak = snapshot.data ?? 0;
-  return Row(
-    children: [
-      Text(
-        '$streak',
-        style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 18),
-      ),
-      const SizedBox(width: 10),
-      GestureDetector(
-        onTap: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const CompetitionPage()),
-          );
-        },
-        child: const FaIcon(
-          FontAwesomeIcons.trophy,
-          size: 24,
-          color: Color(0xFFFFBA76),
+             FutureBuilder<int>(
+  future: _getUserStreak(),
+  builder: (context, snapshot) {
+    final streak = snapshot.data ?? 0;
+    return Row(
+      children: [
+        // Trophy icon
+        GestureDetector(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const CompetitionPage()),
+            );
+          },
+          child: const FaIcon(
+            FontAwesomeIcons.trophy,
+            size: 24,
+            color: Color(0xFFFFBA76),
+          ),
         ),
-      ),
-    ],
-  );
-}
 
-              ),
+        const SizedBox(width: 8),
+
+        // Streak icon
+        Container(
+          margin: const EdgeInsets.only(bottom: 4),
+          child: SvgPicture.asset(
+            'assets/streakIcon.svg',
+            width: 32,
+            height: 32,
+          ),
+        ),
+
+        const SizedBox(width: 4),
+
+        // Streak number
+        Container(
+          margin: const EdgeInsets.only(top: 4),
+          child: Text(
+            '$streak',
+            style: const TextStyle(color: Color(0xFFFFBA76), fontSize: 25),
+          ),
+        ),
+      ],
+    );
+  },
+),
+
             ],
           ),
         ),

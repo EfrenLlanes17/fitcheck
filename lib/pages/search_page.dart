@@ -53,7 +53,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
 Widget build(BuildContext context) {
   return DefaultTabController(
-    length: 2,
+    length: 3,
     child: Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: PreferredSize(
@@ -108,6 +108,7 @@ Widget build(BuildContext context) {
       tabs: [
         Tab(text: 'Accounts'),
         Tab(text: 'Posts'),
+        Tab(text: 'Groups'),
       ],
     ),
   ),
@@ -313,6 +314,109 @@ Widget build(BuildContext context) {
 
                   },
                 ),
+
+//groups
+FutureBuilder<DataSnapshot>(
+  future: FirebaseDatabase.instance.ref('groups').get(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Center(
+        child: SizedBox(
+          width: 450,
+          height: 450,
+          child: Transform.scale(
+            scale: 0.5,
+            child: Lottie.asset(
+              'assets/animations/dogloader.json',
+              repeat: true,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (!snapshot.hasData || snapshot.data!.value == null) {
+      return const Center(
+        child: Text(
+          'No groups found',
+          style: TextStyle(color: Color(0xFFFFBA76)),
+        ),
+      );
+    }
+
+    final groupMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+    final List<Map<String, dynamic>> groupList = [];
+
+    groupMap.forEach((groupId, groupDataRaw) {
+      final groupData = Map<String, dynamic>.from(groupDataRaw);
+      final profilePic = groupData['bannerurl'] ?? '';
+      final memberCount = groupData['membercount'] ?? 0;
+      final groupName = groupData['groupname'] ?? ''; // the actual display name
+
+      groupList.add({
+        'groupName': groupName,
+        'profilepicture': profilePic,
+        'memberCount': memberCount,
+        'groupId': groupId, // optional if you want to navigate later
+      });
+    });
+
+    final filteredGroups = groupList.where((entry) {
+      final name = entry['groupName'].toString().toLowerCase();
+      return name.contains(searchQuery.toLowerCase());
+    }).toList();
+
+    if (filteredGroups.isEmpty) {
+      return const Center(
+        child: Text(
+          'No groups found.',
+          style: TextStyle(color: Color(0xFFFFBA76)),
+        ),
+      );
+    }
+
+    return ListView.builder(
+  itemCount: filteredGroups.length,
+  itemBuilder: (context, index) {
+    final group = filteredGroups[index];
+    final groupName = group['groupName'];
+    final profilePicUrl = (group['profilepicture'] as String).isNotEmpty
+        ? group['profilepicture']
+        : 'https://via.placeholder.com/150/FFBA76/ffffff?text=Group';
+    final memberCount = group['memberCount'];
+    final groupId = group['groupId'];
+
+    // Add this print statement for debugging
+    print('Group: $groupName | Members: $memberCount | ID: $groupId');
+
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(profilePicUrl),
+        backgroundColor: const Color(0xFFFFBA76),
+      ),
+      title: Text(
+        groupName,
+        style: const TextStyle(color: Color(0xFFFFBA76)),
+      ),
+      subtitle: Text(
+        '$memberCount members',
+        style: const TextStyle(color: Color(0xFFFFBA76)),
+      ),
+      onTap: () {
+        // Optional: print tapped group
+        print('Tapped on $groupName ($groupId)');
+        // TODO: Navigate to group details page or chat
+      },
+    );
+  },
+);
+
+  },
+)
+
+
+                
               ],
             ),
           ),

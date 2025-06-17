@@ -17,7 +17,8 @@ import 'package:fitcheck/pages/message_page.dart';
 import 'package:fitcheck/pages/VideoDemo.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as path;
 
 
 
@@ -100,14 +101,47 @@ Future<void> _stopVideoRecording() async {
     _audioPlayer.play(AssetSource('sounds/squeak.mp3'));
   }
 
-  Future<void> _pickImageFromGallery() async {
+void _showMediaPickerOptions() {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (BuildContext context) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.image, color: Color(0xFFFFBA76)),
+              title: Text('Pick Image', style: TextStyle(color: Color(0xFFFFBA76))),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImageFromGallery();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.videocam, color: Color(0xFFFFBA76)),
+              title: Text('Pick Video', style: TextStyle(color: Color(0xFFFFBA76))),
+              onTap: () {
+                Navigator.pop(context);
+                _pickVideoFromGallery();
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Future<void> _pickImageFromGallery() async {
   try {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      if (!mounted) return;
-
+    if (pickedFile != null && mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -116,9 +150,28 @@ Future<void> _stopVideoRecording() async {
       );
     }
   } catch (e) {
-    print('Error picking image from gallery: $e');
+    print('Error picking image: $e');
   }
 }
+
+Future<void> _pickVideoFromGallery() async {
+  try {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+
+    if (pickedFile != null && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoDemo(videoPath: pickedFile.path),
+        ),
+      );
+    }
+  } catch (e) {
+    print('Error picking video: $e');
+  }
+}
+
 
 
   @override
@@ -389,7 +442,7 @@ void _flipCamera() async {
         heroTag: 'gallery',
         backgroundColor: Color(0xFFFFBA76),
         elevation: 0,
-        onPressed: _pickImageFromGallery,
+        onPressed: _showMediaPickerOptions,
         child: const Icon(Icons.photo_library, color: Color.fromARGB(255, 255, 255, 255)),
       ),
 

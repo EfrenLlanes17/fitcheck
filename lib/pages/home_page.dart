@@ -454,19 +454,56 @@ void showReportBottomSheet(BuildContext context, String postKey) {
 
           final picturesMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
 
-final sortedEntries = picturesMap.entries.toList()
-  ..sort((a, b) {
-    final aData = Map<String, dynamic>.from(a.value);
-    final bData = Map<String, dynamic>.from(b.value);
+ return FutureBuilder<DataSnapshot>(
+      future: FirebaseDatabase.instance.ref('users/$_currentUsername/wanttosee').get(),
+      builder: (context, wantToSeeSnapshot) {
+        if (!wantToSeeSnapshot.hasData || wantToSeeSnapshot.data!.value == null) {
+          return const Center(child: Text("No preferences found"));
+        }
+                final wantToSeeList = List<String>.from(wantToSeeSnapshot.data!.value as List);
 
+return FutureBuilder<List<Map<String, dynamic>>>(
+          future: Future.wait(
+            picturesMap.entries.map((entry) async {
+              final post = Map<String, dynamic>.from(entry.value);
+              final postUser = post['user'];
+              final postAnimal = post['animal'];
+
+              final typeSnapshot = await FirebaseDatabase.instance
+                  .ref('users/$postUser/pets/$postAnimal/type')
+                  .get();
+
+              final animalType = typeSnapshot.value?.toString();
+
+              if (animalType != null && wantToSeeList.contains(animalType)) {
+                return {...post, 'key': entry.key}; // include key if needed
+              } else {
+                return {}; // filtered out
+              }
+            }),
+          ),
+          builder: (context, filteredSnapshot) {
+            if (!filteredSnapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final filteredPosts = filteredSnapshot.data!
+                .where((post) => post.isNotEmpty)
+                .toList();
+
+            if (filteredPosts.isEmpty) {
+              return const Center(child: Text("No matching posts"));
+            }
+
+final sortedEntries = List<Map<String, dynamic>>.from(filteredPosts)
+  ..sort((a, b) {
     DateTime parseTimestamp(dynamic value) {
       if (value is int) {
-        // If stored as milliseconds since epoch
         return DateTime.fromMillisecondsSinceEpoch(value);
       }
       if (value is String) {
         try {
-          return DateTime.parse(value); // Works for ISO 8601
+          return DateTime.parse(value);
         } catch (_) {
           return DateTime.fromMillisecondsSinceEpoch(int.tryParse(value) ?? 0);
         }
@@ -474,11 +511,12 @@ final sortedEntries = picturesMap.entries.toList()
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
 
-    final aTimestamp = parseTimestamp(aData['timestamp']);
-    final bTimestamp = parseTimestamp(bData['timestamp']);
+    final aTimestamp = parseTimestamp(a['timestamp']);
+    final bTimestamp = parseTimestamp(b['timestamp']);
 
     return bTimestamp.compareTo(aTimestamp); // Most recent first
   });
+
 
 
 
@@ -488,15 +526,16 @@ final sortedEntries = picturesMap.entries.toList()
 // Updated version of pictureWidgets to reflect UI style with full backend functionality
 
 final pictureWidgets = sortedEntries.map((entry) {
-  final data = Map<String, dynamic>.from(entry.value);
-  final imageUrl = data['url'] ?? '';
-  final timestamp = data['timestamp'].toString();
-  final caption = data['caption'] ?? '';
-  final username = data['user'] ?? '';
-  final profilePicUrl = data['profilepicture'] ?? '';
-  final animal = data['animal'] ?? '';
-  final postKey = entry.key;
-  int likes = int.tryParse(data['likes'].toString()) ?? 0;
+  final imageUrl = entry['url'] ?? '';
+  final timestamp = entry['timestamp'].toString();
+  final caption = entry['caption'] ?? '';
+  final username = entry['user'] ?? '';
+  final profilePicUrl = entry['profilepicture'] ?? '';
+  final animal = entry['animal'] ?? '';
+  final postKey = entry['key']; // you added this manually earlier
+  int likes = int.tryParse(entry['likes'].toString()) ?? 0;
+
+
 
   return FutureBuilder<DataSnapshot>(
     future: FirebaseDatabase.instance.ref('pictures/$postKey/likedBy/$_currentUsername').get(),
@@ -508,6 +547,9 @@ final pictureWidgets = sortedEntries.map((entry) {
         builder: (context, saveSnapshot) {
           bool isSaved = saveSnapshot.data?.value == true;
           bool showComments = false;
+
+
+
           return StatefulBuilder(
             builder: (context, setState) {
               
@@ -837,6 +879,10 @@ final pictureWidgets = sortedEntries.map((entry) {
 
 
           return ListView(children: pictureWidgets);
+          },
+      );
+          },
+      );
         },
       ),
       ],

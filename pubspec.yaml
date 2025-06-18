@@ -58,6 +58,7 @@ dependencies:
   lottie: ^2.7.0
   flutter_svg: ^2.0.7
   mime: ^1.0.4
+  dio: ^5.4.0
 
 flutter_icons:
   android: true

@@ -43,7 +43,7 @@ class _VideoPostWidgetState extends State<VideoPostWidget> {
   @override
 void initState() {
   super.initState();
-  _controller = VideoPlayerController.contentUri(Uri.parse(widget.url));
+_controller = VideoPlayerController.file(File(widget.url));
   
   _initializeVideoPlayerFuture = _controller.initialize().then((_) {
     // Play video automatically after initialization

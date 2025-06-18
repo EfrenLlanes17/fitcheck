@@ -21,6 +21,7 @@ import 'package:fitcheck/pages/reelsdisplay.dart';
 import 'package:video_player/video_player.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:dio/dio.dart';
 
 
 
@@ -92,6 +93,23 @@ class _FreindsPageState extends State<FreindsPage> {
     
     _loadUserData();
   }
+
+  Future<String> cacheVideo(String url, String filename) async {
+  final dir = await getTemporaryDirectory();
+  final filePath = '${dir.path}/$filename';
+
+  final file = File(filePath);
+  if (await file.exists()) return filePath;
+
+  try {
+    await Dio().download(url, filePath);
+    return filePath;
+  } catch (e) {
+    print("Cache failed: $e");
+    return url; // fallback to network
+  }
+}
+
 
   String _getTimeAgo(DateTime postDate) {
   final now = DateTime.now();
@@ -348,36 +366,44 @@ void showReportBottomSheet(BuildContext context, String postKey) {
             return bTimestamp.compareTo(aTimestamp);
           });
 
-       final videoWidgets = sortedEntries.map((entry) {
-  final postKey = entry.key;
-  final data = Map<String, dynamic>.from(entry.value);
-  final url = data['url'] ?? '';
-  final username = data['username'] ?? '';
-  final caption = data['caption'] ?? '';
-  final timestamp = data['timestamp'];
-  final postDate = timestamp is int
-      ? DateTime.fromMillisecondsSinceEpoch(timestamp)
-      : DateTime.tryParse(timestamp.toString()) ?? DateTime.now();
+       return FutureBuilder<List<Widget>>(
+  future: Future.wait(sortedEntries.map((entry) async {
+    final postKey = entry.key;
+    final data = Map<String, dynamic>.from(entry.value);
+    final url = data['url'] ?? '';
+    final username = data['username'] ?? '';
+    final caption = data['caption'] ?? '';
+    final timestamp = data['timestamp'];
+    final postDate = timestamp is int
+        ? DateTime.fromMillisecondsSinceEpoch(timestamp)
+        : DateTime.tryParse(timestamp.toString()) ?? DateTime.now();
 
-  return VideoPostWidget(
-    url: url,
-    username: username,
-    caption: caption,
-    postKey: postKey,
-    postDate: postDate,
-    onShare: shareImageFromUrl,
-    onReport: showReportBottomSheet,
-  );
-}).toList();
+    final cachedPath = await cacheVideo(url, '$postKey.mp4');
 
+    return VideoPostWidget(
+      url: cachedPath,
+      username: username,
+      caption: caption,
+      postKey: postKey,
+      postDate: postDate,
+      onShare: shareImageFromUrl,
+      onReport: showReportBottomSheet,
+    );
+  })),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
+    final videoWidgets = snapshot.data!;
+    return PageView.builder(
+      scrollDirection: Axis.vertical,
+      itemCount: videoWidgets.length,
+      itemBuilder: (context, index) => videoWidgets[index],
+    );
+  },
+);
 
-
-        return PageView.builder(
-          scrollDirection: Axis.vertical,
-          itemCount: videoWidgets.length,
-          itemBuilder: (context, index) => videoWidgets[index],
-        );
       },
     ),
   ],

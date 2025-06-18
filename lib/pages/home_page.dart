@@ -179,8 +179,8 @@ class _HomePageState extends State<HomePage> {
 
     await Share.shareXFiles(
       [xFile],
-      text: 'Check out this picture from FitCheck!',
-      subject: 'Shared from FitCheck',
+      text: 'Check out this picture from PawPrint!',
+      subject: 'Shared from PawPrint',
     );
   } catch (e) {
     debugPrint('Error sharing image: $e');

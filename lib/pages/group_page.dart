@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:lottie/lottie.dart';
+import 'package:fitcheck/pages/specificgroup.dart';
 
 
 import 'package:flutter/services.dart';
@@ -111,7 +112,14 @@ class _GroupPageState extends State<GroupPage> {
           final imageUrl = groupData['bannerurl'] ?? '';
           final memberCount = groupData['membercount']?.toString() ?? '0';
 
-          return Container(
+          return GestureDetector(
+  onTap: () {
+    // Handle tap event here
+    print('Tapped group: ${groupData['groupname']}');
+    // You can also navigate:
+     Navigator.push(context, MaterialPageRoute(builder: (_) => PETspeciicGroupPage()));
+  },
+  child: Container(
             margin: const EdgeInsets.only(bottom: 15),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -163,6 +171,7 @@ class _GroupPageState extends State<GroupPage> {
                 ),
               ],
             ),
+  ),
           );
         },
       );
@@ -206,7 +215,14 @@ class _GroupPageState extends State<GroupPage> {
           children: groupsMap.entries.map((entry) {
             final groupData = Map<String, dynamic>.from(entry.value);
 
-            return Container(
+            return GestureDetector(
+  onTap: () {
+    // Handle tap event here
+    print('Tapped group: ${groupData['groupname']}');
+    // You can also navigate:
+     Navigator.push(context, MaterialPageRoute(builder: (_) => PETspeciicGroupPage()));
+  },
+  child: Container(
               width: 160,
               margin: const EdgeInsets.only(right: 12),
               decoration: BoxDecoration(
@@ -245,6 +261,7 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ],
               ),
+  ),
             );
           }).toList(),
         ),

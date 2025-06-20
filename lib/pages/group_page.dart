@@ -117,7 +117,7 @@ class _GroupPageState extends State<GroupPage> {
     // Handle tap event here
     print('Tapped group: ${groupData['groupname']}');
     // You can also navigate:
-     Navigator.push(context, MaterialPageRoute(builder: (_) => PETspeciicGroupPage()));
+     Navigator.push(context, MaterialPageRoute(builder: (_) => PETspeciicGroupPage(groupname: groupData['groupname'])));
   },
   child: Container(
             margin: const EdgeInsets.only(bottom: 15),
@@ -220,7 +220,7 @@ class _GroupPageState extends State<GroupPage> {
     // Handle tap event here
     print('Tapped group: ${groupData['groupname']}');
     // You can also navigate:
-     Navigator.push(context, MaterialPageRoute(builder: (_) => PETspeciicGroupPage()));
+     Navigator.push(context, MaterialPageRoute(builder: (_) => PETspeciicGroupPage(groupname: groupData['groupname'],)));
   },
   child: Container(
               width: 160,

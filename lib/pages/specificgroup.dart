@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fitcheck/pages/group_page.dart';
 
-void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'PET Group Page',
-      theme: ThemeData(primarySwatch: Colors.orange),
-      home: const PETspeciicGroupPage(),
-    );
-  }
-}
 
 class PETspeciicGroupPage extends StatefulWidget {
-  const PETspeciicGroupPage({super.key});
+  final String groupname;
+  const PETspeciicGroupPage({super.key, required this.groupname});
 
   @override
   State<PETspeciicGroupPage> createState() => _PETspeciicGroupPageState();
 }
 
 class _PETspeciicGroupPageState extends State<PETspeciicGroupPage> {
+String groupname = "";
+  @override
+  void initState() {
+    super.initState();
+   groupname = widget.groupname;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -43,7 +40,6 @@ class _PETspeciicGroupPageState extends State<PETspeciicGroupPage> {
             ),
             child: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(child: _buildTopBar()),
                 SliverToBoxAdapter(child: _buildHeaderSection()),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
@@ -59,94 +55,100 @@ class _PETspeciicGroupPageState extends State<PETspeciicGroupPage> {
     );
   }
 
-  Widget _buildTopBar() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Icon(Icons.arrow_back_ios, color: Color(0xFFFFBA76), size: 24),
-          const Text(
-            'GROUPS',
-            style: TextStyle(
-              color: Color(0xFFFFBA76),
-              fontSize: 24,
-              fontFamily: 'Oswald',
-            ),
+ Widget _buildHeaderSection() {
+  return Stack(
+    children: [
+      // Background image with dark overlay
+      Container(
+        width: double.infinity,
+        height: 275,
+        color: const Color(0xFF2F2F2F),
+        child: Opacity(
+          opacity: 0.5,
+          child: Image.network(
+            'https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.1.0&auto=format&fit=crop&w=1080&q=80',
+            fit: BoxFit.cover,
           ),
-          Row(
-            children: const [
-              Padding(
-                padding: EdgeInsets.only(right: 12),
-                child: FaIcon(
-                  FontAwesomeIcons.comment,
-                  color: Color(0xFFFFBA76),
-                  size: 24,
-                ),
+        ),
+      ),
+
+      // Top buttons (overlaid)
+      Positioned(
+        top: 5,
+        left: 16,
+        right: 16,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Color(0xFFFFBA76)),
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const GroupPage()),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 12),
-                child: FaIcon(
-                  FontAwesomeIcons.ellipsisH,
-                  color: Color(0xFFFFBA76),
-                  size: 24,
+            ),
+            Row(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(right: 12),
+                  child: FaIcon(
+                    FontAwesomeIcons.comment,
+                    color: Color(0xFFFFBA76),
+                    size: 20,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: FaIcon(
+                    FontAwesomeIcons.ellipsisH,
+                    color: Color(0xFFFFBA76),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+
+      // Group info centered
+      Positioned.fill(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                groupname,
+                style: const TextStyle(fontSize: 32, color: Colors.white),
+              ),
+              const Text(
+                '2,758 Followers',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFBA76),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Join the Pack',
+                  style: TextStyle(fontSize: 24),
                 ),
               ),
             ],
           ),
-        ],
+        ),
       ),
-    );
-  }
+    ],
+  );
+}
 
-  Widget _buildHeaderSection() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          width: double.infinity,
-          height: 275,
-          color: const Color(0xFF2F2F2F),
-          child: Opacity(
-            opacity: 0.5,
-            child: Image.network(
-              'https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.1.0&auto=format&fit=crop&w=1080&q=80',
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Column(
-          children: [
-            const Text(
-              'Puppy Gang',
-              style: TextStyle(fontSize: 32, color: Colors.white),
-            ),
-            const Text(
-              '2,758 Followers',
-              style: TextStyle(fontSize: 18, color: Colors.white),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFBA76),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'Join the Pack',
-                style: TextStyle(fontSize: 24),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 
   Widget _buildPost({bool imageOnly = false}) {
     return Padding(

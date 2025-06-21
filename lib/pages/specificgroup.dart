@@ -17,13 +17,42 @@ class PETspeciicGroupPage extends StatefulWidget {
 
 class _PETspeciicGroupPageState extends State<PETspeciicGroupPage> {
 String groupname = "";
+String _currentUsername = "";
+String _currentanimal = "";
   final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
 
   @override
   void initState() {
     super.initState();
    groupname = widget.groupname;
+_loadUserData();
+  }
 
+  void _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('username');
+
+    if (savedUsername != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentUsername = savedUsername;
+        });
+      }
+    }
+
+    final savedAnimal = prefs.getString('animal');
+
+    if (savedAnimal != null) {
+      final snapshot = await databaseRef.child('users/$savedUsername/pets/$savedAnimal').get();
+      if (snapshot.exists) {
+        final userData = snapshot.value as Map;
+        setState(() {
+          _currentanimal = savedAnimal;
+        });
+      }
+    }
   }
 
   @override
@@ -95,13 +124,15 @@ Widget _buildHeaderSection() {
         );
       }
 
+      final groupKey = matchingEntry.key;
       final groupData = Map<String, dynamic>.from(matchingEntry.value);
       final imageUrl = groupData['bannerurl'] ?? '';
       final followerCount = groupData['membercount']?.toString() ?? '0';
+      final members = Map<String, dynamic>.from(groupData['members'] ?? {});
+      final isMember = members.containsKey(_currentUsername); // Make sure _currentUsername is defined
 
       return Stack(
         children: [
-          // Background image with dark overlay
           Container(
             width: double.infinity,
             height: 275,
@@ -114,8 +145,6 @@ Widget _buildHeaderSection() {
               ),
             ),
           ),
-
-          // Top buttons (overlaid)
           Positioned(
             top: 5,
             left: 16,
@@ -149,8 +178,6 @@ Widget _buildHeaderSection() {
               ],
             ),
           ),
-
-          // Group info centered
           Positioned.fill(
             child: Center(
               child: Column(
@@ -166,7 +193,39 @@ Widget _buildHeaderSection() {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {},
+                   onPressed: () async {
+  final groupRef = FirebaseDatabase.instance.ref('groups/$groupKey');
+  final userRef = groupRef.child('members/$_currentUsername');
+  final userGroupRef = FirebaseDatabase.instance
+      .ref('users/$_currentUsername/groups/$groupKey');
+
+  // Get current member count (defaults to 0 if null)
+  final groupSnapshot = await groupRef.get();
+  int currentCount = 0;
+  if (groupSnapshot.exists && groupSnapshot.value != null) {
+    final data = Map<String, dynamic>.from(groupSnapshot.value as Map);
+    currentCount = (data['membercount'] ?? 0) as int;
+  }
+
+  if (isMember) {
+    // Leave group
+    await userRef.remove();
+    await userGroupRef.remove();
+    await groupRef.update({'membercount': currentCount > 0 ? currentCount - 1 : 0});
+  } else {
+    // Join group
+    final profilePicSnap = await FirebaseDatabase.instance
+        .ref('users/$_currentUsername/pets/$_currentanimal/profilepicture')
+        .get();
+    final profilePic = profilePicSnap.value ?? '';
+    await userRef.set({'profilepicture': profilePic});
+    await userGroupRef.set({'groupname': groupname, 'url': imageUrl});
+    await groupRef.update({'membercount': currentCount + 1});
+  }
+
+  setState(() {}); // Refresh button state and UI
+},
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFBA76),
                       foregroundColor: Colors.white,
@@ -175,9 +234,9 @@ Widget _buildHeaderSection() {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Join the Pack',
-                      style: TextStyle(fontSize: 24),
+                    child: Text(
+                      isMember ? 'Following' : 'Join the Pack',
+                      style: const TextStyle(fontSize: 24),
                     ),
                   ),
                 ],
@@ -189,6 +248,7 @@ Widget _buildHeaderSection() {
     },
   );
 }
+
 
 
 

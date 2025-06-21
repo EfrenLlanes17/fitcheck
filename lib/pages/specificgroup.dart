@@ -88,6 +88,75 @@ _loadUserData();
     );
   }
 
+  void showReportBottomSheet(BuildContext context) {
+  final TextEditingController reportController = TextEditingController();
+
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Report Pack',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFFFBA76)),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Please describe the issue:',  style: TextStyle(color: Color(0xFFFFBA76)),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: reportController,
+              maxLines: 4,
+              style: const TextStyle(color: Color(0xFFFFBA76)),
+              decoration: const InputDecoration(
+                hintText: 'Enter your report here...',
+                hintStyle: TextStyle(color: Color(0xFFFFBA76)),
+                border: OutlineInputBorder(),
+                
+              ),
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                 
+                  backgroundColor: const Color(0xFFFFBA76), // Button background
+                ),
+                onPressed: () async {
+                  final reportText = reportController.text.trim();
+                  if (reportText.isNotEmpty) {
+                    await databaseRef.child('packreports').push().set({
+      'text': reportText, 'reporter' : _currentUsername, 'groupname' : groupname
+      
+    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Send', style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 Widget _buildHeaderSection() {
   final groupsRef = FirebaseDatabase.instance.ref().child('groups');
 
@@ -160,7 +229,7 @@ Widget _buildHeaderSection() {
                   ),
                 ),
                 Row(
-                  children: const [
+                  children:  [
                     Padding(
                       padding: EdgeInsets.only(right: 12),
                       child: FaIcon(
@@ -170,9 +239,40 @@ Widget _buildHeaderSection() {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 12),
-                      child: Icon(Icons.more_vert, color: Color(0xFFFFBA76)),
+  padding: EdgeInsets.only(left: 12), // ✅ Not const
+  child: IconButton(
+    icon: Icon(Icons.more_vert, color: Color(0xFFFFBA76)), // ✅ Not const
+    onPressed: () async {
+      await showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return SafeArea(
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.flag, color: Color(0xFFFFBA76)),
+                    title: Text(
+                      'Report Competition',
+                      style: TextStyle(color: Color(0xFFFFBA76)),
                     ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showReportBottomSheet(context); // make sure this function exists
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  ),
+)
+
                   ],
                 ),
               ],

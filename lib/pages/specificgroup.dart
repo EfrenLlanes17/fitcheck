@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fitcheck/pages/group_page.dart';
-
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 
@@ -15,6 +17,8 @@ class PETspeciicGroupPage extends StatefulWidget {
 
 class _PETspeciicGroupPageState extends State<PETspeciicGroupPage> {
 String groupname = "";
+  final DatabaseReference databaseRef = FirebaseDatabase.instance.ref();
+
   @override
   void initState() {
     super.initState();
@@ -55,99 +59,138 @@ String groupname = "";
     );
   }
 
- Widget _buildHeaderSection() {
-  return Stack(
-    children: [
-      // Background image with dark overlay
-      Container(
-        width: double.infinity,
-        height: 275,
-        color: const Color(0xFF2F2F2F),
-        child: Opacity(
-          opacity: 0.5,
-          child: Image.network(
-            'https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.1.0&auto=format&fit=crop&w=1080&q=80',
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
+Widget _buildHeaderSection() {
+  final groupsRef = FirebaseDatabase.instance.ref().child('groups');
 
-      // Top buttons (overlaid)
-      Positioned(
-        top: 5,
-        left: 16,
-        right: 16,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Color(0xFFFFBA76)),
-              onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const GroupPage()),
+  return FutureBuilder<DataSnapshot>(
+    future: groupsRef.get(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const SizedBox(
+          height: 275,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      if (!snapshot.hasData || snapshot.data!.value == null) {
+        return const SizedBox(
+          height: 275,
+          child: Center(child: Text('No groups found', style: TextStyle(color: Colors.white))),
+        );
+      }
+
+      final groupsMap = Map<String, dynamic>.from(snapshot.data!.value as Map);
+      final matchingEntry = groupsMap.entries.firstWhere(
+        (entry) {
+          final data = Map<String, dynamic>.from(entry.value);
+          return data['groupname'] == groupname;
+        },
+        orElse: () => MapEntry('', {}),
+      );
+
+      if (matchingEntry.value.isEmpty) {
+        return const SizedBox(
+          height: 275,
+          child: Center(child: Text('Group not found', style: TextStyle(color: Colors.white))),
+        );
+      }
+
+      final groupData = Map<String, dynamic>.from(matchingEntry.value);
+      final imageUrl = groupData['bannerurl'] ?? '';
+      final followerCount = groupData['membercount']?.toString() ?? '0';
+
+      return Stack(
+        children: [
+          // Background image with dark overlay
+          Container(
+            width: double.infinity,
+            height: 275,
+            color: const Color(0xFF2F2F2F),
+            child: Opacity(
+              opacity: 0.6,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
               ),
             ),
-            Row(
-              children: const [
-                Padding(
-                  padding: EdgeInsets.only(right: 12),
-                  child: FaIcon(
-                    FontAwesomeIcons.comment,
-                    color: Color(0xFFFFBA76),
-                    size: 20,
+          ),
+
+          // Top buttons (overlaid)
+          Positioned(
+            top: 5,
+            left: 16,
+            right: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color(0xFFFFBA76)),
+                  onPressed: () => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const GroupPage()),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 12),
-                  child: FaIcon(
-                    FontAwesomeIcons.ellipsisH,
-                    color: Color(0xFFFFBA76),
-                    size: 20,
-                  ),
+                Row(
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.only(right: 12),
+                      child: FaIcon(
+                        FontAwesomeIcons.comment,
+                        color: Color(0xFFFFBA76),
+                        size: 20,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 12),
+                      child: Icon(Icons.more_vert, color: Color(0xFFFFBA76)),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-
-      // Group info centered
-      Positioned.fill(
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                groupname,
-                style: const TextStyle(fontSize: 32, color: Colors.white),
-              ),
-              const Text(
-                '2,758 Followers',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFBA76),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Join the Pack',
-                  style: TextStyle(fontSize: 24),
-                ),
-              ),
-            ],
           ),
-        ),
-      ),
-    ],
+
+          // Group info centered
+          Positioned.fill(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    groupname,
+                    style: const TextStyle(fontSize: 32, color: Colors.white),
+                  ),
+                  Text(
+                    '$followerCount Followers',
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFBA76),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Join the Pack',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    },
   );
 }
+
+
 
 
   Widget _buildPost({bool imageOnly = false}) {
